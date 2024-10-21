@@ -3,7 +3,7 @@ from typing import Optional
 from DBConnector import DBConnector
 from src.Model.Movie import Movie
 
-class  MovieDAO:
+class  MovieRepo:
     db_connector : DBConnector
 
     def __init__(self, db_connector: DBConnector):
