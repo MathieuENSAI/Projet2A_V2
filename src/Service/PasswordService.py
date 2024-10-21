@@ -7,9 +7,9 @@ from src.Model.User import User
 
 
 def hash_password(password: str, salt: Optional[str] = None) -> str:
-    ## TODO
-
-    return "1234"
+    if salt is None:
+        salt = create_salt()
+    return hashlib.sha256(salt.encode() + password.encode()).hexdigest()
 
 
 def create_salt() -> str:
