@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from datetime import date
 
 class Movie(BaseModel):
-    id_movie: int
+    movie_id : int
     original_title: str
     date_sortie: date
     realisateur: str
