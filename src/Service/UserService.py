@@ -11,7 +11,11 @@ class UserService:
 
     def create_user(self, username: str, password: str) -> User:
         ## TODO
-
+        
+        ## ici penser à utiliser la fonction create_salt() pour créer le sel du mdp
+        ## pour le HACHAGE ^^
+        ## Il faut aussi utiliser la fonc check password pour voir si le mdp choisi est ok
+        ## password = le mdp haché donc password = hash_password(password, salt)
         return
 
     def get_user(self, user_id: int) -> User | None:

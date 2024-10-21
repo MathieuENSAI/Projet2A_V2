@@ -12,6 +12,7 @@ class MovieService:
 
     def __init__(self, movie_db: None):
         self.movie_db = movie_db
+        
 
     def get_by_id(self, movie_id: int, language = None) -> Movie:
         url = f'https://api.themoviedb.org/3/movie/{movie_id}'
