@@ -21,3 +21,14 @@ CREATE TABLE projet_info.seenmovies (
     note INT,
     favorite BOOLEAN
 )
+
+DROP TABLE IF EXISTS projet_info.Movie CASCADE;
+CREATE TABLE projet_info.Movie(
+    movie_id SERIAL PRIMARY KEY,
+    original_title CHAR(128),
+    date_sortie DATETIME,
+    realisateur CHAR(64),
+    langue_vo CHAR(32),
+    genre CHAR(32),
+    resume CHAR(256)
+);
