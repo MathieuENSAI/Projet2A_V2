@@ -1,6 +1,6 @@
 from typing import Optional
 
-from DBConnector import DBConnector
+from src.DAO.DBConnector import DBConnector
 from src.Model.Movie import Movie
 
 class  MovieRepo:
