@@ -16,6 +16,7 @@ class SeenMovieRepo:
             return None
         return SeenMovie(**raw_seenmovie)
     
+    
     def get_by_user_and_movie(self, id_user: int, id_movie: int ) -> Optional[SeenMovie]:
         raw_seenmovie = self.db_connector.sql_query(
             """SELECT * from projet_info.seenmovies 
@@ -41,6 +42,20 @@ class SeenMovieRepo:
 
         return SeenMovie(**raw_created_seenmovie)
     
+    def update_db(self, seenmovie : SeenMovie):
+        raw_update = self.db_connector.sql_query (
+        """UPDATE projet_info.seenmovies                            "
+           SET seen      = %(seen)s,                   "
+           note        = %(note)s,
+           favorite = %(favorite)s,                      "
+           WHERE id_seenmovie = %(id_seenmovie)s;    """,
+                        { "seen" :seenmovie.seen, 
+                         "note" :seenmovie.note,
+                         "favorite" : seenmovie.favorite,
+                        }
+                    )
+        return raw_update ==1
+    
     def delete_from_db(self, seenmovie : SeenMovie):
         raw_delete = self.db_connector.sql_query(
             """DELETE FROM projet_info.seenmovies
@@ -49,20 +64,20 @@ class SeenMovieRepo:
         )
         return raw_delete.rowcount > 0
     
-    def get_note(self, id_user : int, id_movie : int) -> SeenMovie: 
-        raw_note = self.db_connector.sql_query(
-            """
-            SELECT note 
-            FROM seenmovies 
-            WHERE %(id_user)s = id_user 
-            AND %(id_movie)s = id_movie)
-            """,
-            {"id_user": id_user, "id_movie": id_movie}, "one",
-        )
-        if raw_note : 
-            return raw_note
-        else :
-            return("No note available.")
+    # def get_note(self, id_user : int, id_movie : int) -> SeenMovie: 
+    #     raw_note = self.db_connector.sql_query(
+    #         """
+    #         SELECT note 
+    #         FROM seenmovies 
+    #         WHERE %(id_user)s = id_user 
+    #         AND %(id_movie)s = id_movie)
+    #         """,
+    #         {"id_user": id_user, "id_movie": id_movie}, "one",
+    #     )
+    #     if raw_note : 
+    #         return raw_note
+    #     else :
+    #         return("No note available.")
         
     def get_list_seenmovies_by_user(self, id_user : int) -> list[int]:
         """ Returns the list of movies id seen by a user"""
@@ -82,7 +97,7 @@ class SeenMovieRepo:
                 list_movies.append(row["id_movie"])
             return list_movies
         else : 
-            return ("No movie seen by this user.")
+            return None
         
     def get_watchlist_user(self, id_user : int) -> list[int]:
         """ Returns the movies a user wanna see in the future"""
@@ -102,7 +117,7 @@ class SeenMovieRepo:
                 list_movies.append(row["id_movie"])
             return list_movies
         else : 
-            return ("No movie in this user's watchlist.")
+            return None
         
     def get_list_favorite_movie(self, id_user : int) -> list[int]:
         """ Returns the list of favorite movies of an user"""
@@ -122,7 +137,7 @@ class SeenMovieRepo:
                 list_movies.append(row["id_movie"])
             return list_movies
         else : 
-            return ("This user don't have any favorite movie")
+            return None
         
     def get_list_users_by_movie(self, id_movie : int) -> list[int]:
         """ Returns the list of users who have seen a movie"""
@@ -142,5 +157,5 @@ class SeenMovieRepo:
                 list_users.append(row["id_users"])
             return list_users
         else : 
-            return ("This movie hasn't been seen by any user.")
+            return None
         
