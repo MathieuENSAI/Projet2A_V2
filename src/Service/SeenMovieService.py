@@ -34,19 +34,23 @@ class SeenMovieService:
     
     def watchlist(user : User):
         if SeenMovieRepo.get_watchlist_user(user.id_user):
+            watchlist=[]
             list_movies = SeenMovieRepo.get_watchlist_user(user.id_user)
             for movie in list_movies:
                 movie_to_watch = MovieRepo.get_by_id(movie)
-                print(movie_to_watch.info())
+                watchlist.append(movie_to_watch.title)
+            return watchlist
         else:
             print("No movie found in this user's watchlist.")
     
     def seenmovies_user(user: User):
         if SeenMovieRepo.get_list_seenmovies_by_user(user.id_user):
-            list_movies = SeenMovieRepo.get_list_seenmovies_by_user(user.id_user)
+            seenmovies=[]
+            list_movies = SeenMovieRepo.get_watchlist_user(user.id_user)
             for movie in list_movies:
                 watched_movie = MovieRepo.get_by_id(movie)
-                print(watched_movie.info())
+                seenmovies.append(watched_movie.title)
+            return seenmovies
         else:
             print("No movie have been seen by this user.")
     
@@ -60,3 +64,14 @@ class SeenMovieService:
             return list_username
         else:
             print("This have not been seen by any user in our database.")
+
+    def favorite_movie_user(user : User):
+        if SeenMovieRepo.get_list_favorite_movie(user.id_user):
+            list_favorite = []
+            list_movies = SeenMovieRepo.get_list_favorite_movie(user.id_user)
+            for movie in list_movies:
+                favorite = MovieRepo.get_by_id(favorite)
+                list_favorite.append(favorite.title)
+            return list_favorite
+        else:
+            print("This user don't have favorite movies")

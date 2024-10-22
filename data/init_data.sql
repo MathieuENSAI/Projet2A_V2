@@ -18,7 +18,7 @@ VALUES
 (3, 'en', 'Legend of Tomorow', '2022-11-05', 'Legend of Tomorow');
 
 -- -- INITIALISER LA TABLE SeenMovie
-INSERT INTO projet_info.SeenMovie(id_user, id_movie, seen, vote, favorite)
+INSERT INTO projet_info.SeenMovies(id_user, id_movie, seen, vote, favorite)
 VALUES
 (1, 1, TRUE, 8, TRUE),
 (1, 2, TRUE, 3, FALSE),
