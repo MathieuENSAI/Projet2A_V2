@@ -32,8 +32,8 @@ CREATE TABLE projet_info.SeenMovies (
     seen BOOLEAN,
     vote INT,
     favorite BOOLEAN,
-    FOREIGN KEY (id_user) REFERENCES projet_info.User(id_user),
-    FOREIGN KEY (id_movie) REFERENCES projet_info.Movie(id)
+    FOREIGN KEY(id_user) REFERENCES projet_info.User(id_user) ON DELETE SET NULL,
+    FOREIGN KEY(id_movie) REFERENCES projet_info.Movie(id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS projet_info.UserFollowers CASCADE ;
@@ -41,6 +41,20 @@ CREATE TABLE projet_info.UserFollowers (
     id_user INT NOT NULL,
     id_follower INT NOT NULL,
     PRIMARY KEY(id_user, id_follower),
-    FOREIGN KEY (id_user) REFERENCES projet_info.User(id_user),
-    FOREIGN KEY (id_follower) REFERENCES projet_info.User(id_user)
+    FOREIGN KEY (id_user) REFERENCES projet_info.User(id_user) ON DELETE CASCADE,
+    FOREIGN KEY (id_follower) REFERENCES projet_info.User(id_user) ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS projet_info.Genre CASCADE;
+CREATE TABLE projet_info.Genre(
+    id_genre INT PRIMARY KEY,
+    name_genre CHAR(32)
+);
+
+DROP TABLE IF EXISTS projet_info.MovieGenre CASCADE;
+CREATE TABLE projet_info.MovieGenre(
+    id_movie INT,
+    id_genre INT,
+    FOREIGN KEY (id_movie) REFERENCES projet_info.Movie(id) ON DELETE SET NULL,
+    FOREIGN KEY (id_genre) REFERENCES projet_info.Genre(id_genre) ON DELETE CASCADE
 );
