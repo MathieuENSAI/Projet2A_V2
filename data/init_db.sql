@@ -8,8 +8,8 @@ CREATE SCHEMA projet_info;
 DROP TABLE IF EXISTS projet_info.utilisateur CASCADE ;
 CREATE TABLE projet_info.User (
     id_user serial PRIMARY KEY,
-    username VARCHAR(30) UNIQUE,
-    password VARCHAR(250)
+    username VARCHAR(32) UNIQUE,
+    password VARCHAR(256)
 );
 
 DROP TABLE IF EXISTS projet_info.Movie CASCADE;
@@ -20,7 +20,8 @@ CREATE TABLE projet_info.Movie(
     release_date DATE,
     titre CHAR(128),
     vote_average FLOAT,
-    vote_count INT
+    vote_count INT, 
+    overview CHAR(256)
 );
 
 DROP TABLE IF EXISTS projet_info.SeenMovies CASCADE ; 
