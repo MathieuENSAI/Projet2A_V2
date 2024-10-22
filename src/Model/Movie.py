@@ -2,27 +2,27 @@ from pydantic import BaseModel
 from datetime import date
 
 class Movie(BaseModel):
-    movie_id : int
+    id : int
+    original_language: str
     original_title: str
-    date_sortie: date
-    realisateur: str
-    langue_vo: str
-    genre: str
-    resume: str
-    average_rating: str = None
+    release_date:date
+    titre:str
+    vote_average: float
+    vote_count: int
+    overview: str
 
     # def update_average_rating(self):
 
     def info(self):
         info = f"""
-        id_movie: {self.id_movie}
+        id: {self.id}
+        original_language: {self.original_language}
         original_title: {self.original_title}
-        date_sortie: {self.date}
-        realisateur: {self.realisateur}
-        langue_vo: {self.langue_vo}
-        genre: {self.genre}
-        resume: {self.re}
-        average_rating: {self.average_rating}
+        release_date: {self.release_date}
+        titre: {self.titre}
+        vote_average: {self.vote_average}
+        vote_count: {self. vote_count}
+        overview: {self.overview}
         """
 
         return info
