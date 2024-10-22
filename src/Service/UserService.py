@@ -15,5 +15,20 @@ class UserService:
         user = self.user_repo.insert_into_db(username = username, salt = salt, hashed_password=pass_word)
         return(user)
 
-    def get_user(self, user_id: int) -> User | None:
+    def get_user_by_id(self, user_id: int) -> User | None:
         return self.user_repo.get_by_id(user_id)
+    
+    def login_user(self, username: str, password: str) -> Optional[User]:
+        user = self.user_repo.get_by_username(username)
+        if user is None:
+            return None
+        hashed_password = hash_password(password, user.salt)
+        if hashed_password == user.hashed_password:
+            return user
+        return None
+
+    def delete_user(self, user_id: int) -> None:
+        user = self.get_user_by_id(user_id)
+        if user is None:
+            raise ValueError("User not found")
+        self.user_repo.delete_from_db(user)

@@ -35,3 +35,63 @@ class UserRepo:
         )
 
         return User(**raw_created_user)
+
+    def get_all(self) -> list[User]:
+        raw_users = self.db_connector.sql_query("SELECT * from users", [], "all")
+        if raw_users is None:
+            return None
+        return User(**raw_users)
+    
+    def modify_user(self, user: User) -> User:
+        raw_modified_user = self.db_connector.sql_query(
+            """
+        UPDATE users
+        SET username = %(username)s, salt = %(salt)s, password = %(password)s
+        WHERE id = %(id)s
+        RETURNING *;
+        """,
+            user.to_dict(),
+            "one",
+        )
+        return User(**raw_modified_user)
+    
+    def delete_user(self, user: User) -> None:
+        try:
+            self.db_connector.sql_query(
+                """
+            DELETE FROM users
+            WHERE id = %(id)s;
+            """,
+                user.to_dict(),
+                "none",
+            )
+        except Exception as e:
+            print(f"Error deleting user: {e}")
+            raise e
+
+    def login(self, username: str, password: str) -> Optional[User]:
+        raw_user = self.db_connector.sql_query(
+            """
+            SELECT * FROM users
+            WHERE username = %(username)s AND password = %(password)s;
+            """,
+            {"username": username, "password": password},
+            "one",
+        )
+        if raw_user is None:
+            return None
+        return User(**raw_user)
+
+    def retrieve_scouts(self, user: User) -> list[User]:
+        raw_users = self.db_connector.sql_query(
+            """
+            SELECT * FROM users
+            WHERE scout = %(scout)s;
+            """,
+            {"scout": user.id},
+            "all",
+        )
+        if raw_users is None:
+            return None
+        return [User(**raw_user) for raw_user in raw_users]
+
