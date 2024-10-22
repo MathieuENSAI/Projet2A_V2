@@ -5,5 +5,3 @@ class SeenMovieService:
     user : User = None
     movie : Movie = None 
 
-    def movie_seen_by():
-        
