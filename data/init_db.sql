@@ -25,7 +25,7 @@ CREATE TABLE projet_info.Movie(
 );
 
 DROP TABLE IF EXISTS projet_info.SeenMovies CASCADE ; 
-CREATE TABLE projet_info.seenmovies (
+CREATE TABLE projet_info.   SeenMovies (
     id_seenmovie SERIAL PRIMARY KEY,
     id_user INT NOT NULL,
     id_movie INT NOT NULL,
