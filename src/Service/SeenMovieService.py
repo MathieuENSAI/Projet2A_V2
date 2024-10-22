@@ -1,5 +1,6 @@
 from src.Model.User import User
 from src.Model.Movie import Movie
+from src.DAO.UserRepo import UserRepo
 from src.DAO.MovieRepo import MovieRepo
 from src.Model.SeenMovie import SeenMovie
 from src.DAO.SeenMovieRepo import SeenMovieRepo
@@ -49,4 +50,13 @@ class SeenMovieService:
         else:
             print("No movie have been seen by this user.")
     
-    def movies
+    def movies_seen_by(movie : Movie):
+        if SeenMovieRepo.get_list_users_by_movie(movie.id):
+            list_username=[]
+            list_users = SeenMovieRepo.get_list_users_by_movie(movie.id)
+            for user in list_users:
+                username = UserRepo.get_by_id(user)
+                list_username.append(username.username)
+            return list_username
+        else:
+            print("This have not been seen by any user in our database.")

@@ -1,5 +1,5 @@
 -- INITIALISER LA TABLE Utilisateur --
-INSERT INTO projet_info.User(pseudo, pass_word)
+INSERT INTO projet_info.User(username, pass_word)
 VALUES
 ('admin', 'admin48'),
 ('projetInfo', '48'),

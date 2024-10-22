@@ -20,6 +20,15 @@
             "name": "PostgreSQL",
             "database": "id2600",
             "username": "id2600"
+        },
+        {
+            "previewLimit": 50,
+            "server": "sgbd-eleves.domensai.ecole",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "PostgreSQL",
+            "database": "id2515",
+            "username": "id2515"
         }
     ]
 }
