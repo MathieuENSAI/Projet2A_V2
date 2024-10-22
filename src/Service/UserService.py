@@ -10,13 +10,12 @@ class UserService:
         self.user_repo = user_repo
 
     def create_user(self, username: str, password: str) -> User:
-        ## TODO
-        
-        ## ici penser à utiliser la fonction create_salt() pour créer le sel du mdp
-        ## pour le HACHAGE ^^
-        ## Il faut aussi utiliser la fonc check password pour voir si le mdp choisi est ok
-        ## password = le mdp haché donc password = hash_password(password, salt)
-        return
+        if self.user_repo.get_by_username(username) != None :
+            raise Exception("This nickname allready exists")
+        check_password_strength(password)
+        salt = create_salt()
+        pass_word = hash_password(password, salt)
+        self.user_repo.insert_into_db(username = username, salt = salt, hashed_password=pass_word)
 
     def get_user(self, user_id: int) -> User | None:
         return self.user_repo.get_by_id(user_id)
