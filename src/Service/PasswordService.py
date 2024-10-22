@@ -25,7 +25,7 @@ def validate_username_password(username: str, password: str, user_repo: UserRepo
     user_with_username: Optional[User] = user_repo.get_by_username(username=username)
     user = UserRepo.get_by_username(username)
     tested_password = hash_password(password, user.salt)
-    if tested_password != user(password):
+    if tested_password != user(pass_word):
         raise Exception("Incorrect Password")
     ##J'ai fais ça, jsp si c'est bon (à revoir en fction du reste)
     return user_with_username
