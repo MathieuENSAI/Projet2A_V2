@@ -18,7 +18,7 @@ CREATE TABLE projet_info.Movie(
     original_language CHAR(16),
     original_title CHAR(128),
     release_date DATE,
-    titre CHAR(128),
+    title CHAR(128),
     vote_average FLOAT,
     vote_count INT, 
     overview CHAR(256)

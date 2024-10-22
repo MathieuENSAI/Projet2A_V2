@@ -19,4 +19,6 @@ class  MovieRepo:
         else :
             return Movie(**raw_movie)
 
+    def get_by_title(self, ti)
+
 
