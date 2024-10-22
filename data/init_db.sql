@@ -30,7 +30,6 @@ CREATE TABLE projet_info.seenmovies (
     id_user INT NOT NULL,
     id_movie INT NOT NULL,
     seen BOOLEAN,
-    see_later BOOLEAN,
     vote INT,
     favorite BOOLEAN,
     FOREIGN KEY (id_user) REFERENCES User(id_user),
