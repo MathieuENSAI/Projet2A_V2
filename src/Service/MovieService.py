@@ -18,3 +18,16 @@ class MovieService:
         if movie is not None:
             movie_repo.insert_into_db(movie)
             return movie
+        
+        raise FileNotFoundError()
+
+    def get_by_title(self,title: str):
+        movies = movie_repo.get_by_title(title)
+        movies_from_TMDB = movie_TMDB.get_by_title(title)
+        for movie in movies_from_TMDB:
+        if movie.id not in {m.id for m in movies}:
+            unique_movies.append(movie)
+        return movies
+
+    
+
