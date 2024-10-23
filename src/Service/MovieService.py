@@ -32,7 +32,7 @@ class MovieService:
         return movies
 
     def get_by_release_date(self, release_date: str):
-        movies = self.movie_repo.get_get_by_release_dateby_title(release_date)
+        movies = self.movie_repo.get_by_release_date(release_date)
         if movies is None:
             movies = []
         movies_from_TMDB = self.movie_TMDB.get_by_release_date(release_date)
