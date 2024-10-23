@@ -30,12 +30,12 @@ CREATE TABLE projet_info.Movie(
 
 
 CREATE TABLE projet_info.SeenMovies (
-    id_seenmovie SERIAL PRIMARY KEY,
     id_user INT NOT NULL,
     id_movie INT NOT NULL,
     seen BOOLEAN,
     vote INT,
     favorite BOOLEAN,
+    PRIMARY KEY (id_user,id_movie),
     FOREIGN KEY(id_user) REFERENCES projet_info.User(id_user) ON DELETE SET NULL,
     FOREIGN KEY(id_movie) REFERENCES projet_info.Movie(id) ON DELETE CASCADE
 );
