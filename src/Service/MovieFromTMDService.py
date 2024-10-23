@@ -16,31 +16,86 @@ class MovieFromTMDService:
         self.movie_db = movie_db
         
 
-    def get_by_id(self, movie_id: int, language = None) -> Movie:
+    def get_by_id(self, movie_id: int) -> Movie:
         url = f'https://api.themoviedb.org/3/movie/{movie_id}'
-        params = {
-        'language': language
-        }
         print(movie_id)
-        response = requests.get(url, params=params,headers=header)
+        response = requests.get(url,headers=header)
         data = response.json()
         print(data)
-        return Movie(movie_id, data.get('original_title', 'Not found'))
+        return Movie(id = movie_id, original_language = data.get('original_language', 'Not found'),
+                      original_title = data.get('original_title', 'Not found'),
+                      release_date = data.get('original_title', 'Not found'),
+                      title = data.get('title', 'Not found'),
+                      overview = data.get('overview', 'Not found'),
+                      vote_average = None, vote_count = None)
 
-    def search_id_movie(self, query: str,
+    def get_by_title(self, title: str):
+        payload = {'query': title}
+        response = requests.get('https://api.themoviedb.org/3/search/movie?',
+        params=payload, headers=header)
+        data = response.json()
+        films = data.get('results', [])
+        resultats = []
+        for film in films:
+            movie = Movie(
+                id=film['id'],
+                original_language=film.get('original_language','Not found'),
+                original_title=film.get('original_title','Not found'),
+                release_date=film.get('release_date','Not found'),
+                title=film.get('title','Not found'),
+                overview=film.get('overview','Not found'),
+                vote_average=None,
+                vote_count=None,
+            )
+            resultats.append(movie)
+        return resultats
+    
+    def get_by_release_date(self, release_date: str):
+        payload = {'release_date.gte': release_date} 
+        response = requests.get('https://api.themoviedb.org/3/discover/movie?', 
+                                params=payload, headers=header)
+        data = response.json()
+        films = data.get('results', [])
+        resultats = []
+        for film in films:
+            movie = Movie(
+                id=film['id'],
+                original_language=film.get('original_language', 'Not found'),
+                original_title=film.get('original_title', 'Not found'),
+                release_date=film.get('release_date', 'Not found'),
+                title=film.get('title', 'Not found'),
+                overview=film.get('overview', 'Not found'),
+                vote_average=None, 
+                vote_count=None,
+            )
+            resultats.append(movie)
+        return resultats
+
+    def search_movie(self, query: str,
                         language = None, primary_release_year = None, 
                         page = None, region = None, year = None) -> list:
         payload = {'query': query,
                     'language': language,
                     'primary_release_year': primary_release_year,
-                    'page': page,
                     'region': region,
                     'year': year}
         response = requests.get('https://api.themoviedb.org/3/search/movie?',
         params=payload, headers=header)
         data = response.json()
         films = data.get('results', [])
-        resultats = [(film['id'], film['title']) for film in films]
+        resultats = []
+        for film in films:
+            movie = Movie(
+                id=film['id'],
+                original_language=film.get('original_language','Not found'),
+                original_title=film.get('original_title','Not found'),
+                release_date=film.get('release_date','Not found'),
+                title=film.get('title','Not found'),
+                overview=film.get('overview','Not found'),
+                vote_average=None,
+                vote_count=None,
+            )
+            resultats.append(movie)
         return resultats
     
     def get_id_name_genre(self)-> list[Genre]:
