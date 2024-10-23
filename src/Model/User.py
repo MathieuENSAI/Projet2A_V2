@@ -26,6 +26,8 @@ class User(BaseModel):
     #     ##TODO
     
     # def add_favorite_movie(self, movie_title):
+    #     ##TODO
+    # def add_favorite_movie(self, movie_title):
         ##TODO
     # def add_favorite_movie(self, movie_title):
     #     ##TODO

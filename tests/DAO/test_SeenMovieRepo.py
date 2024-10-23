@@ -27,10 +27,33 @@ def test_get_by_user_and_movie_result():
                           vote=8,favorite=True)
     assert seenmovie == seenmovierepo.get_by_user_and_movie(1,1)
 
-def test_insert_into_db():
+def test_insert_into_db_sucess():
     seenmovierepo=SeenMovieRepo(db_connector)
-    seenmovie = SeenMovie(id_seenmovie=5,id_user=1, id_movie=3,seen=True, vote=1, favorite=True)
+    seenmovie = SeenMovie(id_user=1, id_movie=3,seen=True, vote=1, favorite=True)
     assert seenmovie == seenmovierepo.insert_into_db(
                           id_user=1, id_movie=3,seen=True, vote=1, favorite=True)
+
+def test_insert_into_db_fail():
+    seenmovierepo=SeenMovieRepo(db_connector)
+    seenmovie = SeenMovie(id_user=1, id_movie=3,seen=True, vote=1, favorite=True)
+    assert seenmovie != seenmovierepo.insert_into_db(id_user=1, id_movie=3,
+                                                     seen=True, vote=1, favorite=True)
     
-    
+def test_delete_from_db_success():
+    seenmovierepo=SeenMovieRepo(db_connector)
+    seenmovie = SeenMovie(id_user=1, id_movie=3,seen=True, vote=1, favorite=True)
+    assert seenmovierepo.delete_from_db(seenmovie) == True
+
+def test_update_db():
+    seenmovierepo=SeenMovieRepo(db_connector)
+    seenmovie = SeenMovie(id_user=1, id_movie=3,seen=True, vote=2, favorite=True)
+    assert seenmovierepo.update_db(seenmovie) == True
+
+
+def test_get_list_seenmovies_by_user_none():
+    seenmovierepo=SeenMovieRepo(db_connector)
+    assert seenmovierepo.get_list_seenmovies_by_user(15) is None
+
+def test_get_list_seenmovies_by_user_sucess():
+    seenmovierepo=SeenMovieRepo(db_connector)
+    assert seenmovierepo.get_list_seenmovies_by_user(1) == [1,2,3]
