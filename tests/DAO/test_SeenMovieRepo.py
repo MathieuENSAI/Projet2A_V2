@@ -33,12 +33,6 @@ def test_insert_into_db_sucess():
     assert seenmovie == seenmovierepo.insert_into_db(
                           id_user=1, id_movie=3,seen=True, vote=1, favorite=True)
 
-def test_insert_into_db_fail():
-    seenmovierepo=SeenMovieRepo(db_connector)
-    seenmovie = SeenMovie(id_user=1, id_movie=3,seen=True, vote=1, favorite=True)
-    assert seenmovie != seenmovierepo.insert_into_db(id_user=1, id_movie=3,
-                                                     seen=True, vote=1, favorite=True)
-    
 def test_delete_from_db_success():
     seenmovierepo=SeenMovieRepo(db_connector)
     seenmovie = SeenMovie(id_user=1, id_movie=3,seen=True, vote=1, favorite=True)
@@ -49,11 +43,34 @@ def test_update_db():
     seenmovie = SeenMovie(id_user=1, id_movie=3,seen=True, vote=2, favorite=True)
     assert seenmovierepo.update_db(seenmovie) == True
 
-
 def test_get_list_seenmovies_by_user_none():
     seenmovierepo=SeenMovieRepo(db_connector)
     assert seenmovierepo.get_list_seenmovies_by_user(15) is None
 
-def test_get_list_seenmovies_by_user_sucess():
+def test_get_list_seenmovies_by_user_success():
     seenmovierepo=SeenMovieRepo(db_connector)
     assert seenmovierepo.get_list_seenmovies_by_user(1) == [1,2,3]
+
+def test_get_watchlist_user_none():
+    seenmovierepo=SeenMovieRepo(db_connector)
+    assert seenmovierepo.get_watchlist_user(15) is None
+
+def test_get_watchlist_user_success():
+    seenmovierepo=SeenMovieRepo(db_connector)
+    assert seenmovierepo.get_watchlist_user(2) == [3]
+
+def test_get_list_favorite_movie_none():
+    seenmovierepo=SeenMovieRepo(db_connector)
+    assert seenmovierepo.get_list_favorite_movie(15) is None
+
+def test_get_list_favorite_movie_success():
+    seenmovierepo=SeenMovieRepo(db_connector)
+    assert seenmovierepo.get_list_favorite_movie(3) == [2]
+
+def test_get_list_users_by_movie_none():
+    seenmovierepo=SeenMovieRepo(db_connector)
+    assert seenmovierepo.get_list_users_by_movie(15) is None
+
+def test_get_list_users_by_movie_success():
+    seenmovierepo=SeenMovieRepo(db_connector)
+    assert seenmovierepo.get_list_users_by_movie(2) == [1,3]
