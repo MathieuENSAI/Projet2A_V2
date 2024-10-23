@@ -76,8 +76,8 @@ class UserService:
             following.remove(user)
         return following
     
-    def disconnection():
-        ##TODO
+    # def disconnection():
+    #     ##TODO
 
 
 

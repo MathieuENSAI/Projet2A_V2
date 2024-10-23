@@ -31,8 +31,8 @@ class SeenMovieRepo:
                         vote : int = None, favorite : bool = False) -> SeenMovie:
         raw_created_seenmovie = self.db_connector.sql_query(
             """
-        INSERT INTO projet_info.seenmovies (id_seenmovie, id_user, id_movie, seen, vote, favorite)
-        VALUES (DEFAULT, %(id_user)s, %(id_movie)s, %(seen)s, %(vote)s, %(favorite)s)
+        INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, vote, favorite)
+        VALUES (%(id_user)s, %(id_movie)s, %(seen)s, %(vote)s, %(favorite)s)
         RETURNING *;
         """,
             {"id_user": id_user, "id_movie": id_movie, "seen" : seen, "vote" : vote, 
@@ -45,13 +45,16 @@ class SeenMovieRepo:
     def update_db(self, seenmovie : SeenMovie):
         raw_update = self.db_connector.sql_query (
         """UPDATE projet_info.seenmovies                            "
-           SET seen      = %(seen)s,                   "
-           vote        = %(vote)s,
-           favorite = %(favorite)s,                      "
-           WHERE id_seenmovie = %(id_seenmovie)s;    """,
+           SET seen      = %(seen)s, 
+           vote   = %(vote)s,
+           favorite = %(favorite)s, 
+           WHERE id_user = %(id_user)s
+           AND id_movie = %(id_movie)s;    """,
                         { "seen" :seenmovie.seen, 
                          "vote" :seenmovie.vote,
                          "favorite" : seenmovie.favorite,
+                         "id_user" : seenmovie.id_user,
+                         "id_movie":seenmovie.id_movie
                         }
                     )
         return raw_update ==1
@@ -59,8 +62,8 @@ class SeenMovieRepo:
     def delete_from_db(self, seenmovie : SeenMovie):
         raw_delete = self.db_connector.sql_query(
             """DELETE FROM projet_info.seenmovies
-               WHERE %(id_user)s = id_user
-               ANS %(id_movie)s = id_movie""",
+               WHERE id_user = %(id_user)s
+               AND  id_movie = %(id_movie)s""",
                {"id_user" : seenmovie.id_user,
                 "id_movie" : seenmovie.id_movie}
         )
@@ -86,7 +89,7 @@ class SeenMovieRepo:
         raw_movies = self.db_connector.sql_query(
             """
             SELECT id_movie 
-            FROM seenmovies 
+            FROM projet_info.seenmovies 
             WHERE %(id_user)s = id_user
             AND seen = TRUE
             """,
@@ -106,7 +109,7 @@ class SeenMovieRepo:
         raw_movies = self.db_connector.sql_query(
             """
             SELECT id_movie 
-            FROM seenmovies 
+            FROM projet_info.seenmovies 
             WHERE %(id_user)s = id_user
             AND seen = FALSE
             """,
@@ -126,7 +129,7 @@ class SeenMovieRepo:
         raw_movies = self.db_connector.sql_query(
             """
             SELECT id_movie 
-            FROM seenmovies 
+            FROM projet_info.seenmovies 
             WHERE %(id_user)s = id_user
             AND favorite = TRUE
             """,
@@ -146,7 +149,7 @@ class SeenMovieRepo:
         raw_users = self.db_connector.sql_query(
             """
             SELECT id_user 
-            FROM seenmovies 
+            FROM projet_info.seenmovies 
             WHERE %(id_movie)s = id_movie
             AND seen = TRUE
             """,

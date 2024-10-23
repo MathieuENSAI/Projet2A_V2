@@ -25,7 +25,7 @@ class User(BaseModel):
     # def stop_follow(self, username):
     #     ##TODO
     
-    def add_favorite_movie(self, movie_title):
-        ##TODO
+    # def add_favorite_movie(self, movie_title):
+    #     ##TODO
     # def add_favorite_movie(self, movie_title):
     #     ##TODO
