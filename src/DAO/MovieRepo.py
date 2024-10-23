@@ -16,12 +16,12 @@ class  MovieRepo:
         if len(movies)>1 :
             query += ", (%s, %s, %s, %s, %s, %s)"*(len(movies)-1)
         query += " RETURNING *;"
-        data = tuple(atribut for movie in movies for attribut in (
+        data = tuple(attribut for movie in movies for attribut in (
             movie.id, movie.original_language, movie.original_title, movie.release_date, movie.title, movie.overview
             ))
 
         raw_created = self.db_connector.sql_query(query, data, "all")
-        if raw_movie is None :
+        if raw_created is None :
             return None
         else :
             return movies

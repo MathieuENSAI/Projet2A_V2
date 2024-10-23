@@ -103,7 +103,6 @@ class MovieFromTMDService:
 
         response = requests.get(url, headers=headers).json()['genres']
 
-    
+        return [Genre(genre['id'], genre['name']) for genre in response]
 
-        print(response.json()['genres'][0]['id'])
 
