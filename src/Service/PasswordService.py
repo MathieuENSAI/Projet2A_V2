@@ -23,9 +23,7 @@ def check_password_strength(password: str):
 
 def validate_username_password(username: str, password: str, user_repo: UserRepo) -> User:
     user_with_username: Optional[User] = user_repo.get_by_username(username=username)
-    user = UserRepo.get_by_username(username)
-    tested_password = hash_password(password, user.salt)
-    if tested_password != user(pass_word):
+    tested_password = hash_password(password, user_with_username.salt)
+    if tested_password != user_with_username.pass_word:
         raise Exception("Incorrect Password")
-    ##J'ai fais ça, jsp si c'est bon (à revoir en fction du reste)
     return user_with_username

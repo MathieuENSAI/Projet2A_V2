@@ -6,6 +6,8 @@ from src.Service.MovieService import MovieService
 
 from .init_app import movie_service
 
+import logging
+
 movie_router = APIRouter(prefix="/movies", tags=["Movies"])
 
 
@@ -19,8 +21,10 @@ def get_movie_by_id(tmdb_id: int):
             status_code=404,
             detail="Movie with id [{}] not found".format(tmdb_id),
         ) from FileNotFoundError
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid request") from Exception
+    except Exception as e:
+        logging.error(f"Error occurred: {e}")
+        raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
+
 
 @movie_router.get("/search", status_code=status.HTTP_200_OK)
 def search_movie(query: str,
