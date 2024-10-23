@@ -2,11 +2,13 @@ from src.Model.Movie import Movie
 from src.Model.Genre import Genre
 import requests
 import os
+import dotenv
 
 
 class MovieFromTMDService:
+    dotenv.load_dotenv()
     movie_db: None
-    tmdb_token = os.environ["TMDB_TOKEN"]
+    tmdb_token = os.environ['TMDB_TOKEN']
     header = {
     "accept": "application/json",
     "Authorization": "Bearer "+tmdb_token
