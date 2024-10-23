@@ -23,10 +23,12 @@ class MovieService:
 
     def get_by_title(self,title: str):
         movies = movie_repo.get_by_title(title)
+        if movies is None:
+            movies = []
         movies_from_TMDB = movie_TMDB.get_by_title(title)
         for movie in movies_from_TMDB:
-        if movie.id not in {m.id for m in movies}:
-            unique_movies.append(movie)
+            if movie.id not in (m.id for m in movies):
+                unique_movies.append(movie)
         return movies
 
     
