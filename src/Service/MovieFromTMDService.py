@@ -19,14 +19,13 @@ class MovieFromTMDService:
     def get_by_id(self, movie_id: int) -> Movie:
         url = f'https://api.themoviedb.org/3/movie/{movie_id}'
         print(movie_id)
-        response = requests.get(url,headers=header)
+        response = requests.get(url,headers=self.header)
         data = response.json()
         return Movie(id = movie_id, original_language = data.get('original_language', 'Not found'),
-                      original_title = data.get('original_title', 'Not found'),
-                      release_date = data.get('release_date', 'Not found'),
-                      title = data.get('title', 'Not found'),
-                      overview = data.get('overview', 'Not found'),
-                      vote_average = None, vote_count = None)
+                     original_title = data.get('original_title', 'Not found'),
+                     release_date = data.get('release_date', 'Not found'),
+                     title = data.get('title', 'Not found'),
+                     overview = data.get('overview', 'Not found'))
 
     def get_by_title(self, title: str):
         payload = {'query': title}

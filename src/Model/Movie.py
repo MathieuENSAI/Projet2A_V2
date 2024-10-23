@@ -1,11 +1,11 @@
 from pydantic import BaseModel
-from datetime import date
+
 
 class Movie(BaseModel):
     id : int
     original_language: str=None
     original_title: str=None
-    release_date:date=None
+    release_date:str=None
     title:str=None
     vote_average: float=None
     vote_count: int=None
