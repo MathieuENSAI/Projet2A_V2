@@ -1,3 +1,4 @@
+from typing import Optional
 from src.Model.SeenMovie import SeenMovie
 from .DBConnector import DBConnector
 
@@ -158,4 +159,3 @@ class SeenMovieRepo:
             return list_users
         else : 
             return None
-        

@@ -1,3 +1,4 @@
--- Toutes les attaques avec type
-SELECT *
-  FROM projet_info.utilisateurs
+SELECT id_movie 
+            FROM projet_info.seenmovies 
+            WHERE 1 = id_user
+            AND seen = FALSE
