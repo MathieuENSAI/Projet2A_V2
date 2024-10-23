@@ -10,11 +10,11 @@ class MovieService:
         self.movie_TMDB = movie_TMDB
     
     def get_by_id(self, movie_id: str) -> Movie | None :
-        movie = movie_repo.get_by_id(movie_id)
+        movie = self.movie_repo.get_by_id(movie_id)
         if movie is not None:
             return movie
 
-        movie = movie_TMDB.get_by_id(movie_id)
+        movie = self.movie_TMDB.get_by_id(movie_id)
         if movie is not None:
             movie_repo.insert_into_db(movie)
             return movie
@@ -22,20 +22,20 @@ class MovieService:
         raise FileNotFoundError()
 
     def get_by_title(self,title: str):
-        movies = movie_repo.get_by_title(title)
+        movies = self.movie_repo.get_by_title(title)
         if movies is None:
             movies = []
-        movies_from_TMDB = movie_TMDB.get_by_title(title)
+        movies_from_TMDB = self.movie_TMDB.get_by_title(title)
         for movie in movies_from_TMDB:
             if movie.id not in (m.id for m in movies):
                 unique_movies.append(movie)
         return movies
 
     def get_by_release_date(self, release_date: str):
-        movies = movie_repo.get_get_by_release_dateby_title(release_date)
+        movies = self.movie_repo.get_get_by_release_dateby_title(release_date)
         if movies is None:
             movies = []
-        movies_from_TMDB = movie_TMDB.get_by_release_date(release_date)
+        movies_from_TMDB = self.movie_TMDB.get_by_release_date(release_date)
         for movie in movies_from_TMDB:
             if movie.id not in (m.id for m in movies):
                 unique_movies.append(movie)

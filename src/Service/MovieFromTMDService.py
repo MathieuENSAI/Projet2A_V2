@@ -1,4 +1,6 @@
 from src.Model.Movie import Movie
+from src.Model.Genre import Genre
+import requests
 import os
 
 
@@ -95,3 +97,12 @@ class MovieFromTMDService:
             )
             resultats.append(movie)
         return resultats
+    
+    def get_id_name_genre(self)-> list[Genre]:
+        url = "https://api.themoviedb.org/3/genre/movie/list?language=en"
+
+        response = requests.get(url, headers=headers).json()['genres']
+
+        return [Genre(genre['id'], genre['name']) for genre in response]
+
+

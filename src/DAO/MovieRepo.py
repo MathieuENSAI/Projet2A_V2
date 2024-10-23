@@ -10,21 +10,26 @@ class  MovieRepo:
 
         self.db_connector = db_connector
 
-    def insert_into_db(self, movies: list[Movie]):
-
+    def insert_into_db(self, **movies):
+        # Vérification de la présence de données
+        if not movies:
+            return None
         query = "INSERT INTO Movie(id, original_language, original_title, release_date, title, overview) VALUES (%s, %s, %s, %s, %s, %s)"
-        if len(movies)>1 :
-            query += ", (%s, %s, %s, %s, %s, %s)"*(len(movies)-1)
+        if len(movies) > 1:
+            query += ", (%s, %s, %s, %s, %s, %s)" * (len(movies) - 1)
         query += " RETURNING *;"
-        data = tuple(atribut for movie in movies for attribut in (
-            movie.id, movie.original_language, movie.original_title, movie.release_date, movie.title, movie.overview
-            ))
+
+        data = tuple(attribut for movie in movies.values() for attribut in (
+            movie['id'], movie['original_language'], movie['original_title'], movie['release_date'], movie['title'], movie['overview']
+        ))
 
         raw_created = self.db_connector.sql_query(query, data, "all")
-        if raw_movie is None :
+
+        if raw_created is None:
             return None
-        else :
-            return movies
+        else:
+            return [Movie(**attributs) for attributs in raw_created]
+
     
     def get_by_id(self, movie_id:int):
         raw_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE id = %s;", (movie_id), "one")
