@@ -15,5 +15,5 @@ user_repo = UserRepo(db_connector)
 jwt_service = JwtService()
 user_service = UserService(user_repo)
 movie_repo = MovieRepo(db_connector)
-movie_TMDB = MovieFromTMDService
+movie_TMDB = MovieFromTMDService(None)
 movie_service = MovieService(movie_repo,movie_TMDB)

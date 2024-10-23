@@ -9,7 +9,7 @@ class MovieService:
         self.movie_repo = movie_repo
         self.movie_TMDB = movie_TMDB
     
-    def get_by_id(self, movie_id: str) -> Movie | None :
+    def get_by_id(self, movie_id: int) -> Movie:
         movie = self.movie_repo.get_by_id(movie_id)
         if movie is not None:
             return movie
