@@ -42,22 +42,27 @@ class SeenMovieRepo:
 
         return SeenMovie(**raw_created_seenmovie)
     
-    def update_db(self, seenmovie : SeenMovie):
-        raw_update = self.db_connector.sql_query (
-        """UPDATE projet_info.seenmovies                            "
-           SET seen      = %(seen)s, 
-           vote   = %(vote)s,
-           favorite = %(favorite)s, 
-           WHERE id_user = %(id_user)s
-           AND id_movie = %(id_movie)s;    """,
-                        { "seen" :seenmovie.seen, 
-                         "vote" :seenmovie.vote,
-                         "favorite" : seenmovie.favorite,
-                         "id_user" : seenmovie.id_user,
-                         "id_movie":seenmovie.id_movie
-                        }
-                    )
-        return raw_update ==1
+    def update_db(self, seenmovie: SeenMovie):
+        raw_update = self.db_connector.sql_query(
+            """
+            UPDATE projet_info.seenmovies
+            SET seen = %(seen)s, 
+                vote = %(vote)s,
+                favorite = %(favorite)s
+            WHERE id_user = %(id_user)s
+            AND id_movie = %(id_movie)s;
+                """,
+            {
+                "seen": seenmovie.seen,
+                "vote": seenmovie.vote,
+                "favorite": seenmovie.favorite,
+                "id_user": seenmovie.id_user,
+                "id_movie": seenmovie.id_movie
+                },
+                "one"
+            )
+        return raw_update == 1
+
     
     def delete_from_db(self, seenmovie : SeenMovie):
         raw_delete = self.db_connector.sql_query(
@@ -159,7 +164,7 @@ class SeenMovieRepo:
 
         if raw_users:
             for row in raw_users:
-                list_users.append(row["id_users"])
+                list_users.append(row["id_user"])
             return list_users
         else : 
             return None
