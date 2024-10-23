@@ -21,7 +21,6 @@ class MovieFromTMDService:
         print(movie_id)
         response = requests.get(url,headers=header)
         data = response.json()
-        print(data)
         return Movie(id = movie_id, original_language = data.get('original_language', 'Not found'),
                       original_title = data.get('original_title', 'Not found'),
                       release_date = data.get('original_title', 'Not found'),
