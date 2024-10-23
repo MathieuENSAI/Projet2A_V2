@@ -46,5 +46,3 @@ class UserService:
         return user
     
     
-    def disconnection():
-        ##TODO
