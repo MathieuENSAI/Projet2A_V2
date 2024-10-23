@@ -21,8 +21,3 @@ class User(BaseModel):
     
     def add_favorite_movie(self, movie_title):
         ##TODO
-        
-    
-
-
-        
