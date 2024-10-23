@@ -10,9 +10,6 @@ class UserService:
         self.user_repo = user_repo
 
     def create_user(self, username: str, password: str) -> User:
-        if not self.check_username(username=username):
-            raise Exception("This username allready exists")
-        check_password_strength(password)
         salt = create_salt()
         pass_word = hash_password(password, salt)
         user = self.user_repo.insert_into_db(username = username, salt = salt, hashed_password=pass_word)
@@ -29,7 +26,7 @@ class UserService:
         #if hashed_password == user.hashed_password:
         #    return user
         #return None
-        validate_username_password(username=username, password=password)
+        self.user_repo.login(username=username, password=password)
 
     def delete_user(self, user_id: int) -> None:
         user = self.get_user_by_id(user_id)
@@ -78,8 +75,3 @@ class UserService:
     
     def disconnection():
         ##TODO
-
-
-
-    
-
