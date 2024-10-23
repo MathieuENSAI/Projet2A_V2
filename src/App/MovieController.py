@@ -2,8 +2,6 @@ from fastapi import APIRouter, HTTPException, status
 
 from src.Model.Movie import Movie
 
-from src.Service.MovieService import MovieService
-
 from .init_app import movie_service
 
 import logging
@@ -25,13 +23,20 @@ def get_movie_by_id(tmdb_id: int):
         logging.error(f"Error occurred: {e}")
         raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
 
-
-@movie_router.get("/search", status_code=status.HTTP_200_OK)
-def search_movie(query: str,
-                language = None, primary_release_year = None, 
-                page = None, region = None, year = None):
+@movie_router.get("/search/title", status_code=status.HTTP_200_OK)
+def get_movie_by_title(title: str):
     try:
-        results = movie_service.search_id_movie(query,language,primary_release_year,page,region,year)
-        return results
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid request") from Exception
+        movies = movie_service.get_by_title(title)
+        return movies
+    except Exception as e:
+        logging.error(f"Error occurred: {e}")
+        raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
+
+@movie_router.get("/search/release_date", status_code=status.HTTP_200_OK)
+def get_movie_by_release_date(release_date: str):
+    try:
+        movies = movie_service.get_by_release_date(release_date)
+        return movies
+    except Exception as e:
+        logging.error(f"Error occurred: {e}")
+        raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
