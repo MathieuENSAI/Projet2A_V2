@@ -42,8 +42,8 @@ class  MovieRepo:
         else :
             return [Movie(**raw_movie) for raw_movie in raws_movie]
     
-    def get_by_release_date(self, release_date:str):
-        raws_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE release_date = %s;", (release_date,), "all")
+    def get_by_release_period(self, start_release_date:str, end_release_date:str):
+        raws_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE release_date BETWEEN %s AND %s;", (start_release_date, end_release_date), "all")
         if raws_movie is None :
             return None
         else :

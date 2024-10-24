@@ -33,12 +33,13 @@ class MovieService:
     
         return movies + movie_not_in_db
 
-    def get_by_release_date(self, release_date: str):
-        movies = self.movie_repo.get_by_release_date(release_date)
+    def get_by_release_period(self, start_release_date: str, end_release_date: str):
+        movies = self.movie_repo.get_by_release_period(start_release_date, end_release_date)
         if movies is None:
             movies = []
-        movies_from_TMDB = self.movie_TMDB.get_by_release_date(release_date)
+        movie_not_in_db = []
+        movies_from_TMDB = self.movie_TMDB.get_by_release_period(start_release_date, end_release_date)
         for movie in movies_from_TMDB:
             if movie.id not in (m.id for m in movies):
-                unique_movies.append(movie)
-        return movies
+                movie_not_in_db.append(movie)
+        return movies + movie_not_in_db

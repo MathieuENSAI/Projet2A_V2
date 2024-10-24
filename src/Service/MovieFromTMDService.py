@@ -47,8 +47,9 @@ class MovieFromTMDService:
             resultats.append(movie)
         return resultats
     
-    def get_by_release_date(self, release_date: str):
-        payload = {'release_date.gte': release_date} 
+    def get_by_release_period(self, start_release_date: str, end_release_date: str):
+        payload = {'primary_release_date.gte': start_release_date,
+                  'primary_release_date.lte': end_release_date} 
         response = requests.get('https://api.themoviedb.org/3/discover/movie?', 
                                 params=payload, headers=self.header)
         data = response.json()
