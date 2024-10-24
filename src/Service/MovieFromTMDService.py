@@ -27,6 +27,7 @@ class MovieFromTMDService:
                      title = data.get('title', None),
                      overview = data.get('overview', None))
 
+
     def get_by_title(self, title: str):
         payload = {'query': title}
         response = requests.get('https://api.themoviedb.org/3/search/movie?',
