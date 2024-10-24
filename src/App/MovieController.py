@@ -9,15 +9,15 @@ import logging
 movie_router = APIRouter(prefix="/movies", tags=["Movies"])
 
 
-@movie_router.get("/{tmdb_id}", status_code=status.HTTP_200_OK)
-def get_movie_by_id(tmdb_id: int):
+@movie_router.get("/{movie_id}", status_code=status.HTTP_200_OK)
+def get_movie_by_id(movie_id: int):
     try:
-        my_movie = movie_service.get_by_id(tmdb_id)
+        my_movie = movie_service.get_by_id(movie_id)
         return my_movie
     except FileNotFoundError:
         raise HTTPException(
             status_code=404,
-            detail="Movie with id [{}] not found".format(tmdb_id),
+            detail="Movie with id [{}] not found".format(movie_id),
         ) from FileNotFoundError
     except Exception as e:
         logging.error(f"Error occurred: {e}")

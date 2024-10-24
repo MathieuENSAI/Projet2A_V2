@@ -4,7 +4,6 @@ import requests
 import os
 import dotenv
 
-
 class MovieFromTMDService:
     dotenv.load_dotenv()
     movie_db: None
@@ -14,38 +13,35 @@ class MovieFromTMDService:
     "Authorization": "Bearer "+tmdb_token
     }
 
-    def __init__(self, movie_db: None):
+    def __init__(self, movie_db: None = None):
         self.movie_db = movie_db
         
 
     def get_by_id(self, movie_id: int) -> Movie:
         url = f'https://api.themoviedb.org/3/movie/{movie_id}'
-        print(movie_id)
         response = requests.get(url,headers=self.header)
         data = response.json()
-        return Movie(id = movie_id, original_language = data.get('original_language', 'Not found'),
-                     original_title = data.get('original_title', 'Not found'),
-                     release_date = data.get('release_date', 'Not found'),
-                     title = data.get('title', 'Not found'),
-                     overview = data.get('overview', 'Not found'))
+        return Movie(id = movie_id, original_language = data.get('original_language', None),
+                     original_title = data.get('original_title', None),
+                     release_date = data.get('release_date', None),
+                     title = data.get('title', None),
+                     overview = data.get('overview', None))
 
     def get_by_title(self, title: str):
         payload = {'query': title}
         response = requests.get('https://api.themoviedb.org/3/search/movie?',
-        params=payload, headers=header)
+        params=payload, headers=self.header)
         data = response.json()
         films = data.get('results', [])
         resultats = []
         for film in films:
             movie = Movie(
                 id=film['id'],
-                original_language=film.get('original_language','Not found'),
-                original_title=film.get('original_title','Not found'),
-                release_date=film.get('release_date','Not found'),
-                title=film.get('title','Not found'),
-                overview=film.get('overview','Not found'),
-                vote_average=None,
-                vote_count=None,
+                original_language=film.get('original_language',None),
+                original_title=film.get('original_title',None),
+                release_date=film.get('release_date',None),
+                title=film.get('title',None),
+                overview=film.get('overview',None)
             )
             resultats.append(movie)
         return resultats
@@ -53,20 +49,18 @@ class MovieFromTMDService:
     def get_by_release_date(self, release_date: str):
         payload = {'release_date.gte': release_date} 
         response = requests.get('https://api.themoviedb.org/3/discover/movie?', 
-                                params=payload, headers=header)
+                                params=payload, headers=self.header)
         data = response.json()
         films = data.get('results', [])
         resultats = []
         for film in films:
             movie = Movie(
                 id=film['id'],
-                original_language=film.get('original_language', 'Not found'),
-                original_title=film.get('original_title', 'Not found'),
-                release_date=film.get('release_date', 'Not found'),
-                title=film.get('title', 'Not found'),
-                overview=film.get('overview', 'Not found'),
-                vote_average=None, 
-                vote_count=None,
+                original_language=film.get('original_language', None),
+                original_title=film.get('original_title', None),
+                release_date=film.get('release_date', None),
+                title=film.get('title', None),
+                overview=film.get('overview', None)
             )
             resultats.append(movie)
         return resultats
@@ -80,28 +74,26 @@ class MovieFromTMDService:
                     'region': region,
                     'year': year}
         response = requests.get('https://api.themoviedb.org/3/search/movie?',
-        params=payload, headers=header)
+        params=payload, headers=self.header)
         data = response.json()
         films = data.get('results', [])
         resultats = []
         for film in films:
             movie = Movie(
                 id=film['id'],
-                original_language=film.get('original_language','Not found'),
-                original_title=film.get('original_title','Not found'),
-                release_date=film.get('release_date','Not found'),
-                title=film.get('title','Not found'),
-                overview=film.get('overview','Not found'),
-                vote_average=None,
-                vote_count=None,
+                original_language=film.get('original_language', None),
+                original_title=film.get('original_title', None),
+                release_date=film.get('release_date', None),
+                title=film.get('title', None),
+                overview=film.get('overview', None)
             )
             resultats.append(movie)
-        return resultats
-    
+        return resultats if len(resultats)>0 else None
+
     def get_id_name_genre(self)-> list[Genre]:
         url = "https://api.themoviedb.org/3/genre/movie/list?language=en"
 
-        response = requests.get(url, headers=headers).json()['genres']
+        response = requests.get(url, headers=self.headers).json()['genres']
 
         return [Genre(genre['id'], genre['name']) for genre in response]
 

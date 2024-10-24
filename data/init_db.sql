@@ -20,12 +20,12 @@ CREATE TABLE projet_info.User (
 CREATE TABLE projet_info.Movie(
     id INT PRIMARY KEY,
     original_language CHAR(16),
-    original_title CHAR(128),
+    original_title CHAR(256),
     release_date DATE,
-    title CHAR(128),
+    title CHAR(256),
     vote_average FLOAT,
     vote_count INT, 
-    overview CHAR(256)
+    overview CHAR(1024)
 );
 
 

@@ -8,10 +8,7 @@ class  GenreRepo:
 
         self.db_connector = db_connector
 
-    def insert_into_db(self, **genres):
-        # Vérification de la présence de données
-        if not genres:
-            return None
+    def insert_into_db(self, genres:list[dict]):
         query = "INSERT INTO Movie(id_genre, id_name) VALUES (%s, %s)"
         if len(genres) > 1:
             query += ", (%s, %s)" * (len(genres) - 1)
