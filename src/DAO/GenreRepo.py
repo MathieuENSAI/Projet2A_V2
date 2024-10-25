@@ -9,18 +9,15 @@ class  GenreRepo:
         self.db_connector = db_connector
 
     def insert_into_db(self, genres:list[dict]):
-        query = "INSERT INTO Movie(id_genre, id_name) VALUES (%s, %s)"
-        if len(genres) > 1:
-            query += ", (%s, %s)" * (len(genres) - 1)
-        query += " RETURNING *;"
+        query = """
+        INSERT INTO Genre (id_genre, name_genre)
+        VALUES %s
+        """ 
+        query += ", %s"*(len(genres)-1) +  " ON CONFLICT (id_genre) DO NOTHING RETURNING id_genre;"
+        # Préparer les valeurs pour l'insertion
+        values = [(genre['id_genre'], genre['name_genre']) for genre in genres]
+        raw_created = self.db_connector.sql_query(query, values, "all")
 
-        data = tuple(attribut for genre in genres.values() for attribut in (genre['id'], genre['name']))
-
-        raw_created = self.db_connector.sql_query(query, data, "all")
-
-        if raw_created is None:
-            return None
-        else:
-            return [Genre(**attributs) for attributs in raw_created]
+        return True if raw_created else False
 
   

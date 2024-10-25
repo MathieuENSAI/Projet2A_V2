@@ -64,7 +64,7 @@ class MovieFromTMDService:
                                 params=payload, headers=self.header)
         data = response.json()
         films = data.get('results', [])
-        films = dict(list(films.items())[:number])
+        films = films[:number]
         return [self.build_movie(film) for film in films] if len(films)>0 else None
         
 

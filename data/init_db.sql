@@ -59,6 +59,7 @@ CREATE TABLE projet_info.Genre(
 CREATE TABLE projet_info.MovieGenre(
     id_movie INT,
     id_genre INT,
+    PRIMARY KEY(id_movie, id_genre),
     FOREIGN KEY (id_movie) REFERENCES projet_info.Movie(id) ON DELETE SET NULL,
     FOREIGN KEY (id_genre) REFERENCES projet_info.Genre(id_genre) ON DELETE CASCADE
 );

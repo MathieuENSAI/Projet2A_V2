@@ -43,3 +43,10 @@ class MovieService:
             if movie.id not in (m.id for m in movies):
                 movie_not_in_db.append(movie)
         return movies + movie_not_in_db
+
+    def get_lastest_released(self, number:int)-> list[Movie]:
+        movies = self.movie_TMDB.get_lastest_released(number)
+        self.movie_repo.insert_into_db([movie.__dict__ for movie in movies])
+        return movies
+
+    

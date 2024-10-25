@@ -1,5 +1,3 @@
-from typing import Optional
-from datetime import date
 from src.DAO.DBConnector import DBConnector
 from src.Model.Movie import Movie
 
@@ -11,21 +9,24 @@ class  MovieRepo:
         self.db_connector = db_connector
 
     def insert_into_db(self, movies:list[dict]):
-        query = "INSERT INTO Movie(id, original_language, original_title, release_date, title, overview) VALUES (%s, %s, %s, %s, %s, %s)"
-        if len(movies) > 1:
-            query += ", (%s, %s, %s, %s, %s, %s)" * (len(movies) - 1)
-        query += " RETURNING *;"
+       
+        query = """
+        INSERT INTO Movie (id, original_language, original_title, release_date, title, overview)
+        VALUES %s
+        """ 
+        query += ", %s"*(len(movies)-1) +  " ON CONFLICT (id) DO NOTHING RETURNING id;"
+        # Préparer les valeurs pour l'insertion
+        values = [
+            (
+                movie['id'], movie['original_language'], movie['original_title'],
+                movie['release_date'], movie['title'], movie['overview']
+            )
+            for movie in movies
+        ]
 
-        data = tuple(attribut for movie in movies for attribut in (
-            movie['id'], movie['original_language'], movie['original_title'], movie['release_date'], movie['title'], movie['overview']
-        ))
-
-        raw_created = self.db_connector.sql_query(query, data, "all")
-
-        if raw_created is None:
-            return None
-        else:
-            return [Movie(**attributs) for attributs in raw_created]
+        raw_created = self.db_connector.sql_query(query, values, "all")
+        
+        return True if raw_created else False
     
     def get_by_id(self, movie_id:int):
         raw_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE id = %(movie_id)s;", {"movie_id":movie_id}, "one")

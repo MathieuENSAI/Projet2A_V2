@@ -40,3 +40,12 @@ def get_movie_by_release_period(start_release_date:str, end_release_date:str):
     except Exception as e:
         logging.error(f"Error occurred: {e}")
         raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
+
+@movie_router.get("/search/lastest_released", status_code=status.HTTP_200_OK)
+def get_lastest_released(number:int):
+    try:
+        movies = movie_service.get_lastest_released(number)
+        return movies
+    except Exception as e:
+        logging.error(f"Error occurred: {e}")
+        raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
