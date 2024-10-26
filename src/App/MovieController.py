@@ -1,16 +1,16 @@
-from fastapi import APIRouter, HTTPException, status
-
+from fastapi import APIRouter, Depends, HTTPException, status
+from typing import TYPE_CHECKING, Annotated
+from fastapi.security import HTTPAuthorizationCredentials
+from .JWTBearer import JWTBearer
 from src.Model.Movie import Movie
-
-from .init_app import movie_service
-
+from .init_app import jwt_service, movie_service
 import logging
 
 movie_router = APIRouter(prefix="/movies", tags=["Movies"])
 
-
-@movie_router.get("/{movie_id}", status_code=status.HTTP_200_OK)
-def get_movie_by_id(movie_id: int):
+@movie_router.get("/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+def get_movie_by_id(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    user_id = jwt_service.validate_user_jwt(credentials.credentials)
     try:
         my_movie = movie_service.get_by_id(movie_id)
         return my_movie

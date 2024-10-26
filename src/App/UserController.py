@@ -36,17 +36,17 @@ def create_user(username: str, pass_word: str) -> APIUser:
     return APIUser(id=user.id_user, username=user.username)
 
 
-@user_router.post("/jwt", status_code=status.HTTP_201_CREATED)
-def login(username: str, password: str) -> JWTResponse:
+@user_router.post("/login", status_code=status.HTTP_201_CREATED)
+def login(username: str, pass_word: str) -> JWTResponse:
     """
     Authenticate with username and password and obtain a token
     """
     try:
-        user = validate_username_password(username=username, password=password, user_repo=user_repo)
+        user = validate_username_password(username=username, pass_word=pass_word, user_repo=user_repo)
     except Exception as error:
         raise HTTPException(status_code=403, detail="Invalid username and password combination") from error
 
-    return jwt_service.encode_jwt(user.id)
+    return jwt_service.encode_jwt(user.id_user)
 
 
 @user_router.get("/me", dependencies=[Depends(JWTBearer())])
