@@ -14,7 +14,8 @@ CREATE SCHEMA projet_info;
 CREATE TABLE projet_info.User (
     id_user serial PRIMARY KEY,
     username VARCHAR(32) NOT NULL UNIQUE,
-    pass_word VARCHAR(256) NOT NULL
+    pass_word VARCHAR(256) NOT NULL,
+    salt VARCHAR(256) 
 );
 
 CREATE TABLE projet_info.Movie(
@@ -36,7 +37,7 @@ CREATE TABLE projet_info.SeenMovies (
     vote INT,
     favorite BOOLEAN,
     PRIMARY KEY (id_user,id_movie),
-    FOREIGN KEY(id_user) REFERENCES projet_info.User(id_user) ON DELETE SET NULL,
+    FOREIGN KEY(id_user) REFERENCES projet_info.User(id_user) ON DELETE CASCADE,
     FOREIGN KEY(id_movie) REFERENCES projet_info.Movie(id) ON DELETE CASCADE
 );
 

@@ -4,10 +4,10 @@ from pydantic import BaseModel
 
 
 class User(BaseModel):
-    id_user : int | None
+    id_user : int|None=None
     username: str 
     pass_word: str
-    salt: str
+    salt: str|None
     following : list[int] = []
     favorite_movie : list[int] = []
     watchlist : list[int] = []
