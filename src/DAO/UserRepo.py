@@ -38,13 +38,8 @@ class UserRepo:
     
     def modify_user(self, last_username, user: User) -> User:
         raw_modified_user = self.db_connector.sql_query(
-            """
-        UPDATE projet_info.User
-        SET username = %(username)s, salt = %(salt)s, pass_word = %(pass_word)s
-        WHERE username = %(last_username)s
-        RETURNING *;
-        """,
-            user.__dict__ | {"last_username" : last_username},
+        "UPDATE projet_info.User SET username = %(username)s, salt = %(salt)s, pass_word = %(pass_word)s WHERE username = %(last_username)s RETURNING *;",
+            {"username": user.username, "salt": user.salt, "pass_word": user.pass_word, "last_username" : last_username},
             "one",
         )
         return User(**raw_modified_user)

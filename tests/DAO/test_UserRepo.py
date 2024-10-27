@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING, Literal, Optional, Union
 from src.DAO.UserRepo import UserRepo
+from src.Model.User import User
 
 if TYPE_CHECKING:
     from src.Model.User import User
-
+ 
 
 class MockDBConnector:
     def __init__(self):
@@ -43,7 +44,13 @@ class MockDBConnector:
                 return(self.db[-1])
             case "SELECT * from projet_info.User;":
                 return self.db
-
+            case "UPDATE projet_info.User SET username = %(username)s, salt = %(salt)s, pass_word = %(pass_word)s WHERE username = %(last_username)s RETURNING *;":
+                last_username = data["last_username"]
+                for index_user, user in enumerate(self.db):
+                    if user['username']==last_username:
+                        data.pop("last_username")
+                        self.db[index_user] = {'id_user': index_user} | data
+                        return self.db[index_user]
 
 def test_get_user_by_id():
     user_repo = UserRepo(MockDBConnector())
@@ -80,3 +87,12 @@ def test_get_all_users():
     assert users[1].__dict__== db[1]|{"following": [], "favorite_movie": [], "watchlist":[]}
     assert users[2].__dict__== db[2]|{"following": [], "favorite_movie": [], "watchlist":[]}
 
+def test_modify_user():
+    user_repo = UserRepo(MockDBConnector())
+    db = user_repo.db_connector.db
+    last_username = "user1"
+    new_profile_user = User(username = 'user1', salt =  "myNewSalt", pass_word = "myNewHashedPassword")
+    user: User = user_repo.modify_user(last_username, new_profile_user)  
+    assert user is not None
+    assert user.salt =="myNewSalt"
+    assert user.__dict__ == db[0]|{"following": [], "favorite_movie": [], "watchlist":[]}
