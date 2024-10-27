@@ -24,16 +24,10 @@ class UserRepo:
         return User(**raw_user)
 
     def insert_into_db(self, username: str, salt: str, hashed_password: str) -> User:
-        raw_created_user = self.db_connector.sql_query(
-            """
-        INSERT INTO projet_info.User (id_user, username, salt, pass_word)
-        VALUES (DEFAULT, %(username)s, %(salt)s, %(pass_word)s)
-        RETURNING *;
-        """,
+        raw_created_user = self.db_connector.sql_query("INSERT INTO projet_info.User (id_user, username, salt, pass_word) VALUES (DEFAULT, %(username)s, %(salt)s, %(pass_word)s) RETURNING *;",
             {"username": username, "salt": salt, "pass_word": hashed_password},
             "one",
         )
-
         return User(**raw_created_user) if raw_created_user else None
 
     def get_all(self) -> list[User]:
