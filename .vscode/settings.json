@@ -22,18 +22,6 @@
             "username": "id2515"
         },
         {
-            "pgOptions": {
-                "max": 100
-            },
-            "previewLimit": 100,
-            "server": "sgbd-eleves.domensai.ecole",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "PostgreSQL",
-            "database": "id2600",
-            "username": "id2600"
-        },
-        {
             "previewLimit": 50,
             "server": "sgbd-eleves.domensai.ecole",
             "port": 5432,
@@ -50,6 +38,18 @@
             "name": "id2458",
             "database": "id2458",
             "username": "id2458"
+        },
+        {
+            "pgOptions": {
+                "max": 100
+            },
+            "previewLimit": 100,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "bd_cinema",
+            "database": "bd_cinema",
+            "username": "postgres"
         }
     ]
 }

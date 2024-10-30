@@ -16,34 +16,37 @@ if TYPE_CHECKING:
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@user_router.post("/", status_code=status.HTTP_201_CREATED)
-def create_user(username: str, password: str) -> APIUser:
+@user_router.post("/singup", status_code=status.HTTP_201_CREATED)
+def create_user(username: str, pass_word: str) -> APIUser:
     """
     Performs validation on the username and password
     """
     try:
-        check_password_strength(password=password)
+        check_password_strength(pass_word=pass_word)
     except Exception:
         raise HTTPException(status_code=400, detail="Password too weak") from Exception
-    try:
-        user: User = user_service.create_user(username=username, password=password)
-    except Exception as error:
-        raise HTTPException(status_code=409, detail="Username already exists") from error
 
-    return APIUser(id=user.id, username=user.username)
+    if user_service.user_exists(username):
+        raise HTTPException(status_code=409, detail="User with this username already exists")
+
+    user= user_service.create_user(username=username, pass_word=pass_word)
+    if user is None:
+        raise HTTPException(status_code = 500, detail = "Failed to create a user. Please try again later")
+
+    return APIUser(id=user.id_user, username=user.username)
 
 
-@user_router.post("/jwt", status_code=status.HTTP_201_CREATED)
-def login(username: str, password: str) -> JWTResponse:
+@user_router.post("/login", status_code=status.HTTP_201_CREATED)
+def login(username: str, pass_word: str) -> JWTResponse:
     """
     Authenticate with username and password and obtain a token
     """
     try:
-        user = validate_username_password(username=username, password=password, user_repo=user_repo)
+        user = validate_username_password(username=username, pass_word=pass_word, user_repo=user_repo)
     except Exception as error:
         raise HTTPException(status_code=403, detail="Invalid username and password combination") from error
 
-    return jwt_service.encode_jwt(user.id)
+    return jwt_service.encode_jwt(user.id_user)
 
 
 @user_router.get("/me", dependencies=[Depends(JWTBearer())])

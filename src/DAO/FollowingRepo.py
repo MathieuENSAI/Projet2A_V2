@@ -9,7 +9,7 @@ class FollowingRepo:
 
     def __init__(self, db_connector: DBConnector) -> None:
         self.db_connector = db_connector
-    def retrieve_scouts(self, user: User) -> list[User]:
+    def get_all_scouts(self, user: User) -> list[User]:
         raw_users = self.db_connector.sql_query(
             """
             SELECT * FROM users
@@ -47,7 +47,4 @@ class FollowingRepo:
             "one",
         )
         return User(**raw_modified_user)
-
-
-
-    
+ 
