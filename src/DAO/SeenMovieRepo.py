@@ -21,7 +21,7 @@ class SeenMovieRepo:
         raw_seenmovie = self.db_connector.sql_query(
             """SELECT * from projet_info.seenmovies 
                WHERE id_user =%(id_user)s
-               AND id_movie =%(id_movie)s""",
+               AND id_movie =%(id_movie)s;""",
                {"id_user":id_user, "id_movie":id_movie}, "one")
         if raw_seenmovie is None:
             return None
@@ -30,16 +30,13 @@ class SeenMovieRepo:
     def insert_into_db(self, id_user : int, id_movie : int, seen : bool, 
                         vote : int = None, favorite : bool = False) -> SeenMovie:
         raw_created_seenmovie = self.db_connector.sql_query(
-            """
-        INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, vote, favorite)
-        VALUES (%(id_user)s, %(id_movie)s, %(seen)s, %(vote)s, %(favorite)s)
-        RETURNING *;
-        """,
-            {"id_user": id_user, "id_movie": id_movie, "seen" : seen, "vote" : vote, 
-             "favorite":favorite},
-            "one",
-        )
-
+                """INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, vote, favorite)
+                VALUES (%(id_user)s, %(id_movie)s, %(seen)s, %(vote)s, %(favorite)s)
+                RETURNING *;""",
+                {"id_user": id_user, "id_movie": id_movie, "seen" : seen, "vote" : vote, 
+                 "favorite":favorite},"one")
+        if raw_created_seenmovie is None:
+            return None
         return SeenMovie(**raw_created_seenmovie)
     
     def update_db(self, seenmovie: SeenMovie):
