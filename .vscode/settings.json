@@ -40,14 +40,11 @@
             "username": "id2458"
         },
         {
-            "pgOptions": {
-                "max": 100
-            },
-            "previewLimit": 100,
+            "previewLimit": 50,
             "server": "localhost",
             "port": 5432,
             "driver": "PostgreSQL",
-            "name": "bd_cinema",
+            "name": "postgreSQL",
             "database": "bd_cinema",
             "username": "postgres"
         }
