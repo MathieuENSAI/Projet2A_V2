@@ -47,6 +47,15 @@
             "name": "postgreSQL",
             "database": "bd_cinema",
             "username": "postgres"
+        },
+        {
+            "previewLimit": 50,
+            "server": "sgbd-eleves.domensai.ecole",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "ensai-serveur",
+            "database": "id2600",
+            "username": "id2600"
         }
     ]
 }
