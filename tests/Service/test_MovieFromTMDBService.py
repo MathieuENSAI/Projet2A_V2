@@ -11,3 +11,15 @@ def test_get_by_id():
     movie = movie_db.get_by_id(234)
     assert movie.id==234
     assert movie.original_title == "Das Cabinet des Dr. Caligari"
+
+def test_get_by_title():
+    movie_db = MovieFromTMDService(None)
+    pass
+
+def test_get_by_release_period():
+    movie_db = MovieFromTMDService(None)
+    pass
+
+def test_search_movie():
+    movie_db = MovieFromTMDService(None)
+    pass
