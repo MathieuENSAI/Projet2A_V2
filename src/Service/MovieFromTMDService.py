@@ -49,12 +49,6 @@ class MovieFromTMDService:
         url = f'https://api.themoviedb.org/3/movie/{movie_id}'
         film = requests.get(url,headers=self.header).json()
         return self.build_movie(film) if film.get('id', None) else None
-     
-    def get_by_title(self, title: str):
-        return self.search_movie(query=title)
-    
-    def get_by_genre(self, genre):
-        return self.search_movie(query=genre)
 
     def get_by_release_period(self, start_release_date: str, end_release_date: str):
         payload = {'primary_release_date.gte': start_release_date,
