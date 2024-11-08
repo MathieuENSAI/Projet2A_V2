@@ -16,8 +16,16 @@ class  MovieGenreRepo:
         """ 
         query += ", %s"*(len(movie_genres)-1) +  " ON CONFLICT (id_movie, id_genre) DO NOTHING RETURNING id_movie id_genre;"
         # Préparer les valeurs pour l'insertion
-        values = [(movie_genre['id_movie'], movie_genre['id_genre']) for movie_genre in movie_genres]
-        raw_created = self.db_connector.sql_query(query, values, "none")
+        data=[]
+        for movie_genre in movie_genres:
+            for genre in movie_genre['genres'] :
+                if type(genre) is int:
+                    data.append((movie_genre['id_movie'], genre))
+
+                elif  type(genre) is dict and type(genre.get('id', None)) is int:
+                    data.append((movie_genre['id_movie'], genre['id']))
+
+        raw_created = self.db_connector.sql_query(query, data, "none")
 
         return True if raw_created else False
     

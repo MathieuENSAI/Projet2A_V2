@@ -32,6 +32,15 @@ def get_movie_by_title(title: str):
         logging.error(f"Error occurred: {e}")
         raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
 
+@movie_router.get("/search/genre", status_code=status.HTTP_200_OK)
+def get_movie_by_genre(genre: str):
+    try:
+        movies = movie_service.get_by_genre(genre)
+        return movies
+    except Exception as e:
+        logging.error(f"Error occurred: {e}")
+        raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
+
 @movie_router.get("/search/release_period", status_code=status.HTTP_200_OK)
 def get_movie_by_release_period(start_release_date:str, end_release_date:str):
     try:

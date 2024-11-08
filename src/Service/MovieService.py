@@ -1,13 +1,15 @@
 from src.DAO.MovieRepo import MovieRepo
+from src.DAO.MovieGenreRepo import MovieGenreRepo
 from src.Service.MovieFromTMDService import MovieFromTMDService
 from src.Model.Movie import Movie
 
 
 class MovieService:
 
-    def __init__(self, movie_repo: MovieRepo, movie_TMDB: MovieFromTMDService):
+    def __init__(self, movie_repo: MovieRepo, movie_TMDB: MovieFromTMDService, movie_genre_repo:MovieGenreRepo):
         self.movie_repo = movie_repo
         self.movie_TMDB = movie_TMDB
+        self.movie_genre_repo = movie_genre_repo
     
     def get_by_id(self, movie_id: int) -> Movie | None :
         movie = self.movie_repo.get_by_id(movie_id)
@@ -65,6 +67,7 @@ class MovieService:
     def get_lastest_released(self, number:int)-> list[Movie]:
         movies = self.movie_TMDB.get_lastest_released(number)
         self.movie_repo.insert_into_db([movie['movie'].__dict__ for movie in movies])
+        self.movie_genre_repo.insert_into_db([movie['movie_genre'] for movie in movies])
         return movies
 
 if __name__ == "__main__" :
@@ -73,8 +76,9 @@ if __name__ == "__main__" :
     dotenv.load_dotenv()
     db_connector = DBConnector()
     movie_repo = MovieRepo(db_connector)
+    movie_genre_repo = MovieGenreRepo(db_connector)
     movie_TMDB = MovieFromTMDService()
-    movie_service = MovieService(movie_repo, movie_TMDB)
+    movie_service = MovieService(movie_repo, movie_TMDB, movie_genre_repo)
     print(movie_service.get_by_genre("comedi"))
 
     

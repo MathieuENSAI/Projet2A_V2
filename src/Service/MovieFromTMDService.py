@@ -68,4 +68,4 @@ class MovieFromTMDService:
 if __name__ == "__main__" :
    
     movie_TMDB = MovieFromTMDService()
-    print(movie_TMDB.get_id_name_genre())
+    print(movie_TMDB.search_movie('commedi'))
