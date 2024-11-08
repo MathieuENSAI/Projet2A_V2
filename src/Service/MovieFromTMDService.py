@@ -22,10 +22,10 @@ class MovieFromTMDService:
                      release_date = data.get('release_date', None),
                      title = data.get('title', None),
                      overview = data.get('overview', None)),
-                'movie_genre' : {'id_movie': data['id'], 'id_genres':data.get('genre_ids', [])}
+                'movie_genre' : {'id_movie': data['id'], 'genres':data.get('genre_ids', data.get('genres', []))}
         }
 
-    def get_by_params(payload:str, url='https://api.themoviedb.org/3/discover/movie?'):
+    def get_by_params(self, payload:str, url='https://api.themoviedb.org/3/discover/movie?'):
         response = requests.get(url,
         params=payload, headers=self.header)
         data = response.json()
@@ -42,19 +42,19 @@ class MovieFromTMDService:
                     'year': year}
         response = requests.get('https://api.themoviedb.org/3/search/movie?',
         params=payload, headers=self.header)
-        fimls = response.json()
+        films = response.json()['results']
         return [self.build_movie(film) for film in films] if len(films)>0 else None
 
     def get_by_id(self, movie_id: int) -> Movie:
         url = f'https://api.themoviedb.org/3/movie/{movie_id}'
         film = requests.get(url,headers=self.header).json()
-        return self.build_movie(film) if len(film)>0 else None
-
+        return self.build_movie(film) if film.get('id', None) else None
+     
     def get_by_title(self, title: str):
         return self.search_movie(query=title)
     
     def get_by_genre(self, genre):
-        return self.search_movie(query=title)
+        return self.search_movie(query=genre)
 
     def get_by_release_period(self, start_release_date: str, end_release_date: str):
         payload = {'primary_release_date.gte': start_release_date,
@@ -67,7 +67,11 @@ class MovieFromTMDService:
         
     def get_id_name_genre(self)-> list[Genre]:
         url = "https://api.themoviedb.org/3/genre/movie/list?language=en"
-        response = requests.get(url, headers=self.headers).json()['genres']
-        return [Genre(genre['id'], genre['name']) for genre in response]
+        response = requests.get(url, headers=self.header).json()['genres']
+        return [Genre(id_genre = genre['id'], name_genre=genre['name']) for genre in response]
 
 
+if __name__ == "__main__" :
+   
+    movie_TMDB = MovieFromTMDService()
+    print(movie_TMDB.get_id_name_genre())
