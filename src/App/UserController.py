@@ -63,4 +63,4 @@ def get_user_from_credentials(credentials: HTTPAuthorizationCredentials) -> APIU
     user: User | None = user_repo.get_by_id(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return APIUser(id=user.id, username=user.username)
+    return APIUser(id=user.id_user, username=user.username)

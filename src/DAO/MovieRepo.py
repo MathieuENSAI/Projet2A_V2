@@ -11,10 +11,11 @@ class  MovieRepo:
     def insert_into_db(self, movies:list[dict]):
        
         query = """
-        INSERT INTO Movie (id, original_language, original_title, release_date, title, overview)
+        INSERT INTO projet_info.Movie (id, original_language, original_title, release_date, title, overview)
         VALUES %s
         """ 
-        query += ", %s"*(len(movies)-1) +  " ON CONFLICT (id) DO NOTHING RETURNING id;"
+        query += ", %s"*(len(movies)-1) +  "ON CONFLICT (id) DO NOTHING RETURNING id ;"
+        
         # Préparer les valeurs pour l'insertion
         values = [
             (
@@ -24,7 +25,7 @@ class  MovieRepo:
             for movie in movies
         ]
 
-        raw_created = self.db_connector.sql_query(query, values, "all")
+        raw_created = self.db_connector.sql_query(query, values, "none")
         
         return True if raw_created else False
     
