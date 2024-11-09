@@ -30,7 +30,7 @@ class MovieFromTMDService:
         params=payload, headers=self.header)
         data = response.json()
         films = data.get('results', [])
-        return [self.build_movie(film) for film in films] if len(films)>0 else None
+        return [self.build_movie(film) for film in films] if len(films)>0 else []
 
     def search_movie(self, query: str,
                         language = None, primary_release_year = None, 
@@ -43,7 +43,7 @@ class MovieFromTMDService:
         response = requests.get('https://api.themoviedb.org/3/search/movie?',
         params=payload, headers=self.header)
         films = response.json()['results']
-        return [self.build_movie(film) for film in films] if len(films)>0 else None
+        return [self.build_movie(film) for film in films] if len(films)>0 else []
 
     def get_by_id(self, movie_id: int) -> Movie:
         url = f'https://api.themoviedb.org/3/movie/{movie_id}'
@@ -62,7 +62,7 @@ class MovieFromTMDService:
     def get_id_name_genre(self)-> list[Genre]:
         url = "https://api.themoviedb.org/3/genre/movie/list?language=en"
         response = requests.get(url, headers=self.header).json()['genres']
-        return [Genre(id_genre = genre['id'], name_genre=genre['name']) for genre in response]
+        return [Genre(id_genre = genre['id'], name_genre=genre['name']) for genre in response] if response else []
 
 
 if __name__ == "__main__" :

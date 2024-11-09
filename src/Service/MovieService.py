@@ -18,8 +18,8 @@ class MovieService:
 
         movie = self.movie_TMDB.get_by_id(movie_id)
         if movie is not None:
-            movie = movie['movie']
-            self.movie_repo.insert_into_db([movie.__dict__])
+            self.movie_repo.insert_into_db([movie['movie'].__dict__])
+            self.movie_genre_repo.insert_into_db([movie['movie_genre']])
         return movie
         
         raise FileNotFoundError()

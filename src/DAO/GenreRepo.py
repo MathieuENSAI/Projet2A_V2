@@ -16,7 +16,7 @@ class  GenreRepo:
         query += ", %s"*(len(genres)-1) +  " ON CONFLICT (id_genre) DO NOTHING RETURNING id_genre;"
         # Préparer les valeurs pour l'insertion
         values = [(genre['id_genre'], genre['name_genre']) for genre in genres]
-        raw_created = self.db_connector.sql_query(query, values, "none")
+        raw_created = self.db_connector.sql_query(query, values, "all")
 
         return True if raw_created else False
     

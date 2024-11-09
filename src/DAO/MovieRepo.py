@@ -32,7 +32,7 @@ class  MovieRepo:
     def get_by_id(self, movie_id:int):
         raw_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE id = %(movie_id)s;", {"movie_id":movie_id}, "one")
         if raw_movie is None :
-            return None
+            return []
         else :
             return Movie(**raw_movie)
 
@@ -40,21 +40,21 @@ class  MovieRepo:
         title = f"%{title}%"
         raws_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE (title LIKE %s ) OR (original_title LIKE %s);", (title, title), "all")
         if raws_movie is None :
-            return None
+            return []
         else :
             return [Movie(**raw_movie) for raw_movie in raws_movie]
     
     def get_by_release_period(self, start_release_date:str, end_release_date:str):
         raws_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE release_date BETWEEN %s AND %s;", (start_release_date, end_release_date), "all")
         if raws_movie is None :
-            return None
+            return []
         else :
             return [Movie(**raw_movie) for raw_movie in raws_movie]
     
     def get_lastest_released(self, number:int):
         raws_movie = self.db_connector.sql_query("SELECT * FROM Movie ORDER BY release_date DESC LIMIT %s;", (number,), return_type = "all")
         if raws_movie is None :
-            return None
+            return []
         else :
             return [Movie(**raw_movie) for raw_movie in raws_movie]
     
@@ -68,7 +68,7 @@ class  MovieRepo:
         """
         raws_selected = self.db_connector.sql_query(query, [name_genre], "all")
         
-        return [Movie(**raw_selected) for raw_selected in raws_selected] if raws_selected else None
+        return [Movie(**raw_selected) for raw_selected in raws_selected] if raws_selected else []
 
 
 
