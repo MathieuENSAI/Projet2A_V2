@@ -12,8 +12,8 @@ movie_router = APIRouter(prefix="/movies", tags=["Movies"])
 def get_movie_by_id(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     try:
-        my_movie = movie_service.get_by_id(movie_id)
-        return my_movie
+        movie = movie_service.get_by_id(movie_id)
+        return movie
     except FileNotFoundError:
         raise HTTPException(
             status_code=404,

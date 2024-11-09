@@ -11,6 +11,7 @@ class Movie(BaseModel):
     vote_count: int|None=None
     overview: str|None=None
 
+
     # def update_average_rating(self):
 
     def info(self):
@@ -26,7 +27,7 @@ class Movie(BaseModel):
         """
 
         return info
-
+    
 if __name__ == "__main__" :
    movie= Movie(id=1)
    print(movie.__dict__)

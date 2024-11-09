@@ -32,7 +32,7 @@ class  MovieRepo:
     def get_by_id(self, movie_id:int):
         raw_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE id = %(movie_id)s;", {"movie_id":movie_id}, "one")
         if raw_movie is None :
-            return []
+            return None
         else :
             return Movie(**raw_movie)
 
