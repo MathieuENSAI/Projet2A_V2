@@ -21,14 +21,7 @@ class SeenMovieService:
             id_user=user.id_user,
             id_movie=movie.id,
             seen=False)
-    
-    # def delete_seenmovie_by_id(self, id_seen_movie : int)-> bool:
-    #     if self.seen_movierepo.get_by_id(id_seen_movie):
-    #         seenmovie = self.seen_movierepo.get_by_id(id_seen_movie)
-    #         return self.seen_movierepo.delete_from_db(seenmovie)
-    #     else:
-    #         print("Movie id not found in the database.")
-    
+
     def delete_seenmovie_by_user_and_movie(self, user : User, movie : Movie)-> bool:
         if self.seen_movierepo.get_by_user_and_movie(user.id_user, movie.id):
             seenmovie = self.seen_movierepo.get_by_user_and_movie(user.id_user, movie.id)
