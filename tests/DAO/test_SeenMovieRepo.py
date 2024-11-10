@@ -7,12 +7,13 @@ if TYPE_CHECKING:
 
 class MockDBConnector:
     def __init__(self):
-        self.db = [{"id_user": 1, "id_movie": 1, "seen": True, "vote": 10, "favorite" : True}, 
-            {"id_user": 2, "id_movie": 1, "seen": True, "vote": 0, "favorite" : False},
-            {"id_user": 3, "id_movie": 2, "seen": True, "vote": 10, "favorite" : False},
-            {"id_user": 1, "id_movie": 2, "seen": False, "vote": None, "favorite" : False},
-            {"id_user": 1, "id_movie": 3, "seen": False, "vote": None, "favorite" : False},
-            {"id_user": 1, "id_movie": 4, "seen": False, "vote": None, "favorite" : False}]
+        self.db = [{"id_user": 1, "id_movie": 1, "seen": True, "vote": 10, "favorite" : True},
+                   {"id_user": 2, "id_movie": 2, "seen": True, "vote": 5, "favorite" : True}, 
+                   {"id_user": 2, "id_movie": 1, "seen": True, "vote": 0, "favorite" : False},
+                   {"id_user": 3, "id_movie": 2, "seen": True, "vote": 10, "favorite" : False},
+                   {"id_user": 1, "id_movie": 2, "seen": False, "vote": None, "favorite" : False},
+                   {"id_user": 1, "id_movie": 3, "seen": False, "vote": None, "favorite" : False},
+                   {"id_user": 1, "id_movie": 4, "seen": False, "vote": None, "favorite" : False}]
 
     def sql_query(
         self,
@@ -42,15 +43,61 @@ class MockDBConnector:
                                 "seen": data['seen'], "vote": data['vote'], "favorite": data['favorite']})
                 return(self.db[-1])
             
-            case "SELECT * from projet_info.User;":
-                return self.db
-            case "UPDATE projet_info.User SET username = %(username)s, salt = %(salt)s, pass_word = %(pass_word)s WHERE username = %(last_username)s RETURNING *;":
-                last_username = data["last_username"]
-                for index_user, user in enumerate(self.db):
-                    if user['username']==last_username:
-                        data.pop("last_username")
-                        self.db[index_user] = {'id_user': index_user} | data
-                        return self.db[index_user]
+            case  """SELECT id_movie 
+            FROM projet_info.seenmovies 
+            WHERE %(id_user)s = id_user
+            AND seen = TRUE""":
+                if not data:
+                    raise Exception
+                id_user = data["id_user"]
+                list_seenmovies = []
+                for seenmovie in self.db:
+                    if seenmovie["id_user"] == id_user and seenmovie["seen"] == True:
+                        movie = seenmovie["id_movie"]
+                        list_seenmovies.append(movie)
+                return list_seenmovies
+
+            case """SELECT id_movie 
+            FROM projet_info.seenmovies 
+            WHERE %(id_user)s = id_user
+            AND seen = FALSE""":
+                if not data:
+                    raise Exception
+                id_user = data["id_user"]
+                list_seenmovies = []
+                for seenmovie in self.db:
+                    if seenmovie["id_user"] == id_user and seenmovie["seen"] == False:
+                        movie = seenmovie["id_movie"]
+                        list_seenmovies.append(movie)
+                return list_seenmovies
+            
+            case """SELECT id_movie 
+            FROM projet_info.seenmovies 
+            WHERE %(id_user)s = id_user
+            AND favorite = TRUE""":
+                if not data:
+                    raise Exception
+                id_user = data["id_user"]
+                list_seenmovies = []
+                for seenmovie in self.db:
+                    if seenmovie["id_user"] == id_user and seenmovie["favorite"] == True:
+                        movie = seenmovie["id_movie"]
+                        list_seenmovies.append(movie)
+                return list_seenmovies
+            
+            case """SELECT id_user 
+            FROM projet_info.seenmovies 
+            WHERE %(id_movie)s = id_movie
+            AND seen = TRUE""":
+                if not data:
+                    raise Exception
+                id_movie = data["id_movie"]
+                list_users = []
+                for seenmovie in self.db:
+                    if seenmovie["id_movie"] == id_movie and seenmovie["seen"] == True:
+                        user = seenmovie["id_user"]
+                        list_users.append(user)
+                return list_users
 
 def test_get_by_user_and_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
@@ -63,53 +110,35 @@ def test_get_by_user_and_movie():
 def test_insert_into_db():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     db = seenmovierepo.db_connector.db
-    seenmovie: SeenMovie = seenmovierepo.insert_into_db(1,4,True,None,False)
+    seenmovie: SeenMovie = seenmovierepo.insert_into_db(1,4,True,0,False)
     assert seenmovie is not None
     assert seenmovie.__dict__ == db[-1]
     assert seenmovie.id_user == 1
     assert seenmovie.id_movie == 4
     assert seenmovie.seen == True
-    assert seenmovie.vote == None
+    assert seenmovie.vote == 0
     assert seenmovie.favorite == False
 
-def test_delete_from_db_success():
-    seenmovierepo=SeenMovieRepo(db_connector)
-    seenmovie = SeenMovie(id_user=1, id_movie=3,seen=True, vote=1, favorite=True)
-    assert seenmovierepo.delete_from_db(seenmovie) == True
+def test_get_list_seenmovies_by_user():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    movies: list[int] = seenmovierepo.get_list_seenmovies_by_user(2)
+    assert movies is not None
+    assert movies == [2,1]
 
-def test_update_db():
-    seenmovierepo=SeenMovieRepo(db_connector)
-    seenmovie = SeenMovie(id_user=1, id_movie=3,seen=True, vote=2, favorite=True)
-    assert seenmovierepo.update_db(seenmovie) == True
+def test_get_watchlist_user():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    movies: list[int] = seenmovierepo.get_watchlist_user(1)
+    assert movies is not None
+    assert movies == [2,3,4]
 
-def test_get_list_seenmovies_by_user_none():
-    seenmovierepo=SeenMovieRepo(db_connector)
-    assert seenmovierepo.get_list_seenmovies_by_user(15) is None
+def test_get_list_favorite_movie():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    movies: list[int] = seenmovierepo.get_list_favorite_movie(2)
+    assert movies is not None
+    assert movies == [2]
 
-def test_get_list_seenmovies_by_user_success():
-    seenmovierepo=SeenMovieRepo(db_connector)
-    assert seenmovierepo.get_list_seenmovies_by_user(1) == [1,2,3]
-
-def test_get_watchlist_user_none():
-    seenmovierepo=SeenMovieRepo(db_connector)
-    assert seenmovierepo.get_watchlist_user(15) is None
-
-def test_get_watchlist_user_success():
-    seenmovierepo=SeenMovieRepo(db_connector)
-    assert seenmovierepo.get_watchlist_user(2) == [3]
-
-def test_get_list_favorite_movie_none():
-    seenmovierepo=SeenMovieRepo(db_connector)
-    assert seenmovierepo.get_list_favorite_movie(15) is None
-
-def test_get_list_favorite_movie_success():
-    seenmovierepo=SeenMovieRepo(db_connector)
-    assert seenmovierepo.get_list_favorite_movie(3) == [2]
-
-def test_get_list_users_by_movie_none():
-    seenmovierepo=SeenMovieRepo(db_connector)
-    assert seenmovierepo.get_list_users_by_movie(15) is None
-
-def test_get_list_users_by_movie_success():
-    seenmovierepo=SeenMovieRepo(db_connector)
-    assert seenmovierepo.get_list_users_by_movie(2) == [1,3]
+def test_get_list_users_by_movie():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    users : list[int] = seenmovierepo.get_list_users_by_movie(2)
+    assert users is not None
+    assert users == [2,3]
