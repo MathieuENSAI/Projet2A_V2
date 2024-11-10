@@ -27,14 +27,20 @@ class SeenMovieRepo:
             return None
         return SeenMovie(**raw_seenmovie)
 
-    def insert_into_db(self, id_user : int, id_movie : int, seen : bool, 
-                        vote : int = None, favorite : bool = False) -> SeenMovie:
+    def insert_into_db(self, id_user : int, id_movie : int, seen : bool=True, to_watch_later:bool=False,
+                        watch_count:int=1, vote : int = None, favorite : bool = False) -> SeenMovie:
         raw_created_seenmovie = self.db_connector.sql_query(
-                """INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, vote, favorite)
-                VALUES (%(id_user)s, %(id_movie)s, %(seen)s, %(vote)s, %(favorite)s)
+                """INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, to_watch_later, watch_count, vote, favorite)
+                VALUES (%(id_user)s, %(id_movie)s, %(seen)s, %(to_watch_later)s, %(watch_count)s, %(vote)s, %(favorite)s)
+                ON CONFLICT(id_user, id_movie) DO UPDATE
+                SET watch_count = seenmovies.watch_count + 1,
+                    seen = EXCLUDED.seen,
+                    to_watch_later = EXCLUDED.to_watch_later,
+                    vote = EXCLUDED.vote,
+                    favorite = EXCLUDED.favorite
                 RETURNING *;""",
-                {"id_user": id_user, "id_movie": id_movie, "seen" : seen, "vote" : vote, 
-                 "favorite":favorite},"one")
+                {"id_user": id_user, "id_movie": id_movie, "seen" : seen, "to_watch_later":to_watch_later, 
+                "watch_count":watch_count, "vote" : vote, "favorite":favorite},"one")
         if raw_created_seenmovie is None:
             return None
         return SeenMovie(**raw_created_seenmovie)
@@ -44,6 +50,8 @@ class SeenMovieRepo:
             """
             UPDATE projet_info.seenmovies
             SET seen = %(seen)s, 
+                to_watch_later = %(to_watch_later)s,
+                watch_count = %(watch_count)s,
                 vote = %(vote)s,
                 favorite = %(favorite)s
             WHERE id_user = %(id_user)s
@@ -51,14 +59,16 @@ class SeenMovieRepo:
                 """,
             {
                 "seen": seenmovie.seen,
+                "to_watch_later" : seenmovie.to_watch_later,
+                "watch_count" : seenmovie.watch_count,
                 "vote": seenmovie.vote,
                 "favorite": seenmovie.favorite,
                 "id_user": seenmovie.id_user,
                 "id_movie": seenmovie.id_movie
                 },
-                "one"
+                "none"
             )
-        return raw_update == 1
+        return True if raw_update else False
 
     
     def delete_from_db(self, seenmovie : SeenMovie):
@@ -113,7 +123,7 @@ class SeenMovieRepo:
             SELECT id_movie 
             FROM projet_info.seenmovies 
             WHERE %(id_user)s = id_user
-            AND seen = FALSE
+            AND to_watch_later = TRUE
             """,
             {"id_user": id_user}, "all",
         )

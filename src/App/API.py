@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from .MovieController import movie_router
 from .UserController import user_router
+from .WatchMovieController import watch_movie_route
 from .init_app import scheduler_service
 
 
@@ -11,6 +12,8 @@ def run_app():
     app.include_router(user_router)
 
     app.include_router(movie_router)
+    
+    app.include_router(watch_movie_route)
 
     scheduler_service.start()
 

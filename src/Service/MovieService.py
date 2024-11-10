@@ -20,6 +20,7 @@ class MovieService:
         if movie is not None:
             self.movie_repo.insert_into_db([movie['movie'].__dict__])
             self.movie_genre_repo.insert_into_db([movie['movie_genre']])
+            movie = movie["movie"]
         return movie
         
         raise FileNotFoundError()

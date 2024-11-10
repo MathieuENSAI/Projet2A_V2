@@ -34,6 +34,8 @@ CREATE TABLE projet_info.SeenMovies (
     id_user INT NOT NULL,
     id_movie INT NOT NULL,
     seen BOOLEAN,
+    to_watch_later BOOLEAN,
+    watch_count INT,
     vote INT,
     favorite BOOLEAN,
     PRIMARY KEY (id_user,id_movie),
