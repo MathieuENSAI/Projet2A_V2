@@ -165,4 +165,12 @@ class SeenMovieRepo:
                 list_users.append(row)
             return list_users
         else : 
-            return None
+            return 
+    
+    def mean_note_user(self, id_user:int):
+
+        query = """
+
+        """
+    
+        return 0
