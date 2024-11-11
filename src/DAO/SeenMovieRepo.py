@@ -156,10 +156,12 @@ class SeenMovieRepo:
             return list_users
         else :
             return None
-
+        
     def mean_note_user(self, id_user:int):
 
         query = """
-
+        SELECT AVG(vote) AS mean_note FROM projet_info.seenmovies
+        WHERE id_user=%s AND  vote IS NOT NULL;
         """
-        return 0
+        raw_note = self.db_connector.sql_query(query, [id_user], "one")
+        return raw_note['mean_note'] if raw_note else None
