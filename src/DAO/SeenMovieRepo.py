@@ -157,7 +157,7 @@ class SeenMovieRepo:
         else :
             return None
     
-    def vote_movie(self, id_user:int, id_movie:int, vote:int):
+    def note_movie(self, id_user:int, id_movie:int, note:int):
         query = """
         INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, watch_count, favorite, vote)
         VALUES (%(id_user)s, %(id_movie)s, TRUE, 1, FALSE, %(vote)s)
@@ -165,7 +165,7 @@ class SeenMovieRepo:
         DO UPDATE SET vote = EXCLUDED.vote
         """
         raw_vote = self.db_connector.sql_query(query, 
-              {"id_user":id_user, "id_movie":id_movie, "vote":vote},"none")
+              {"id_user":id_user, "id_movie":id_movie, "vote":note},"none")
         return True if raw_vote else False
 
     def mean_note_user(self, id_user:int):
@@ -176,6 +176,16 @@ class SeenMovieRepo:
         """
         raw_note = self.db_connector.sql_query(query, [id_user], "one")
         return raw_note['mean_note'] if raw_note else None
+    
+    def mean_note_movie(self, id_movie:int):
+
+        query = """
+        SELECT AVG(vote) AS mean_note FROM projet_info.seenmovies
+        WHERE id_movie=%s AND  vote IS NOT NULL;
+        """
+        raw_note = self.db_connector.sql_query(query, [id_movie], "one")
+        return raw_note['mean_note'] if raw_note else None
+
 
 # Tests manuels
 if __name__ == "__main__" :
@@ -183,6 +193,7 @@ if __name__ == "__main__" :
     dotenv.load_dotenv()
     db_connector = DBConnector()
     seen_movie_repo = SeenMovieRepo(db_connector)
-    print(seen_movie_repo.vote_movie(2, 500, 9))
+    print(seen_movie_repo.note_movie(1, 400, 8))
     print(seen_movie_repo.mean_note_user(2))
+    print(seen_movie_repo.mean_note_movie(400))
     
