@@ -9,13 +9,12 @@ class NoteService :
         self.movie_repo=movie_repo
         self.seen_movie_repo=seen_movie_repo
     
-    def note_movie(self, id_user, id_movie, note):
+    def note_movie(self, id_user:int, id_movie:int, note:int):
         vote_movie = self.seen_movie_repo.note_movie(id_user, id_movie, note)
         if vote_movie:
-            movie = self.movie_repo.update_vote(id_movie)
+            movie = self.movie_repo.update_vote(id_movie, vote_movie["vote_avg"], vote_movie["vote_count"])
             return movie
         return None
-        
 
     def get_note(self, id_user : int, id_movie : int):
         seenmovie = self.seen_movie_repo.get_by_user_and_movie(id_user, id_movie)

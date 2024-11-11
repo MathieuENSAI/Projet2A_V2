@@ -157,34 +157,33 @@ class SeenMovieRepo:
         else :
             return None
     
-    def note_movie(self, id_user:int, id_movie:int, note:int):
+    def note_movie(self, id_user: int, id_movie: int, note: int):
         query = """
-        INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, watch_count, favorite, vote)
-        VALUES (%(id_user)s, %(id_movie)s, TRUE, 1, FALSE, %(vote)s)
-        ON CONFLICT (id_movie, id_user)
-        DO UPDATE SET vote = EXCLUDED.vote
-        """
-        raw_vote = self.db_connector.sql_query(query, 
-              {"id_user":id_user, "id_movie":id_movie, "vote":note},"none")
-        return True if raw_vote else False
+            WITH upsert AS (
+                INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, watch_count, favorite, vote)
+                VALUES (%(id_user)s, %(id_movie)s, TRUE, 1, FALSE, %(vote)s)
+                ON CONFLICT (id_movie, id_user)
+                DO UPDATE SET vote = EXCLUDED.vote
+                RETURNING id_movie
+            )
+            SELECT AVG(vote) AS vote_avg, COUNT(vote) AS vote_count 
+            FROM projet_info.seenmovies
+            WHERE id_movie = %(id_movie)s;
+            """
+        vote_movie = self.db_connector.sql_query(query, {"id_user": id_user, "id_movie": id_movie, "vote": note}, "one")
+        
+        return vote_movie if vote_movie else None
+
 
     def mean_note_user(self, id_user:int):
 
         query = """
-        SELECT AVG(vote) AS mean_note FROM projet_info.seenmovies
+        SELECT AVG(vote) AS vote_avg FROM projet_info.seenmovies
         WHERE id_user=%s AND  vote IS NOT NULL;
         """
         raw_note = self.db_connector.sql_query(query, [id_user], "one")
-        return raw_note['mean_note'] if raw_note else None
-    
-    def mean_note_movie(self, id_movie:int):
+        return raw_note["vote_avg"] if raw_note else None
 
-        query = """
-        SELECT AVG(vote) AS mean_note FROM projet_info.seenmovies
-        WHERE id_movie=%s AND  vote IS NOT NULL;
-        """
-        raw_note = self.db_connector.sql_query(query, [id_movie], "one")
-        return raw_note['mean_note'] if raw_note else None
 
 
 # Tests manuels
@@ -193,7 +192,7 @@ if __name__ == "__main__" :
     dotenv.load_dotenv()
     db_connector = DBConnector()
     seen_movie_repo = SeenMovieRepo(db_connector)
-    print(seen_movie_repo.note_movie(1, 400, 8))
+    print(seen_movie_repo.note_movie(1, 500, 10))
     print(seen_movie_repo.mean_note_user(2))
-    print(seen_movie_repo.mean_note_movie(400))
+
     
