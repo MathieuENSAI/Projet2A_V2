@@ -21,7 +21,7 @@ def watch_movie(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentia
         raise HTTPException(status_code=409, detail="Something is going wrong. Try again !") from Exception
     return movie
 
-@watch_movie_route.get("/add-to-watch-list/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+@watch_movie_route.post("/add-to-watch-list/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def add_to_watchlist(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     movie = movie_service.get_by_id(movie_id)
@@ -33,7 +33,7 @@ def add_to_watchlist(movie_id: int, credentials: Annotated[HTTPAuthorizationCred
         raise HTTPException(status_code=409, detail="Something is going wrong. Try again !") from Exception
     return movie
 
-@watch_movie_route.get("/add-to-favorite-list/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+@watch_movie_route.post("/add-to-favorite-list/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def add_to_favoritelist(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     movie = movie_service.get_by_id(movie_id)
@@ -45,7 +45,7 @@ def add_to_favoritelist(movie_id: int, credentials: Annotated[HTTPAuthorizationC
         raise HTTPException(status_code=409, detail="Something is going wrong. Try again !") from Exception
     return movie
 
-@watch_movie_route.get("/note-movie/", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+@watch_movie_route.post("/note-movie/", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def note_movie(movie_id:int, note:int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     movie = movie_service.get_by_id(movie_id)
