@@ -1,6 +1,6 @@
 from typing import Optional
 from src.Model.SeenMovie import SeenMovie
-from .DBConnector import DBConnector
+from src.DAO.DBConnector import DBConnector
 from src.Model.Movie import Movie
 from src.Model.User import User
 
@@ -156,7 +156,18 @@ class SeenMovieRepo:
             return list_users
         else :
             return None
-        
+    
+    def vote_movie(self, id_user:int, id_movie:int, vote:int):
+        query = """
+        INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, watch_count, favorite, vote)
+        VALUES (%(id_user)s, %(id_movie)s, TRUE, 1, FALSE, %(vote)s)
+        ON CONFLICT (id_movie, id_user)
+        DO UPDATE SET vote = EXCLUDED.vote
+        """
+        raw_vote = self.db_connector.sql_query(query, 
+              {"id_user":id_user, "id_movie":id_movie, "vote":vote},"none")
+        return True if raw_vote else False
+
     def mean_note_user(self, id_user:int):
 
         query = """
@@ -165,3 +176,13 @@ class SeenMovieRepo:
         """
         raw_note = self.db_connector.sql_query(query, [id_user], "one")
         return raw_note['mean_note'] if raw_note else None
+
+# Tests manuels
+if __name__ == "__main__" :
+    import dotenv
+    dotenv.load_dotenv()
+    db_connector = DBConnector()
+    seen_movie_repo = SeenMovieRepo(db_connector)
+    print(seen_movie_repo.vote_movie(2, 500, 9))
+    print(seen_movie_repo.mean_note_user(2))
+    
