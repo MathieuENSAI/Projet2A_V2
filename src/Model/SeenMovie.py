@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional
 
 class SeenMovie(BaseModel):
     id_user : int 
