@@ -1,6 +1,8 @@
 from typing import Optional
 from src.Model.SeenMovie import SeenMovie
 from .DBConnector import DBConnector
+from src.Model.Movie import Movie
+from src.Model.User import User
 
 
 class SeenMovieRepo:
@@ -8,14 +10,6 @@ class SeenMovieRepo:
 
     def __init__(self, db_connector: DBConnector):
         self.db_connector = db_connector
-
-    # def get_by_id(self, id_seenmovie: int) -> Optional[SeenMovie]:
-    #     raw_seenmovie = self.db_connector.sql_query(
-    #         """SELECT * from projet_info.seenmovies 
-    #            WHERE id_seenmovie=%s""", [id_seenmovie], "one")
-    #     if raw_seenmovie is None:
-    #         return None
-    #     return SeenMovie(**raw_seenmovie)
     
     def get_by_user_and_movie(self, id_user: int, id_movie: int ) -> Optional[SeenMovie]:
         raw_seenmovie = self.db_connector.sql_query(
@@ -78,47 +72,58 @@ class SeenMovieRepo:
                 "id_movie" : seenmovie.id_movie}
         )
         return raw_delete.rowcount > 0
-    
-    # def get_vote(self, id_user : int, id_movie : int) -> SeenMovie: 
-    #     raw_vote = self.db_connector.sql_query(
-    #         """
-    #         SELECT vote 
-    #         FROM seenmovies 
-    #         WHERE %(id_user)s = id_user 
-    #         AND %(id_movie)s = id_movie)
-    #         """,
-    #         {"id_user": id_user, "id_movie": id_movie}, "one",
-    #     )
-    #     if raw_vote : 
-    #         return raw_vote
-    #     else :
-    #         return("No vote available.")
         
-    def get_list_seenmovies_by_user(self, id_user : int) -> list[int]:
+    def get_list_seenmovies_by_user(self, id_user : int) -> list[Movie]|None:
         """ Returns the list of movies id seen by a user"""
         raw_movies = self.db_connector.sql_query(
-            """SELECT id_movie 
-            FROM projet_info.seenmovies 
-            WHERE %(id_user)s = id_user
-            AND seen = TRUE""",
+            """SELECT *
+            FROM projet_info.seenmovies AS sm
+            JOIN projet_info.movie AS m
+            ON sm.id_movie = m.id
+            WHERE sm.id_user = %(id_user)s
+            AND sm.seen = TRUE;
+            """,
             {"id_user": id_user}, "all",
         )
         list_movies = []
 
         if raw_movies:
-            for row in raw_movies:
-                list_movies.append(row)
+            for movie in raw_movies:
+                list_movies.append(Movie(**movie))
             return list_movies
         else : 
             return None
         
-    def get_watchlist_user(self, id_user : int) -> list[int]:
+    def get_watchlist_user(self, id_user : int) -> list[Movie]|None:
         """ Returns the movies a user wanna see in the future"""
         raw_movies = self.db_connector.sql_query(
-            """SELECT id_movie 
-            FROM projet_info.seenmovies 
-            WHERE %(id_user)s = id_user
-            AND to_watch_later = TRUE
+            """SELECT *
+            FROM projet_info.seenmovies AS sm
+            JOIN projet_info.movie AS m
+            ON sm.id_movie = m.id
+            WHERE sm.id_user = %(id_user)s
+            AND sm.to_watch_later = TRUE;
+            """,
+            {"id_user": id_user}, "all",
+        )
+        list_movies = []
+
+        if raw_movies:
+            for movie in raw_movies:
+                list_movies.append(Movie(**movie))
+            return list_movies
+        else : 
+            return None
+        
+    def get_list_favorite_movie(self, id_user : int) -> list[Movie]|None:
+        """ Returns the list of favorite movies of an user"""
+        raw_movies = self.db_connector.sql_query(
+            """SELECT *
+            FROM projet_info.seenmovies AS sm
+            JOIN projet_info.movie AS m
+            ON sm.id_movie = m.id
+            WHERE sm.id_user = %(id_user)s
+            AND sm.favorite = TRUE;
             """,
             {"id_user": id_user}, "all",
         )
@@ -126,51 +131,28 @@ class SeenMovieRepo:
 
         if raw_movies:
             for row in raw_movies:
-                list_movies.append(row)
+                list_movies.append(Movie(**row))
             return list_movies
         else : 
             return None
         
-    def get_list_favorite_movie(self, id_user : int) -> list[int]:
-        """ Returns the list of favorite movies of an user"""
-        raw_movies = self.db_connector.sql_query(
-            """SELECT id_movie 
-            FROM projet_info.seenmovies 
-            WHERE %(id_user)s = id_user
-            AND favorite = TRUE""",
-            {"id_user": id_user}, "all",
-        )
-        list_movies = []
-
-        if raw_movies:
-            for row in raw_movies:
-                list_movies.append(row)
-            return list_movies
-        else : 
-            return None
-        
-    def get_list_users_by_movie(self, id_movie : int) -> list[int]:
+    def get_list_users_by_movie(self, id_movie : int) -> list[User]|None:
         """ Returns the list of users who have seen a movie"""
         raw_users = self.db_connector.sql_query(
-            """SELECT id_user 
-            FROM projet_info.seenmovies 
-            WHERE %(id_movie)s = id_movie
-            AND seen = TRUE""",
+            """SELECT *
+            FROM projet_info.seenmovies AS sm
+            JOIN projet_info.user AS m
+            ON sm.id_user = m.id_user
+            WHERE sm.id_movie = %(id_movie)s
+            AND sm.seen = TRUE;
+            """,
             {"id_movie": id_movie}, "all",
         )
         list_users = []
 
         if raw_users:
-            for row in raw_users:
-                list_users.append(row)
+            for user in raw_users:
+                list_users.append(User(**user))
             return list_users
-        else : 
-            return 
-    
-    def mean_note_user(self, id_user:int):
-
-        query = """
-
-        """
-    
-        return 0
+        else :
+            return None

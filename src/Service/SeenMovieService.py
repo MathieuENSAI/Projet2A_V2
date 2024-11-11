@@ -41,13 +41,7 @@ class SeenMovieService:
             seenmovie.favorite = True
             return self.seen_movierepo.update_db(seenmovie)
         return True
-    
-    # def delete_seenmovie_by_id(self, id_seen_movie : int)-> bool:
-    #     if self.seen_movierepo.get_by_id(id_seen_movie):
-    #         seenmovie = self.seen_movierepo.get_by_id(id_seen_movie)
-    #         return self.seen_movierepo.delete_from_db(seenmovie)
-    #     else:
-    #         print("Movie id not found in the database.")
+
     
     def delete_seenmovie_by_user_and_movie(self, id_user : int, id_movie : int)-> bool:
         if self.seen_movierepo.get_by_user_and_movie(id_user, id_movie):
@@ -58,44 +52,36 @@ class SeenMovieService:
     
     def watchlist(self, id_user : int):
         if self.seen_movierepo.get_watchlist_user(id_user):
-            watchlist=[]
-            list_movies = self.seen_movierepo.get_watchlist_user(id_user)
+            list_movies = self.seen_movierepo.get_watchlist_user(id_user)*
+            print("The list of movies in this user's watchlist.")
             for movie in list_movies:
-                movie_to_watch = MovieRepo.get_by_id(movie)
-                watchlist.append(movie_to_watch.title)
-            return watchlist
+                movie.info()
         else:
             print("No movie found in this user's watchlist.")
     
     def seenmovies_user(self, id_user: int):
         if self.seen_movierepo.get_list_seenmovies_by_user(id_user):
-            seenmovies=[]
             list_movies = self.seen_movierepo.get_watchlist_user(id_user)
+            print("The list of movies watched by this user.")
             for movie in list_movies:
-                watched_movie = MovieRepo.get_by_id(movie)
-                seenmovies.append(watched_movie.title)
-            return seenmovies
+                movie.info()
         else:
             print("No movie have been seen by this user.")
     
     def movies_seen_by(self, id_movie : int):
         if self.seen_movierepo.get_list_users_by_movie(id_movie):
-            list_username=[]
             list_users = self.seen_movierepo.get_list_users_by_movie(id_movie)
+            print("This movie have been seen by those users:")
             for user in list_users:
-                username = UserRepo.get_by_id(user)
-                list_username.append(username.username)
-            return list_username
+                print(user.username)
         else:
             print("This have not been seen by any user in our database.")
 
     def favorite_movie_user(self, id_user : int):
         if self.seen_movierepo.get_list_favorite_movie(id_user):
-            list_favorite = []
             list_movies = self.seen_movierepo.get_list_favorite_movie(id_user)
+            print("The list of favorite movies of this user:")
             for movie in list_movies:
-                favorite = MovieRepo.get_by_id(movie)
-                list_favorite.append(favorite.title)
-            return list_favorite
+                movie.info()
         else:
             print("This user don't have any favorite movie")
