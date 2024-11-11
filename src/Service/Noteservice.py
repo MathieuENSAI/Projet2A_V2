@@ -27,3 +27,4 @@ class NoteService :
             return sum/len
         else :
             return None
+ 
