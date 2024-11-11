@@ -156,3 +156,10 @@ class SeenMovieRepo:
             return list_users
         else :
             return None
+
+    def mean_note_user(self, id_user:int):
+
+        query = """
+
+        """
+        return 0
