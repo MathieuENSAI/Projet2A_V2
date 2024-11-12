@@ -52,7 +52,7 @@ class SeenMovieService:
     
     def watchlist(self, id_user : int):
         if self.seen_movierepo.get_watchlist_user(id_user):
-            list_movies = self.seen_movierepo.get_watchlist_user(id_user)*
+            list_movies = self.seen_movierepo.get_watchlist_user(id_user)
             print("The list of movies in this user's watchlist.")
             for movie in list_movies:
                 movie.info()

@@ -7,14 +7,21 @@ if TYPE_CHECKING:
 
 class MockDBConnector:
     def __init__(self):
-        self.db = [{"id_user": 1, "id_movie": 1, "seen": True, "vote": 10, "favorite" : True},
-                   {"id_user": 2, "id_movie": 2, "seen": True, "vote": 5, "favorite" : True}, 
-                   {"id_user": 2, "id_movie": 1, "seen": True, "vote": 0, "favorite" : False},
-                   {"id_user": 3, "id_movie": 2, "seen": True, "vote": 10, "favorite" : False},
-                   {"id_user": 1, "id_movie": 2, "seen": False, "vote": None, "favorite" : False},
-                   {"id_user": 1, "id_movie": 3, "seen": False, "vote": None, "favorite" : False},
-                   {"id_user": 1, "id_movie": 4, "seen": False, "vote": None, "favorite" : False}]
-
+        self.db = [
+    {"id_user": 3, "id_movie": 1, "seen": True, "to_watch_later": False, "watch_count": 3, "vote": 8, "favorite": True},
+    {"id_user": 4, "id_movie": 3, "seen": True, "to_watch_later": True, "watch_count": 1, "vote": 6, "favorite": False},
+    {"id_user": 2, "id_movie": 4, "seen": False, "to_watch_later": True, "watch_count": 0, "vote": None, "favorite": False},
+    {"id_user": 5, "id_movie": 2, "seen": True, "to_watch_later": False, "watch_count": 2, "vote": 7, "favorite": True},
+    {"id_user": 1, "id_movie": 5, "seen": False, "to_watch_later": True, "watch_count": 0, "vote": None, "favorite": False},
+    {"id_user": 3, "id_movie": 5, "seen": True, "to_watch_later": False, "watch_count": 1, "vote": 9, "favorite": True},
+    {"id_user": 4, "id_movie": 2, "seen": True, "to_watch_later": False, "watch_count": 2, "vote": 5, "favorite": False},
+    {"id_user": 2, "id_movie": 3, "seen": False, "to_watch_later": True, "watch_count": 0, "vote": None, "favorite": False},
+    {"id_user": 5, "id_movie": 1, "seen": True, "to_watch_later": False, "watch_count": 4, "vote": 10, "favorite": True},
+    {"id_user": 1, "id_movie": 6, "seen": False, "to_watch_later": True, "watch_count": 0, "vote": None, "favorite": False},
+    {"id_user": 3, "id_movie": 4, "seen": True, "to_watch_later": False, "watch_count": 2, "vote": 6, "favorite": False},
+    {"id_user": 4, "id_movie": 1, "seen": True, "to_watch_later": False, "watch_count": 3, "vote": 8, "favorite": True},
+    {"id_user": 5, "id_movie": 3, "seen": False, "to_watch_later": True, "watch_count": 0, "vote": None, "favorite": False}]
+        
     def sql_query(
         self,
         query: str,
@@ -34,13 +41,20 @@ class MockDBConnector:
                         return seenmovie
                 return None
                 
-            case """INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, vote, favorite)
-                VALUES (%(id_user)s, %(id_movie)s, %(seen)s, %(vote)s, %(favorite)s)
+            case """INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, to_watch_later, watch_count, vote, favorite)
+                VALUES (%(id_user)s, %(id_movie)s, %(seen)s, %(to_watch_later)s, %(watch_count)s, %(vote)s, %(favorite)s)
+                ON CONFLICT(id_user, id_movie) DO UPDATE
+                SET watch_count = seenmovies.watch_count + 1,
+                    seen = EXCLUDED.seen,
+                    to_watch_later = EXCLUDED.to_watch_later,
+                    vote = EXCLUDED.vote,
+                    favorite = EXCLUDED.favorite
                 RETURNING *;""":
                 if not data:
                     raise Exception
                 self.db.append({"id_user": data['id_user'], "id_movie" : data['id_movie'], 
-                                "seen": data['seen'], "vote": data['vote'], "favorite": data['favorite']})
+                                "seen": data['seen'], "to_watch_later": data['to_watch_later'],
+                                "watch_count" : data['watch_count'],"vote": data['vote'], "favorite": data['favorite']})
                 return(self.db[-1])
             
             case  """SELECT id_movie 
@@ -102,22 +116,32 @@ class MockDBConnector:
 def test_get_by_user_and_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     db = seenmovierepo.db_connector.db
-    seenmovie: SeenMovie = seenmovierepo.get_by_user_and_movie(1,1)
+    seenmovie: SeenMovie = seenmovierepo.get_by_user_and_movie(3,1)
     assert seenmovie is not None
-    assert seenmovie.id_user == 1 and seenmovie.id_movie == 1
+    assert seenmovie.id_user == 3 and seenmovie.id_movie == 1
     assert seenmovie.__dict__ == db[0]
 
 def test_insert_into_db():
-    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    seenmovierepo = SeenMovieRepo(MockDBConnector())
     db = seenmovierepo.db_connector.db
-    seenmovie: SeenMovie = seenmovierepo.insert_into_db(1,4,True,0,False)
-    assert seenmovie is not None
-    assert seenmovie.__dict__ == db[-1]
+    seenmovie: SeenMovie = seenmovierepo.insert_into_db(
+        id_user=1, 
+        id_movie=4, 
+        seen=True, 
+        watch_count=1, 
+        to_watch_later=False, 
+        vote=None, 
+        favorite=False
+    )
+    assert seenmovie is not None, "L'insertion du film vu a échoué."
+    assert seenmovie.__dict__ == db[-1], "Les données insérées ne correspondent pas aux données en base."
     assert seenmovie.id_user == 1
     assert seenmovie.id_movie == 4
-    assert seenmovie.seen == True
-    assert seenmovie.vote == 0
-    assert seenmovie.favorite == False
+    assert seenmovie.seen is True
+    assert seenmovie.vote is None 
+    assert seenmovie.to_watch_later is False
+    assert seenmovie.watch_count == 1
+    assert seenmovie.favorite is False
 
 def test_get_list_seenmovies_by_user():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
