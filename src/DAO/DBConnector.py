@@ -44,6 +44,8 @@ class DBConnector:
                         return cursor.fetchone()
                     if return_type == "all":
                         return cursor.fetchall()
+                    if return_type=="none":
+                        return cursor
         except Exception as e:
             print("ERROR")
             print(e)

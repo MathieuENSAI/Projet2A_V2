@@ -28,6 +28,18 @@ class  MovieRepo:
         raw_created = self.db_connector.sql_query(query, values, "none")
         
         return True if raw_created else False
+
+    def update_vote(self, id_movie:int, vote_avg:float, vote_count:int):
+        query = """
+        UPDATE projet_info.Movie
+        SET vote_average=%(vote_avg)s, vote_count=%(vote_count)s
+        WHERE id=%(id_movie)s RETURNING *
+        """
+        raw_update = self.db_connector.sql_query(query, 
+        {"id_movie":id_movie, "vote_avg":vote_avg, "vote_count":vote_count}, "one")
+        
+        return Movie(**raw_update) if raw_update else None
+
     
     def get_by_id(self, movie_id:int):
         raw_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE id = %(movie_id)s;", {"movie_id":movie_id}, "one")
@@ -77,7 +89,7 @@ if __name__ == "__main__" :
     dotenv.load_dotenv()
     db_connector = DBConnector()
     movie_repo = MovieRepo(db_connector)
-    print(movie_repo.get_by_genre("action"))
+    print(movie_repo.update_vote(400, 10, 2))
     
     
    
