@@ -14,7 +14,7 @@ def get_movie_by_id(movie_id: int):
     except FileNotFoundError:
         raise HTTPException(
             status_code=404,
-            detail="Movie with id [{}] not found".format(movie_id),
+            detail=f"Movie with id [{movie_id}] not found",
         ) from FileNotFoundError
     except Exception as e:
         logging.error(f"Error occurred: {e}")
