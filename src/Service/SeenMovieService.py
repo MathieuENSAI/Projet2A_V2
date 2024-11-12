@@ -65,6 +65,16 @@ class SeenMovieService:
             # cc Emile : tu peux juste faire un return list_movies. En effet, l'exécution de movie.info() et les print() vont afficher 
             # les résultats uniquement dans la console et ces résultats ne peuvent pas être récupéré pour renvoyer 
             # à l'utilisateur au niveau de Swagger.
+
+            # Une petite remarque et suggestion, les deux ligne de code :
+            # if self.seen_movierepo.get_list_seenmovies_by_user(id_user):
+            # et list_movies = self.seen_movierepo.get_watchlist_user(id_user)
+            # effectuent deux requêtes identique à la base de donnée. Une solution idéale serait de :
+            # de créer l'objet list_movies avant de faire le if, voici à quoi va ressemble ton code
+            # list_movies = self.seen_movierepo.get_watchlist_user(id_user)
+            # if list_movies :
+            # Et là, on fait une seule requête à la base de donnée au lieu de deux requête
+            # Tu peux appliquer ce principe dans toutes tes méthodes services
             print("The list of movies watched by this user.")
             for movie in list_movies:
                 movie.info()
