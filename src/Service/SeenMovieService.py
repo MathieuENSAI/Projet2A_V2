@@ -51,50 +51,33 @@ class SeenMovieService:
             print("Not found in the database.")
     
     def watchlist(self, id_user : int):
-        if self.seen_movierepo.get_watchlist_user(id_user):
-            list_movies = self.seen_movierepo.get_watchlist_user(id_user)
-            print("The list of movies in this user's watchlist.")
+        list_movies = self.seen_movierepo.get_watchlist_user(id_user)
+        if list_movies:
             for movie in list_movies:
-                movie.info()
+                return movie
         else:
-            print("No movie found in this user's watchlist.")
+            return None
     
     def seenmovies_user(self, id_user: int):
-        if self.seen_movierepo.get_list_seenmovies_by_user(id_user):
-            list_movies = self.seen_movierepo.get_watchlist_user(id_user)
-            # cc Emile : tu peux juste faire un return list_movies. En effet, l'exécution de movie.info() et les print() vont afficher 
-            # les résultats uniquement dans la console et ces résultats ne peuvent pas être récupéré pour renvoyer 
-            # à l'utilisateur au niveau de Swagger.
-
-            # Une petite remarque et suggestion, les deux ligne de code :
-            # if self.seen_movierepo.get_list_seenmovies_by_user(id_user):
-            # et list_movies = self.seen_movierepo.get_watchlist_user(id_user)
-            # effectuent deux requêtes identique à la base de donnée. Une solution idéale serait de :
-            # de créer l'objet list_movies avant de faire le if, voici à quoi va ressemble ton code
-            # list_movies = self.seen_movierepo.get_watchlist_user(id_user)
-            # if list_movies :
-            # Et là, on fait une seule requête à la base de donnée au lieu de deux requête
-            # Tu peux appliquer ce principe dans toutes tes méthodes services
-            print("The list of movies watched by this user.")
+        list_movies = self.seen_movierepo.get_watchlist_user(id_user)
+        if list_movies :
             for movie in list_movies:
-                movie.info()
+                return movie
         else:
-            print("No movie have been seen by this user.")
+            return None
     
     def movies_seen_by(self, id_movie : int):
-        if self.seen_movierepo.get_list_users_by_movie(id_movie):
-            list_users = self.seen_movierepo.get_list_users_by_movie(id_movie)
-            print("This movie have been seen by those users:")
+        list_users = self.seen_movierepo.get_list_users_by_movie(id_movie)
+        if list_users:
             for user in list_users:
-                print(user.username)
+                return user
         else:
-            print("This have not been seen by any user in our database.")
+            return None
 
     def favorite_movie_user(self, id_user : int):
-        if self.seen_movierepo.get_list_favorite_movie(id_user):
-            list_movies = self.seen_movierepo.get_list_favorite_movie(id_user)
-            print("The list of favorite movies of this user:")
+        list_movies = self.seen_movierepo.get_list_favorite_movie(id_user)
+        if list_movies:
             for movie in list_movies:
-                movie.info()
+                return movie
         else:
-            print("This user don't have any favorite movie")
+            return None
