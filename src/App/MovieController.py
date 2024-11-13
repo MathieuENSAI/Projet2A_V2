@@ -10,11 +10,10 @@ movie_router = APIRouter(prefix="/movies", tags=["Movies"])
 
 @movie_router.get("/{movie_id}", status_code=status.HTTP_200_OK)
 def get_movie_by_id(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer(partial_access_allowed=True))]):
-    
-    if credentials.get("restricted_access", False):
+    try:
+        user_id = jwt_service.validate_user_jwt(credentials.credentials)  
+    except Exception :
         user_id=None
-    else :
-        user_id = jwt_service.validate_user_jwt(credentials.credentials)
     try:
         movie = movie_service.get_by_id(movie_id, user_id)
         return movie
@@ -28,7 +27,11 @@ def get_movie_by_id(movie_id: int, credentials: Annotated[HTTPAuthorizationCrede
         raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
 
 @movie_router.get("/search/title", status_code=status.HTTP_200_OK)
-def get_movie_by_title(title: str):
+def get_movie_by_title(title: str, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer(partial_access_allowed=True))]):
+    try:
+        user_id = jwt_service.validate_user_jwt(credentials.credentials)  
+    except Exception :
+        user_id=None
     try:
         movies = movie_service.get_by_title(title)
         return movies
@@ -37,7 +40,11 @@ def get_movie_by_title(title: str):
         raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
 
 @movie_router.get("/search/genre", status_code=status.HTTP_200_OK)
-def get_movie_by_genre(genre: str):
+def get_movie_by_genre(genre: str, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer(partial_access_allowed=True))]):
+    try:
+        user_id = jwt_service.validate_user_jwt(credentials.credentials)  
+    except Exception :
+        user_id=None
     try:
         movies = movie_service.get_by_genre(genre)
         return movies
