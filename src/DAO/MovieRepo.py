@@ -1,5 +1,5 @@
 from src.DAO.DBConnector import DBConnector
-from src.Model.Movie import Movie
+from src.Model.Movie import Movie, APIMovie
 
 class  MovieRepo:
     db_connector : DBConnector
@@ -59,11 +59,10 @@ class  MovieRepo:
         WHERE M.id = %(movie_id)s;
         """
         raw_movie = self.db_connector.sql_query(query, {"movie_id":movie_id, "user_id": user_id}, "one")
-        return raw_movie
         if raw_movie is None :
             return None
-        else :
-            return Movie(**raw_movie)
+        
+        return APIMovie(**raw_movie)
 
     def get_by_title(self, title:str, user_id=None):
         title = f"%{title}%"
@@ -79,16 +78,40 @@ class  MovieRepo:
             FROM projet_info.SeenMovies SM
             JOIN myFollowers mF ON SM.id_user = mF.id_follower
             WHERE SM.id_movie = M.id
-            ) AS follower_average_vote
+            ) AS followers_average_vote
         FROM projet_info.Movie M
         WHERE M.title LIKE %(title)s OR M.original_title LIKE %(title)s;
         """
         raws_movie = self.db_connector.sql_query(query, {"title": title, "user_id": user_id}, "all")
-        return raws_movie
         if raws_movie is None :
             return []
         else :
-            return [Movie(**raw_movie) for raw_movie in raws_movie]
+            return [APIMovie(**raw_movie) for raw_movie in raws_movie]
+    
+    def get_by_genre(self, name_genre:str, user_id=None):
+
+        name_genre = f"%{name_genre}%"
+        query = """ 
+        WITH myFollowers AS (
+            SELECT id_follower 
+            FROM projet_info.userfollowers UF 
+            WHERE UF.id_user = %(user_id)s
+        )
+        SELECT 
+            M.*, 
+            (SELECT AVG(SM.vote)
+            FROM projet_info.SeenMovies SM
+            JOIN myFollowers mF ON SM.id_user = mF.id_follower
+            WHERE SM.id_movie = M.id
+            ) AS followers_average_vote
+        FROM projet_info.Movie M
+        JOIN projet_info.MovieGenre MG ON MG.id_movie= M.id
+        JOIN projet_info.Genre G ON MG.id_genre=G.id_genre
+        WHERE G.name_genre LIKE %(name_genre)s;
+        """
+        raws_selected = self.db_connector.sql_query(query, {"name_genre": name_genre, "user_id": user_id}, "all")
+        
+        return [APIMovie(**raw_selected) for raw_selected in raws_selected] if raws_selected else []
     
     def get_by_release_period(self, start_release_date:str, end_release_date:str):
         raws_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE release_date BETWEEN %s AND %s;", (start_release_date, end_release_date), "all")
@@ -104,17 +127,17 @@ class  MovieRepo:
         else :
             return [Movie(**raw_movie) for raw_movie in raws_movie]
     
-    def get_by_genre(self, name_genre:str):
+    # def get_by_genre(self, name_genre:str):
 
-        name_genre = f"%{name_genre}%"
-        query = """SELECT * FROM projet_info.Genre G
-        JOIN projet_info.MovieGenre MG ON G.id_genre = MG.id_genre
-        LEFT projet_info.Movie M ON MG.id_movie = M.id
-        WHERE G.name_genre LIKE %s;
-        """
-        raws_selected = self.db_connector.sql_query(query, [name_genre], "all")
+    #     name_genre = f"%{name_genre}%"
+    #     query = """SELECT * FROM projet_info.Genre G
+    #     JOIN projet_info.MovieGenre MG ON G.id_genre = MG.id_genre
+    #     LEFT projet_info.Movie M ON MG.id_movie = M.id
+    #     WHERE G.name_genre LIKE %s;
+    #     """
+    #     raws_selected = self.db_connector.sql_query(query, [name_genre], "all")
         
-        return [Movie(**raw_selected) for raw_selected in raws_selected] if raws_selected else []
+    #     return [Movie(**raw_selected) for raw_selected in raws_selected] if raws_selected else []
 
 
 
@@ -123,7 +146,7 @@ if __name__ == "__main__" :
     dotenv.load_dotenv()
     db_connector = DBConnector()
     movie_repo = MovieRepo(db_connector)
-    print(movie_repo.get_by_title("a", 1))
+    print(movie_repo.get_by_genre("", 1))
     
     
    

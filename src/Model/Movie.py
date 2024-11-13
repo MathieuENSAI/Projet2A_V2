@@ -1,15 +1,16 @@
 from pydantic import BaseModel
 from datetime import date
+from typing import Optional
 
 class Movie(BaseModel):
     id : int
-    original_language: str|None=None
-    original_title: str|None=None
-    release_date:date|str|None=None
-    title:str|None=None
-    vote_average: float|None=None
-    vote_count: int|None=None
-    overview: str|None=None
+    original_language: Optional[str]=None
+    original_title: Optional[str]=None
+    release_date:Optional[date|str]=None
+    title: Optional[str]=None
+    vote_average: Optional[float]=None
+    vote_count: Optional[int]=None
+    overview: Optional[str]=None
 
 
     # def update_average_rating(self):
@@ -27,7 +28,10 @@ class Movie(BaseModel):
         """
 
         return info
-    
+
+class APIMovie(Movie):
+    followers_average_vote: Optional[float] = None
+
 if __name__ == "__main__" :
    movie= Movie(id=1)
    print(movie.__dict__)

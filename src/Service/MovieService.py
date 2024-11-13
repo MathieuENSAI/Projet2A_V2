@@ -25,8 +25,8 @@ class MovieService:
         
         raise FileNotFoundError()
     
-    def get_by_title(self,title: str):
-        movies = self.movie_repo.get_by_title(title)
+    def get_by_title(self,title: str, user_id=None):
+        movies = self.movie_repo.get_by_title(title, user_id)
         if movies is None:
             movies = []
         movie_not_in_db = []
@@ -38,8 +38,8 @@ class MovieService:
     
         return movies + movie_not_in_db
     
-    def get_by_genre(self,genre: str):
-        movies = self.movie_repo.get_by_genre(genre)
+    def get_by_genre(self,genre: str, user_id=None):
+        movies = self.movie_repo.get_by_genre(genre, user_id)
         if movies is None:
             movies = []
         movie_not_in_db = []
