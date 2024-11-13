@@ -89,9 +89,12 @@ class SeenMovieRepo:
 
         if raw_movies:
             for movie in raw_movies:
-                list_movies.append(Movie(**movie))
+                if isinstance(movie, Movie):
+                    list_movies.append(movie)
+                elif isinstance(movie, dict):
+                    list_movies.append(Movie(id=movie["id_movie"], **movie))
             return list_movies
-        else : 
+        else:
             return None
         
     def get_watchlist_user(self, id_user : int) -> list[Movie]|None:
@@ -107,12 +110,14 @@ class SeenMovieRepo:
             {"id_user": id_user}, "all",
         )
         list_movies = []
-
         if raw_movies:
             for movie in raw_movies:
-                list_movies.append(Movie(**movie))
+                if isinstance(movie, Movie):
+                    list_movies.append(movie)
+                elif isinstance(movie, dict):
+                    list_movies.append(Movie(id=movie["id_movie"], **movie))
             return list_movies
-        else : 
+        else:
             return None
         
     def get_list_favorite_movie(self, id_user : int) -> list[Movie]|None:
@@ -130,10 +135,13 @@ class SeenMovieRepo:
         list_movies = []
 
         if raw_movies:
-            for row in raw_movies:
-                list_movies.append(Movie(**row))
+            for movie in raw_movies:
+                if isinstance(movie, Movie):
+                    list_movies.append(movie)
+                elif isinstance(movie, dict):
+                    list_movies.append(Movie(id=movie["id_movie"], **movie))
             return list_movies
-        else : 
+        else:
             return None
         
     def get_list_users_by_movie(self, id_movie : int) -> list[User]|None:
@@ -152,9 +160,12 @@ class SeenMovieRepo:
 
         if raw_users:
             for user in raw_users:
-                list_users.append(User(**user))
+                if isinstance(user, User):
+                    list_users.append(user)
+                elif isinstance(user, dict):
+                    list_users.append(**User)
             return list_users
-        else :
+        else:
             return None
     
     def note_movie(self, id_user: int, id_movie: int, note: int):
