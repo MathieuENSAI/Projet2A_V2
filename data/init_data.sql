@@ -22,7 +22,7 @@ INSERT INTO projet_info.SeenMovies(id_user, id_movie, seen, to_watch_later, watc
 VALUES
 (1, 1, TRUE, FALSE, 1, 8, TRUE),
 (1, 2, TRUE, FALSE, 1, 3, FALSE),
-(2, 3, FALSE, TRUE, 0, NULL, FALSE),
+(2, 2, FALSE, TRUE, 0, NULL, FALSE),
 (3, 2, TRUE, FALSE, 1, 9, TRUE);
 
 -- INSERER Les données dans la table Genre

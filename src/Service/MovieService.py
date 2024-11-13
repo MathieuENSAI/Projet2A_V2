@@ -11,7 +11,7 @@ class MovieService:
         self.movie_TMDB = movie_TMDB
         self.movie_genre_repo = movie_genre_repo
     
-    def get_by_id(self, movie_id: int) -> Movie | None :
+    def get_by_id(self, movie_id: int, user_id=None) -> Movie | None :
         movie = self.movie_repo.get_by_id(movie_id)
         if movie is not None:
             return movie

@@ -41,16 +41,50 @@ class  MovieRepo:
         return Movie(**raw_update) if raw_update else None
 
     
-    def get_by_id(self, movie_id:int):
-        raw_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE id = %(movie_id)s;", {"movie_id":movie_id}, "one")
+    def get_by_id(self, movie_id:int, user_id=None):
+        query = """ 
+        WITH myFollowers AS (
+            SELECT id_follower 
+            FROM projet_info.userfollowers UF 
+            WHERE UF.id_user = %(user_id)s
+        )
+        SELECT 
+            M.*, 
+            (SELECT AVG(SM.vote)
+            FROM projet_info.SeenMovies SM
+            JOIN myFollowers mF ON SM.id_user = mF.id_follower
+            WHERE SM.id_movie = M.id
+            ) AS followers_average_vote
+        FROM projet_info.Movie M
+        WHERE M.id = %(movie_id)s;
+        """
+        raw_movie = self.db_connector.sql_query(query, {"movie_id":movie_id, "user_id": user_id}, "one")
+        return raw_movie
         if raw_movie is None :
             return None
         else :
             return Movie(**raw_movie)
 
-    def get_by_title(self, title:str):
+    def get_by_title(self, title:str, user_id=None):
         title = f"%{title}%"
-        raws_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE (title LIKE %s ) OR (original_title LIKE %s);", (title, title), "all")
+        query = """ 
+        WITH myFollowers AS (
+            SELECT id_follower 
+            FROM projet_info.userfollowers UF 
+            WHERE UF.id_user = %(user_id)s
+        )
+        SELECT 
+            M.*, 
+            (SELECT AVG(SM.vote)
+            FROM projet_info.SeenMovies SM
+            JOIN myFollowers mF ON SM.id_user = mF.id_follower
+            WHERE SM.id_movie = M.id
+            ) AS follower_average_vote
+        FROM projet_info.Movie M
+        WHERE M.title LIKE %(title)s OR M.original_title LIKE %(title)s;
+        """
+        raws_movie = self.db_connector.sql_query(query, {"title": title, "user_id": user_id}, "all")
+        return raws_movie
         if raws_movie is None :
             return []
         else :
@@ -75,7 +109,7 @@ class  MovieRepo:
         name_genre = f"%{name_genre}%"
         query = """SELECT * FROM projet_info.Genre G
         JOIN projet_info.MovieGenre MG ON G.id_genre = MG.id_genre
-        JOIN projet_info.Movie M ON MG.id_movie = M.id
+        LEFT projet_info.Movie M ON MG.id_movie = M.id
         WHERE G.name_genre LIKE %s;
         """
         raws_selected = self.db_connector.sql_query(query, [name_genre], "all")
@@ -89,7 +123,7 @@ if __name__ == "__main__" :
     dotenv.load_dotenv()
     db_connector = DBConnector()
     movie_repo = MovieRepo(db_connector)
-    print(movie_repo.update_vote(400, 10, 2))
+    print(movie_repo.get_by_title("a", 1))
     
     
    
