@@ -8,9 +8,9 @@ class FollowingService:
         self.following_repo = following_repo
         self.user_repo = user_repo
 
-    def get_all_scouts(self, user_id : int) -> list[User] :
-        user = self.user_repo.get_by_id(user_id)
-        self.following_repo.get_all_scouts(user)
+    def get_all_following(self, user_id : int) -> list[User] :
+       
+        user_following = self.following_repo.get_all_following(user_id)
     
     def add_scout(self, user: User, scout: User) -> User:
         self.following_repo.add_scout(user, scout)
