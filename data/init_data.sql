@@ -7,8 +7,8 @@ VALUES
 ('eleve', 'eleve48');
 
 -- INTIALISER LA TABLE UserFolowers
-INSERT INTO projet_info.UserFollowers(id_user, id_follower)
-VALUES (1, 2), (1, 3), (1,4), (2, 1), (2, 4), (3, 2), (3, 4);
+INSERT INTO projet_info.UserFollowing(id_user, id_following)
+VALUES (1, 2), (1, 3), (1,4), (2, 1), (2, 3), (3, 2), (3, 4);
 
 --INSERER les données dans la table Movie
 INSERT INTO projet_info.Movie(id, original_language, original_title, release_date, title)

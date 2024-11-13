@@ -44,12 +44,12 @@ CREATE TABLE projet_info.SeenMovies (
 );
 
 
-CREATE TABLE projet_info.UserFollowers (
+CREATE TABLE projet_info.UserFollowing (
     id_user INT NOT NULL,
-    id_follower INT NOT NULL,
-    PRIMARY KEY(id_user, id_follower),
+    id_following INT NOT NULL,
+    PRIMARY KEY(id_user, id_following),
     FOREIGN KEY (id_user) REFERENCES projet_info.User(id_user) ON DELETE CASCADE,
-    FOREIGN KEY (id_follower) REFERENCES projet_info.User(id_user) ON DELETE CASCADE
+    FOREIGN KEY (id_following) REFERENCES projet_info.User(id_user) ON DELETE CASCADE
 );
 
 

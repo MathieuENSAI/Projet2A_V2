@@ -30,7 +30,8 @@ class Movie(BaseModel):
         return info
 
 class APIMovie(Movie):
-    followers_average_vote: Optional[float] = None
+    following_vote_average: Optional[float] = None
+    total_liked_following: Optional[int] = None
 
 if __name__ == "__main__" :
    movie= Movie(id=1)

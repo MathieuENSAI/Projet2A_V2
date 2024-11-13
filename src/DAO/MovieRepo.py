@@ -43,18 +43,23 @@ class  MovieRepo:
     
     def get_by_id(self, movie_id:int, user_id=None):
         query = """ 
-        WITH myFollowers AS (
-            SELECT id_follower 
-            FROM projet_info.userfollowers UF 
+        WITH myFollowing AS (
+            SELECT id_following 
+            FROM projet_info.userfollowing UF 
             WHERE UF.id_user = %(user_id)s
         )
         SELECT 
             M.*, 
             (SELECT AVG(SM.vote)
             FROM projet_info.SeenMovies SM
-            JOIN myFollowers mF ON SM.id_user = mF.id_follower
+            JOIN myFollowing mF ON SM.id_user = mF.id_following
             WHERE SM.id_movie = M.id
-            ) AS followers_average_vote
+            ) AS following_vote_average,
+            (SELECT COUNT(SM.favorite)
+            FROM projet_info.SeenMovies SM
+            JOIN myFollowing mF ON SM.id_user = mF.id_following
+            WHERE SM.id_movie = M.id AND SM.favorite=TRUE
+            ) AS total_liked_following
         FROM projet_info.Movie M
         WHERE M.id = %(movie_id)s;
         """
@@ -67,20 +72,26 @@ class  MovieRepo:
     def get_by_title(self, title:str, user_id=None):
         title = f"%{title}%"
         query = """ 
-        WITH myFollowers AS (
-            SELECT id_follower 
-            FROM projet_info.userfollowers UF 
+        WITH myFollowing AS (
+            SELECT id_following 
+            FROM projet_info.userfollowing UF 
             WHERE UF.id_user = %(user_id)s
         )
         SELECT 
             M.*, 
             (SELECT AVG(SM.vote)
             FROM projet_info.SeenMovies SM
-            JOIN myFollowers mF ON SM.id_user = mF.id_follower
+            JOIN myFollowing mF ON SM.id_user = mF.id_following
             WHERE SM.id_movie = M.id
-            ) AS followers_average_vote
+            ) AS following_vote_average,
+            (SELECT COUNT(SM.favorite)
+            FROM projet_info.SeenMovies SM
+            JOIN myFollowing mF ON SM.id_user = mF.id_following
+            WHERE SM.id_movie = M.id AND SM.favorite=TRUE
+            ) AS total_liked_following
         FROM projet_info.Movie M
-        WHERE M.title LIKE %(title)s OR M.original_title LIKE %(title)s;
+        WHERE M.title LIKE %(title)s OR M.original_title LIKE %(title)s
+        GROUP BY M.id;
         """
         raws_movie = self.db_connector.sql_query(query, {"title": title, "user_id": user_id}, "all")
         if raws_movie is None :
@@ -92,22 +103,27 @@ class  MovieRepo:
 
         name_genre = f"%{name_genre}%"
         query = """ 
-        WITH myFollowers AS (
-            SELECT id_follower 
-            FROM projet_info.userfollowers UF 
+        WITH myFollowing AS (
+            SELECT id_following 
+            FROM projet_info.userfollowing UF 
             WHERE UF.id_user = %(user_id)s
         )
         SELECT 
             M.*, 
             (SELECT AVG(SM.vote)
             FROM projet_info.SeenMovies SM
-            JOIN myFollowers mF ON SM.id_user = mF.id_follower
+            JOIN myFollowing mF ON SM.id_user = mF.id_following
             WHERE SM.id_movie = M.id
-            ) AS followers_average_vote
+            ) AS following_vote_average,
+            (SELECT COUNT(SM.favorite)
+            FROM projet_info.SeenMovies SM
+            JOIN myFollowing mF ON SM.id_user = mF.id_following
+            WHERE SM.id_movie = M.id AND SM.favorite=TRUE
+            ) AS total_liked_following
         FROM projet_info.Movie M
         JOIN projet_info.MovieGenre MG ON MG.id_movie= M.id
-        JOIN projet_info.Genre G ON MG.id_genre=G.id_genre
-        WHERE G.name_genre LIKE %(name_genre)s;
+        JOIN projet_info.Genre G ON (MG.id_genre=G.id_genre AND G.name_genre LIKE %(name_genre)s)
+        GROUP BY M.id;
         """
         raws_selected = self.db_connector.sql_query(query, {"name_genre": name_genre, "user_id": user_id}, "all")
         
@@ -127,26 +143,12 @@ class  MovieRepo:
         else :
             return [Movie(**raw_movie) for raw_movie in raws_movie]
     
-    # def get_by_genre(self, name_genre:str):
-
-    #     name_genre = f"%{name_genre}%"
-    #     query = """SELECT * FROM projet_info.Genre G
-    #     JOIN projet_info.MovieGenre MG ON G.id_genre = MG.id_genre
-    #     LEFT projet_info.Movie M ON MG.id_movie = M.id
-    #     WHERE G.name_genre LIKE %s;
-    #     """
-    #     raws_selected = self.db_connector.sql_query(query, [name_genre], "all")
-        
-    #     return [Movie(**raw_selected) for raw_selected in raws_selected] if raws_selected else []
-
-
-
 if __name__ == "__main__" :
     import dotenv
     dotenv.load_dotenv()
     db_connector = DBConnector()
     movie_repo = MovieRepo(db_connector)
-    print(movie_repo.get_by_genre("", 1))
+    print(movie_repo.get_by_title('', 2))
     
     
    
