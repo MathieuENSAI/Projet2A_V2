@@ -23,6 +23,7 @@ class SeenMovieService:
                 id_user=id_user,
                 id_movie=id_movie,
                 seen=False,
+                watch_count=0,
                 to_watch_later=True)
         elif not seenmovie.to_watch_later:
             seenmovie.to_watch_later = True

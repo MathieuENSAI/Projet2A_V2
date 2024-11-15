@@ -174,7 +174,9 @@ class SeenMovieRepo:
             INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, watch_count, favorite, vote)
             VALUES (%(id_user)s, %(id_movie)s, TRUE, 1, FALSE, %(vote)s)
             ON CONFLICT (id_movie, id_user)
-            DO UPDATE SET vote = EXCLUDED.vote;
+            DO UPDATE SET vote = EXCLUDED.vote
+            SET seen = TRUE
+            SET watch_count = watch_count +1;
         """
         self.db_connector.sql_query(upsert_query, {"id_user": id_user, "id_movie": id_movie, "vote": note}, "none")
         avg_query = """
