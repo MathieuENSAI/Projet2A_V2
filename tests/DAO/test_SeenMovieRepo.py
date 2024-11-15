@@ -436,6 +436,3 @@ def test_get_list_users_by_movie():
     assert users[1] == User(id_user=5, username="",pass_word="", salt=None)
     assert users[2] == User(id_user=4, username="",pass_word="", salt=None)
 
-def test_note_movie():
-    seenmovierepo=SeenMovieRepo(MockDBConnector())
-    vote_movie : int = seenmovierepo.note_movie(id_user=)

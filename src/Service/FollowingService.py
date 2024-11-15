@@ -1,19 +1,29 @@
 from src.DAO.FollowingRepo import FollowingRepo
 from src.DAO.UserRepo import UserRepo
 from src.Model.User import User
-
+from src.DAO.MovieRepo import MovieRepo
 
 class FollowingService:
-    def __init__(self, following_repo : FollowingRepo, user_repo : UserRepo):
+    def __init__(self, following_repo : FollowingRepo):
         self.following_repo = following_repo
-        self.user_repo = user_repo
+        #self.user_repo = user_repo
+        #self.movie_repo = movie_repo
 
-    def get_all_scouts(self, user_id : int) -> list[User] :
-        user = self.user_repo.get_by_id(user_id)
-        self.following_repo.get_all_scouts(user)
+    def add_following(self, id_user: int, id_following: int) :
+        return self.following_repo.add_following(id_user, id_following)
     
-    def add_scout(self, user: User, scout: User) -> User:
-        self.following_repo.add_scout(user, scout)
+    def get_all_following(self, user_id : int) -> list[User] :
+        return self.following_repo.get_all_following(user_id)
+        
+    def get_following_seen_movies(self, id_following:int):
+        return self.following_repo.get_following_seen_movies(id_following)
+    
+    def get_movies_seen_together(self, id_user:int, id_following:int):
+        return self.following_repo.get_movies_seen_together(id_user, id_following)
+
+    def get_following_movies_collection(self, id_user:int, id_following:int):
+        return {"following_seen_movies": self.get_following_seen_movies(id_following),
+        "movies_seen_together": self.get_movies_seen_together(id_user, id_following)}
 
     def remove_scout(self, user: User, scout: User) -> User:
         self.following_repo.remove_scout(user, scout)
