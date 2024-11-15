@@ -62,6 +62,16 @@ class FollowingRepo:
         """
         raws_collection = self.db_connector.sql_query(query, {"id_user":id_user, "id_following":id_following}, "all" )
         return raws_collection
+    
+    def get_movies_liked_by_all_following(id_user:int):
+        query="""
+            SELECT * FROM projet_info.User U
+            JOIN projet_info.
+        """
+        return 0
+    
+    def get_top_movies_liked_by_all_following(id_user:int, top:int):
+        return 0
 
     def remove_scout(self, user: User) -> User:
         raw_modified_user = self.db_connector.sql_query(
