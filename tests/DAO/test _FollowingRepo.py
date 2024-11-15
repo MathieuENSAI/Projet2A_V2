@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 from psycopg2.errors import ForeignKeyViolation
 from src.Model.User import User
 from src.Model.APIUser import APIUser
-from src.DAO.FollowingRepo import FollowingRepo  # Assurez-vous d'utiliser le bon chemin d'import
+from src.DAO.FollowingRepo import FollowingRepo
 from src.DAO.DBConnector import DBConnector
 
 # Fixture pour créer un objet FollowingRepo avec un DBConnector mocké
