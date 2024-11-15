@@ -45,7 +45,7 @@ class FollowingRepo:
     def get_following_seen_movies(self, id_following:int):
 
         query = """
-        SELECT M.*, SM.vote AS following_vote FROM projet_info.SeenMovies SM
+        SELECT M.*, SM.vote AS following_vote, SM.favorite AS following_favorite FROM projet_info.SeenMovies SM
         JOIN projet_info.Movie M ON SM.id_movie=M.id
         WHERE SM.seen=TRUE AND SM.id_user=%s;
         """
@@ -54,7 +54,7 @@ class FollowingRepo:
     
     def get_movies_seen_together(self, id_user:int, id_following:int):
         query = """
-            SELECT M.*, SM2.vote AS following_vote FROM projet_info.Movie M
+            SELECT M.*, SM2.vote AS following_vote, SM2.favorite AS following_favorite FROM projet_info.Movie M
             JOIN  projet_info.SeenMovies SM1 ON SM1.id_movie=M.id
             JOIN projet_info.SeenMovies SM2 ON SM1.id_movie = SM2.id_movie
             WHERE SM1.seen=TRUE AND SM2.seen=TRUE AND 
@@ -65,7 +65,7 @@ class FollowingRepo:
     
     def get_movies_liked_by_all_following(id_user:int):
         query="""
-            SELECT * FROM projet_info.User U
+            SELECT * FROM projet_info.User
             JOIN projet_info.
         """
         return 0

@@ -18,12 +18,12 @@ VALUES
 (3, 'en', 'Legend of Tomorow', '2022-11-05', 'Legend of Tomorow');
 
 -- -- INITIALISER LA TABLE SeenMovie
-INSERT INTO projet_info.SeenMovies(id_user, id_movie, seen, to_watch_later, watch_count, vote, favorite)
+INSERT INTO projet_info.SeenMovies(id_user, id_movie, seen, to_watch_later, vote, favorite)
 VALUES
-(1, 1, TRUE, FALSE, 1, 8, TRUE),
-(1, 2, TRUE, FALSE, 1, 3, FALSE),
-(2, 2, FALSE, TRUE, 0, NULL, FALSE),
-(3, 2, TRUE, FALSE, 1, 9, TRUE);
+(1, 1, TRUE, FALSE, 8, TRUE),
+(1, 2, TRUE, FALSE, 3, FALSE),
+(2, 2, FALSE, TRUE, NULL, FALSE),
+(3, 2, TRUE, FALSE, 9, TRUE);
 
 -- INSERER Les données dans la table Genre
 INSERT INTO projet_info.Genre(id_genre, name_genre)
