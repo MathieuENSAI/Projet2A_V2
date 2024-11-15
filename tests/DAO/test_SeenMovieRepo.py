@@ -359,18 +359,6 @@ class MockDBConnector:
                         user = User(**seenmovie)
                         list_users.append(user)
                 return list_users
-            case """
-            SELECT AVG(vote) AS vote_avg, COUNT(vote) AS vote_count 
-            FROM projet_info.seenmovies
-            WHERE id_movie = %(id_movie)s;
-            """ :
-                id_user = data["id_user"]
-                id_movie = data["id_movie"]
-                vote = data["vote"]
-                for seenmovie in self.db: 
-                    if seenmovie["id_movie"] == id_movie and seenmovie[id_user] == [id_user]:
-                        self.db[seenmovie]["vote"] = vote
-                    if seenmovie["id_movie"]==id_movie and seenmovie["vote"] is not None :
 
 def test_get_by_user_and_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
