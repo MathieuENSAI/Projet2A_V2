@@ -276,11 +276,10 @@ class MockDBConnector:
                         return seenmovie
                 return None
                 
-            case """INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, to_watch_later, watch_count, vote, favorite)
-                VALUES (%(id_user)s, %(id_movie)s, %(seen)s, %(to_watch_later)s, %(watch_count)s, %(vote)s, %(favorite)s)
+            case """INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, to_watch_later, vote, favorite)
+                VALUES (%(id_user)s, %(id_movie)s, %(seen)s, %(to_watch_later)s, %(vote)s, %(favorite)s)
                 ON CONFLICT(id_user, id_movie) DO UPDATE
-                SET watch_count = seenmovies.watch_count + 1,
-                    seen = EXCLUDED.seen,
+                SET seen = EXCLUDED.seen,
                     to_watch_later = EXCLUDED.to_watch_later,
                     vote = EXCLUDED.vote,
                     favorite = EXCLUDED.favorite
@@ -288,8 +287,8 @@ class MockDBConnector:
                 if not data:
                     raise Exception
                 self.db.append({"id_user": data['id_user'], "id_movie" : data['id_movie'], 
-                                "seen": data['seen'], "to_watch_later": data['to_watch_later'],
-                                "watch_count" : data['watch_count'],"vote": data['vote'], "favorite": data['favorite']})
+                                "seen": data['seen'], "to_watch_later": data['to_watch_later']
+                                ,"vote": data['vote'], "favorite": data['favorite']})
                 return(self.db[-1])
             
             case  """SELECT *
@@ -362,8 +361,7 @@ class MockDBConnector:
             case """
             SELECT AVG(vote) AS vote_avg, COUNT(vote) AS vote_count 
             FROM projet_info.seenmovies
-            WHERE id_movie = %(id_movie)s;
-            """ :
+            WHERE id_movie = %(id_movie)s;""" :
                 id_user = data["id_user"]
                 id_movie = data["id_movie"]
                 vote = data["vote"]
@@ -380,19 +378,16 @@ class MockDBConnector:
 
 def test_get_by_user_and_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    db = seenmovierepo.db_connector.db
     seenmovie: SeenMovie = seenmovierepo.get_by_user_and_movie(3,1)
     assert seenmovie is not None
     assert seenmovie.id_user == 3 and seenmovie.id_movie == 1
 
 def test_insert_into_db():
     seenmovierepo = SeenMovieRepo(MockDBConnector())
-    db = seenmovierepo.db_connector.db
     seenmovie: SeenMovie = seenmovierepo.insert_into_db(
         id_user=1, 
         id_movie=4, 
-        seen=True, 
-        watch_count=1, 
+        seen=True,  
         to_watch_later=False, 
         vote=None, 
         favorite=False
@@ -403,7 +398,6 @@ def test_insert_into_db():
     assert seenmovie.seen is True
     assert seenmovie.vote is None 
     assert seenmovie.to_watch_later is False
-    assert seenmovie.watch_count == 1
     assert seenmovie.favorite is False
 
 def test_get_list_seenmovies_by_user():
@@ -441,4 +435,5 @@ def test_get_list_users_by_movie():
 
 def test_note_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    note_movie : int = seenmovierepo.note_movie(id_user=3,id_movie=4,note=8)
+    note_movie : int = seenmovierepo.note_movie(id_user=4,id_movie=1,note=6)
+    assert note_movie == 8

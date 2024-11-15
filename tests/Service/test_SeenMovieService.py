@@ -15,7 +15,7 @@ def test_seen_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     seenmovieservice = SeenMovieService(seenmovierepo)
     db = seenmovierepo.db_connector.db
-    seenmovie : SeenMovie = seenmovieservice.seen_movie(user,movie)
+    seenmovie : SeenMovie = seenmovieservice.seen_movie(user.id_user,movie.id)
     assert seenmovie is not None
     assert seenmovie.__dict__ == db[-1]
     assert seenmovie.id_user == 1
