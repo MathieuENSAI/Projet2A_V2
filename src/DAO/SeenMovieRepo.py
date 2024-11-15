@@ -170,13 +170,12 @@ class SeenMovieRepo:
             INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, favorite, vote)
             VALUES (%(id_user)s, %(id_movie)s, TRUE, FALSE, %(vote)s)
             ON CONFLICT (id_movie, id_user)
-            DO UPDATE SET vote = EXCLUDED.vote
-            SET seen=TRUE;
+            DO UPDATE SET vote = EXCLUDED.vote, seen=TRUE;
             SELECT AVG(vote) AS vote_avg, COUNT(vote) AS vote_count 
             FROM projet_info.seenmovies
             WHERE id_movie = %(id_movie)s;
         """
-        vote_movie= self.db_connector.sql_query(upsert_query, {"id_user": id_user, "id_movie": id_movie, "vote": note}, "none")
+        vote_movie= self.db_connector.sql_query(query, {"id_user": id_user, "id_movie": id_movie, "vote": note}, "one")
         
         return vote_movie if vote_movie else None
     
@@ -189,7 +188,7 @@ class SeenMovieRepo:
             FROM projet_info.seenmovies
             WHERE id_movie = %(id_movie)s;
         """
-        vote_movie = self.db_connector.sql_query(query, {"id_user": id_user, "id_movie": id_movie, "vote": note}, "none")
+        vote_movie = self.db_connector.sql_query(query, {"id_user": id_user, "id_movie": id_movie}, "one")
        
         return vote_movie if vote_movie else None
 

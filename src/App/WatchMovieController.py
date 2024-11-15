@@ -64,3 +64,12 @@ def note_movie(
     except Exception:
         raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
     return movie
+
+@watch_movie_route.put("/delete-movie-note", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+def delete_note_movie(movie_id:int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    user_id = jwt_service.validate_user_jwt(credentials.credentials)
+    movie = note_service.delete_note_movie(user_id, movie_id)
+    if not movie :
+        raise HTTPException(status_code=404, detail="Movie with this id does not exist.")
+    else:
+        return movie
