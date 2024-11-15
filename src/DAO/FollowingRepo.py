@@ -25,6 +25,14 @@ class FollowingRepo:
             return None
         return APIUser(id=following_add["id_user"], username=following_add["username"])
     
+    def is_user_follow(self, id_user:int, id_following:int):
+        query="""
+            SELECT * FROM projet_info.userfollowing
+            WHERE id_user = %s AND id_following=%s;
+        """
+        following = self.db_connector.sql_query(query,(id_user, id_following),"one")
+        return  True if following else False
+
     def get_all_following(self, id_user: int) -> list[APIUser]:
         query = """
             SELECT * FROM projet_info.user U
