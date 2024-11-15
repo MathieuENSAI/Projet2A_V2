@@ -50,7 +50,7 @@ class SeenMovieService:
         else:
             print("Not found in the database.")
     
-    def watchlist(self, id_user : int):
+    def watchlist(self, id_user : int) -> list[Movie]:
         list_movies = self.seen_movierepo.get_watchlist_user(id_user)
         if list_movies:
             for movie in list_movies:
@@ -58,15 +58,15 @@ class SeenMovieService:
         else:
             return None
     
-    def seenmovies_user(self, id_user: int):
-        list_movies = self.seen_movierepo.get_watchlist_user(id_user)
+    def seenmovies_user(self, id_user: int)-> list[Movie]:
+        list_movies = self.seen_movierepo.get_list_seenmovies_by_user(id_user)
         if list_movies :
             for movie in list_movies:
                 return movie
         else:
             return None
     
-    def movies_seen_by(self, id_movie : int):
+    def movies_seen_by(self, id_movie : int) -> list[Movie]:
         list_users = self.seen_movierepo.get_list_users_by_movie(id_movie)
         if list_users:
             for user in list_users:
@@ -74,7 +74,7 @@ class SeenMovieService:
         else:
             return None
 
-    def favorite_movie_user(self, id_user : int):
+    def favorite_movie_user(self, id_user : int) -> list[User]:
         list_movies = self.seen_movierepo.get_list_favorite_movie(id_user)
         if list_movies:
             for movie in list_movies:

@@ -372,9 +372,6 @@ class MockDBConnector:
                         self.db[seenmovie]["vote"] = vote
                     if seenmovie["id_movie"]==id_movie and seenmovie["vote"] is not None :
 
-                else:
-                    return None
-
 def test_get_by_user_and_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     db = seenmovierepo.db_connector.db
