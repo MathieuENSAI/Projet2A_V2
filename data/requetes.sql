@@ -1,1 +1,0 @@
-SELECT * from projet_info.User WHERE id_user=2;
