@@ -9,7 +9,7 @@ import logging
 following_route = APIRouter(prefix="/follow", tags=["User Following"])
 
 @following_route.post("/", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
-def watch_movie(following_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+def add_following(following_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     
     following = following_service.add_following(user_id, following_id)
