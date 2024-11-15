@@ -57,19 +57,8 @@ class SeenMovieRepo:
                 "none"
             )
         return True if raw_update else False
-
     
-    def delete_from_db(self, seenmovie : SeenMovie):
-        raw_delete = self.db_connector.sql_query(
-            """DELETE FROM projet_info.seenmovies
-               WHERE id_user = %(id_user)s
-               AND  id_movie = %(id_movie)s""",
-               {"id_user" : seenmovie.id_user,
-                "id_movie" : seenmovie.id_movie}
-        )
-        return raw_delete.rowcount > 0
-        
-    def get_list_seenmovies_by_user(self, id_user : int) -> list[Movie]|None:
+    def get_movies_seen_by_user(self, id_user : int) -> list[Movie]|None:
         """ Returns the list of movies id seen by a user"""
         raw_movies = self.db_connector.sql_query(
             """SELECT *
@@ -81,19 +70,12 @@ class SeenMovieRepo:
             """,
             {"id_user": id_user}, "all",
         )
-        list_movies = []
-
         if raw_movies:
-            for movie in raw_movies:
-                if isinstance(movie, Movie):
-                    list_movies.append(movie)
-                elif isinstance(movie, dict):
-                    list_movies.append(Movie(id=movie["id_movie"], **movie))
-            return list_movies
+            return [Movie(**raw_movie) for raw_movie in raw_movies]
         else:
             return None
         
-    def get_watchlist_user(self, id_user : int) -> list[Movie]|None:
+    def get_watchlist_movie(self, id_user : int) -> list[Movie]|None:
         """ Returns the movies a user wanna see in the future"""
         raw_movies = self.db_connector.sql_query(
             """SELECT *
@@ -105,18 +87,12 @@ class SeenMovieRepo:
             """,
             {"id_user": id_user}, "all",
         )
-        list_movies = []
         if raw_movies:
-            for movie in raw_movies:
-                if isinstance(movie, Movie):
-                    list_movies.append(movie)
-                elif isinstance(movie, dict):
-                    list_movies.append(Movie(id=movie["id_movie"], **movie))
-            return list_movies
+            return [Movie(**raw_movie) for raw_movie in raw_movies]
         else:
             return None
         
-    def get_list_favorite_movie(self, id_user : int) -> list[Movie]|None:
+    def get_user_favorites_movie(self, id_user : int) -> list[Movie]|None:
         """ Returns the list of favorite movies of an user"""
         raw_movies = self.db_connector.sql_query(
             """SELECT *
@@ -128,19 +104,12 @@ class SeenMovieRepo:
             """,
             {"id_user": id_user}, "all",
         )
-        list_movies = []
-
         if raw_movies:
-            for movie in raw_movies:
-                if isinstance(movie, Movie):
-                    list_movies.append(movie)
-                elif isinstance(movie, dict):
-                    list_movies.append(Movie(id=movie["id_movie"], **movie))
-            return list_movies
+            return [Movie(**raw_movie) for raw_movie in raw_movies]
         else:
             return None
         
-    def get_list_users_by_movie(self, id_movie : int) -> list[User]|None:
+    def get_users_who_watch_movie(self, id_movie : int) -> list[User]|None:
         """ Returns the list of users who have seen a movie"""
         raw_users = self.db_connector.sql_query(
             """SELECT *
@@ -152,15 +121,8 @@ class SeenMovieRepo:
             """,
             {"id_movie": id_movie}, "all",
         )
-        list_users = []
-
         if raw_users:
-            for user in raw_users:
-                if isinstance(user, User):
-                    list_users.append(user)
-                elif isinstance(user, dict):
-                    list_users.append(**User)
-            return list_users
+            return [PIUser(**raw_user) for raw_user in raw_users]
         else:
             return None
     

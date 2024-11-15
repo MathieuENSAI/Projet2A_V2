@@ -9,13 +9,13 @@ from src.DAO.SeenMovieRepo import SeenMovieRepo
 if TYPE_CHECKING:
     from src.Model.SeenMovie import SeenMovie
 
-def test_seen_movie():
+def test_watch_movie():
     user = User(id_user=1,username="Emile",pass_word="Emilemdp", salt=None)
     movie = Movie(id=5)
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     seenmovieservice = SeenMovieService(seenmovierepo)
     db = seenmovierepo.db_connector.db
-    seenmovie : SeenMovie = seenmovieservice.seen_movie(user.id_user,movie.id)
+    seenmovie : SeenMovie = seenmovieservice.watch_movie(user.id_user,movie.id)
     assert seenmovie is not None
     assert seenmovie.__dict__ == db[-1]
     assert seenmovie.id_user == 1
@@ -59,30 +59,30 @@ def test_add_to_favoritelist_new():
 def test_watchlist_exist():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     seenmovieservice = SeenMovieService(seenmovierepo)
-    list_movies : list[Movie] = seenmovieservice.watchlist(id_user=1)
+    list_movies : list[Movie] = seenmovieservice.user_watchlist(id_user=1)
     assert list_movies[0] == Movie(id=5)
     assert list_movies[1] == Movie(id=6)
 
-def test_favorite_movie_user_exist():
+def test_user_favorites_movie_exist():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     seenmovieservice = SeenMovieService(seenmovierepo)
-    list_movies : list[Movie] = seenmovieservice.favorite_movie_user(id_user=4)
+    list_movies : list[Movie] = seenmovieservice.user_favorites_movie(id_user=4)
     assert list_movies is not None
     assert list_movies[0] == Movie(id=1)
 
-def test_seenmovies_user_exist():
+def test_user_seenmovies_exist():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     seenmovieservice = SeenMovieService(seenmovierepo)
-    list_movies : list[Movie] = seenmovieservice.seenmovies_user(id_user=4)
+    list_movies : list[Movie] = seenmovieservice.user_seenmovies(id_user=4)
     assert list_movies is not None
     assert list_movies[0] == Movie(id=3)
     assert list_movies[1] == Movie(id=2)
     assert list_movies[2] == Movie(id=1)
 
-def test_movie_seen_by():
+def test_who_watch_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     seenmovieservice = SeenMovieService(seenmovierepo)
-    users : list[User] = seenmovieservice.movie_seen_by(1)
+    users : list[User] = seenmovieservice.who_watch_movie(1)
     assert users is not None
     assert users[0].id_user == 3
     assert users[0].username == ""

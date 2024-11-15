@@ -387,7 +387,7 @@ def test_insert_into_db():
     assert seenmovie.to_watch_later is False
     assert seenmovie.favorite is False
 
-def test_get_list_seenmovies_by_user():
+def test_get_movies_seen_by_user():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     movies: list[Movie] = seenmovierepo.get_list_seenmovies_by_user(4)
     assert movies is not None
@@ -402,15 +402,15 @@ def test_get_watchlist_user():
     assert movies[0] == Movie(id=5)
     assert movies[1] == Movie(id=6)
 
-def test_get_list_favorite_movie():
+def test_get_user_favorites_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    movies: list[Movie] = seenmovierepo.get_list_favorite_movie(4)
+    movies: list[Movie] = seenmovierepo.get_user_favorites_movie(4)
     assert movies is not None
     assert movies[0] == Movie(id=1)
 
-def test_get_list_users_by_movie():
+def test_get_users_who_watch_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    users : list[User] = seenmovierepo.get_list_users_by_movie(1)
+    users : list[User] = seenmovierepo.get_users_who_watch_movie(1)
     assert users is not None
     assert users[0].id_user == 3
     assert users[0].username == ""

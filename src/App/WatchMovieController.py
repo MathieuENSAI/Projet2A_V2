@@ -17,7 +17,7 @@ def watch_movie(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentia
     if movie is None:
         raise HTTPException(status_code=404, detail="Movie with this id does not exist.")
     try:
-        seen_movie = seen_movie_service.seen_movie(user_id, movie_id)
+        seen_movie = seen_movie_service.watch_movie(user_id, movie_id)
     except Exception:
         raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
     return movie
