@@ -23,7 +23,6 @@ class SeenMovieService:
                 id_user=id_user,
                 id_movie=id_movie,
                 seen=False,
-                watch_count=0,
                 to_watch_later=True)
         elif not seenmovie.to_watch_later:
             seenmovie.to_watch_later = True
@@ -54,31 +53,27 @@ class SeenMovieService:
     def watchlist(self, id_user : int) -> list[Movie]:
         list_movies = self.seen_movierepo.get_watchlist_user(id_user)
         if list_movies:
-            for movie in list_movies:
-                return movie
+            return list_movies
         else:
             return None
     
     def seenmovies_user(self, id_user: int)-> list[Movie]:
         list_movies = self.seen_movierepo.get_list_seenmovies_by_user(id_user)
         if list_movies :
-            for movie in list_movies:
-                return movie
+            return list_movies
         else:
             return None
     
-    def movies_seen_by(self, id_movie : int) -> list[Movie]:
+    def movie_seen_by(self, id_movie : int) -> list[Movie]:
         list_users = self.seen_movierepo.get_list_users_by_movie(id_movie)
         if list_users:
-            for user in list_users:
-                return user
+            return list_users
         else:
             return None
 
     def favorite_movie_user(self, id_user : int) -> list[User]:
         list_movies = self.seen_movierepo.get_list_favorite_movie(id_user)
         if list_movies:
-            for movie in list_movies:
-                return movie
+            return list_movies
         else:
             return None
