@@ -13,7 +13,7 @@ class FollowingService:
         return self.following_repo.add_following(id_user, id_following)
     
     def is_user_follow(id_user:int, id_following:int):
-        return self.is_user_follow(id_user, id_following)
+        return self.following_repo.is_user_follow(id_user, id_following)
     
     def get_all_following(self, user_id : int) -> list[User] :
         return self.following_repo.get_all_following(user_id)
