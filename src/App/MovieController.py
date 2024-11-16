@@ -55,8 +55,9 @@ def get_movie_by_genre(genre: str, credentials: Annotated[HTTPAuthorizationCrede
         raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
 
 class ReleasePeriod(BaseModel): 
-    start: date = Field(title="start date")
+    start: date
     end: date 
+
 @movie_router.get("/search/release_period", status_code=status.HTTP_200_OK)
 def get_movie_by_release_period(release_period:ReleasePeriod=Depends(ReleasePeriod)):
     try:
