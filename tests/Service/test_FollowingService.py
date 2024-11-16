@@ -1,52 +1,61 @@
 import pytest
 from unittest.mock import MagicMock
 from src.DAO.FollowingRepo import FollowingRepo
-from src.DAO.UserRepo import UserRepo
-from src.Model.User import User
+from src.Model.APIUser import APIUser
 from src.Service.FollowingService import FollowingService  
 
+"""
+Les tests du service FollowingService sont effectués pour vérifier que les méthodes services
+appellent correctement les méthodes DAO de FollowingRepo et que les résultats renvoyés par 
+les méthodes services sont effectivement ceux renvoyés par les méthodes DAO.
+
+"""
 @pytest.fixture
 def following_service():
-    # Création des mocks pour FollowingRepo et UserRepo
+    """ Création de mocks pour FollowingRepo"""
     following_repo_mock = MagicMock(spec=FollowingRepo)
-    user_repo_mock = MagicMock(spec=UserRepo)
-    # Instanciation de FollowingService avec les mocks
-    return FollowingService(following_repo=following_repo_mock, user_repo=user_repo_mock), following_repo_mock, user_repo_mock
+    return FollowingService(following_repo=following_repo_mock), following_repo_mock
 
+def test_add_following(following_service):
+    service, following_repo_mock = following_service
+    resultat = service.add_following(1, 2)
+    following_repo_mock.add_following.assert_called_once_with(1, 2)
+    assert resultat == following_repo_mock.add_following.return_value
+
+def test_stop_follow(following_service):
+    service, following_repo_mock = following_service
+    resultat = service.stop_follow(1, 2)
+    following_repo_mock.delete_following.assert_called_once_with(1, 2)
+    assert resultat == following_repo_mock.delete_following.return_value
+
+def test_is_user_follow(following_service):
+    service, following_repo_mock = following_service
+    resultat = service.is_user_follow(1, 2)
+    following_repo_mock.is_user_follow.assert_called_once_with(1, 2)
+    assert resultat == following_repo_mock.is_user_follow.return_value
+    
 def test_get_all_following(following_service):
-    service, following_repo_mock, _ = following_service
-    # Simuler un retour pour la méthode get_all_following
-    following_repo_mock.get_all_following.return_value = [
-        User(id=2, username="user2"),
-        User(id=3, username="user3")
-    ]
-    
+    service, following_repo_mock = following_service
     result = service.get_all_following(1)
-    
-    # Vérifier que la méthode de FollowingRepo a bien été appelée avec le bon user_id
     following_repo_mock.get_all_following.assert_called_once_with(1)
-    # Vérifier le résultat
-    assert result == [
-        User(id=2, username="user2"),
-        User(id=3, username="user3")
-    ]
+    assert result == following_repo_mock.get_all_following.return_value
+    
+def test_get_following_seen_movies(following_service):
+    service, following_repo_mock = following_service
+    result = service.get_following_seen_movies(2)
+    following_repo_mock.get_following_seen_movies.assert_called_once_with(2)
+    assert result == following_repo_mock.get_following_seen_movies.return_value
 
-def test_add_scout(following_service):
-    service, following_repo_mock, _ = following_service
-    user = User(id=1, username="user1")
-    scout = User(id=2, username="scoutuser")
-    
-    service.add_scout(user, scout)
-    
-    # Vérifier que la méthode add_scout de FollowingRepo a bien été appelée avec les bons arguments
-    following_repo_mock.add_scout.assert_called_once_with(user, scout)
+def test_get_movies_seen_together(following_service):
+    service, following_repo_mock = following_service
+    result = service.get_movies_seen_together(1, 2)
+    following_repo_mock.get_movies_seen_together.assert_called_once_with(1, 2)
+    assert result == following_repo_mock.get_movies_seen_together.return_value
 
-def test_remove_scout(following_service):
-    service, following_repo_mock, _ = following_service
-    user = User(id=1, username="user1")
-    scout = User(id=2, username="scoutuser")
-    
-    service.remove_scout(user, scout)
-    
-    # Vérifier que la méthode remove_scout de FollowingRepo a bien été appelée avec les bons arguments
-    following_repo_mock.remove_scout.assert_called_once_with(user, scout)
+def test_get_following_movies_collection(following_service):
+    service, following_repo_mock = following_service
+    result = service.get_following_movies_collection(1, 2)
+    following_repo_mock.get_following_seen_movies.assert_called_once_with(2)
+    following_repo_mock.get_movies_seen_together.assert_called_once_with(1, 2)
+    assert result == {"following_seen_movies": following_repo_mock.get_following_seen_movies.return_value,
+        "movies_seen_together": following_repo_mock.get_movies_seen_together.return_value}

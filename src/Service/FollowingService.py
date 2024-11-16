@@ -11,6 +11,7 @@ class FollowingService:
 
     def add_following(self, id_user: int, id_following: int) :
         return self.following_repo.add_following(id_user, id_following)
+    
     def stop_follow(self, id_user:int, id_following:int):
         return self.following_repo.delete_following(id_user, id_following)
     
