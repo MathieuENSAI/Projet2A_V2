@@ -34,7 +34,7 @@ def add_to_watchlist(movie_id: int, credentials: Annotated[HTTPAuthorizationCred
         raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
     return movie
 
-@watch_movie_route.put("/remove-from-user-watch-lists", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+@watch_movie_route.put("/remove-from-user-watch-lists/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def remove_from_user_watchlists(movie_id:int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     return seen_movie_service.remote_from_user_watchlists(user_id, movie_id)
@@ -51,7 +51,7 @@ def add_to_favoritelist(movie_id: int, credentials: Annotated[HTTPAuthorizationC
         raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
     return movie
 
-@watch_movie_route.put("/remove-from-user-favorites", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+@watch_movie_route.put("/remove-from-user-favorites/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def remove_from_user_favorites(movie_id:int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     return seen_movie_service.remote_from_user_favorites(user_id, movie_id)
@@ -60,7 +60,7 @@ class RatingMovie(BaseModel):
     movie_id:int
     note: conint(ge=0, le=10) 
 
-@watch_movie_route.post("/note-movie/", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+@watch_movie_route.post("/note-movie", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def note_movie(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())],
     rating_movie: RatingMovie=Depends(RatingMovie)
@@ -75,7 +75,7 @@ def note_movie(
         raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
     return movie
 
-@watch_movie_route.put("/remove-movie-note", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+@watch_movie_route.put("/remove-movie-note/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def remove_note_movie(movie_id:int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     movie = note_service.remove_note_movie(user_id, movie_id)

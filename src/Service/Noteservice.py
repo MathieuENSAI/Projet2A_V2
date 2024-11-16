@@ -17,7 +17,7 @@ class NoteService :
         return None
     
     def remove_note_movie(self, id_user:int, id_movie:int):
-        vote_movie =self.seen_movie_repo.delete_note_movie(id_user, id_movie)
+        vote_movie =self.seen_movie_repo.remove_note_movie(id_user, id_movie)
         if vote_movie:
             movie = self.movie_repo.update_vote(id_movie, vote_movie["vote_avg"], vote_movie["vote_count"])
             return movie

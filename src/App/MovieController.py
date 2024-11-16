@@ -28,7 +28,7 @@ def get_movie_by_id(movie_id: int, credentials: Annotated[HTTPAuthorizationCrede
         logging.error(f"Error occurred: {e}")
         raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
 
-@movie_router.get("/search/title", status_code=status.HTTP_200_OK)
+@movie_router.get("/search/title/{title}", status_code=status.HTTP_200_OK)
 def get_movie_by_title(title: str, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer(partial_access_allowed=True))]):
     try:
         user_id = jwt_service.validate_user_jwt(credentials.credentials)  
@@ -41,7 +41,7 @@ def get_movie_by_title(title: str, credentials: Annotated[HTTPAuthorizationCrede
         logging.error(f"Error occurred: {e}")
         raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
 
-@movie_router.get("/search/genre", status_code=status.HTTP_200_OK)
+@movie_router.get("/search/genre/{genre}", status_code=status.HTTP_200_OK)
 def get_movie_by_genre(genre: str, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer(partial_access_allowed=True))]):
     try:
         user_id = jwt_service.validate_user_jwt(credentials.credentials)  
@@ -55,18 +55,8 @@ def get_movie_by_genre(genre: str, credentials: Annotated[HTTPAuthorizationCrede
         raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
 
 class ReleasePeriod(BaseModel): 
-    start: date = Field(
-        ..., 
-        description="start date",
-        example="2024-01-01",  # Exemple d'une date valide
-        format="date"
-    )
-    end: date = Field(
-        ..., 
-        description="end date",
-        example="2024-12-31",  # Exemple d'une date valide
-        format="date"
-    )
+    start: date = Field(title="start date")
+    end: date 
 @movie_router.get("/search/release_period", status_code=status.HTTP_200_OK)
 def get_movie_by_release_period(release_period:ReleasePeriod=Depends(ReleasePeriod)):
     try:
@@ -76,7 +66,7 @@ def get_movie_by_release_period(release_period:ReleasePeriod=Depends(ReleasePeri
         logging.error(f"Error occurred: {e}")
         raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
 
-@movie_router.get("/search/lastest_released", status_code=status.HTTP_200_OK)
+@movie_router.get("/search/lastest_released/{number}", status_code=status.HTTP_200_OK)
 def get_lastest_released(number:int):
     try:
         movies = movie_service.get_lastest_released(number)
