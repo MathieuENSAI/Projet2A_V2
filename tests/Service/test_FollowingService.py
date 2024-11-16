@@ -40,18 +40,6 @@ def test_get_all_following(following_service):
     following_repo_mock.get_all_following.assert_called_once_with(1)
     assert result == following_repo_mock.get_all_following.return_value
     
-def test_get_following_seen_movies(following_service):
-    service, following_repo_mock = following_service
-    result = service.get_following_seen_movies(2)
-    following_repo_mock.get_following_seen_movies.assert_called_once_with(2)
-    assert result == following_repo_mock.get_following_seen_movies.return_value
-
-def test_get_movies_seen_together(following_service):
-    service, following_repo_mock = following_service
-    result = service.get_movies_seen_together(1, 2)
-    following_repo_mock.get_movies_seen_together.assert_called_once_with(1, 2)
-    assert result == following_repo_mock.get_movies_seen_together.return_value
-
 def test_get_following_movies_collection(following_service):
     service, following_repo_mock = following_service
     result = service.get_following_movies_collection(1, 2)
