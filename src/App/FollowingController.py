@@ -17,10 +17,21 @@ def add_following(following_id: int, credentials: Annotated[HTTPAuthorizationCre
         raise HTTPException(status_code=404, detail=f"You can not follow user with id[{following_id}]. check and try adain")
     return {"following":following} |following_service.get_following_movies_collection(user_id, following_id)
 
+@following_route.delete("/stop-follow",  status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+def stop_follow(following_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    user_id = jwt_service.validate_user_jwt(credentials.credentials)
+    return following_service.stop_follow(user_id, following_id)
+
+@following_route.get("/all-following",  status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+def all_following(credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    user_id = jwt_service.validate_user_jwt(credentials.credentials)
+    return following_service.get_all_following(user_id)
+
 @following_route.get("/following-movies-collection",  status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def get_following_movies_collection(following_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     if following_service.is_user_follow(user_id, following_id):
         return following_service.get_following_movies_collection(user_id, following_id)
     else:
-       raise HTTPException(status_code=404, detail=f"You can not get movies collections from this user.") 
+       raise HTTPException(status_code=404, detail=f"You can not get movies collections from this user.")
+

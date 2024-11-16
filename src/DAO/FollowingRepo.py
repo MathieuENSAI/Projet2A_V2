@@ -25,6 +25,14 @@ class FollowingRepo:
             return None
         return APIUser(id=following_add["id_user"], username=following_add["username"])
     
+    def delete_following(self, id_user:int, id_following:int):
+        raw_delete = self.db_connector.sql_query(
+            """DELETE FROM projet_info.UserFollowing WHERE id_user=%s AND id_following=%s;""",
+            (id_user, id_following), "none"
+
+        )
+        return True if raw_delete else False
+    
     def is_user_follow(self, id_user:int, id_following:int):
         query="""
             SELECT * FROM projet_info.userfollowing
@@ -72,20 +80,7 @@ class FollowingRepo:
     
     def get_top_movies_liked_by_all_following(id_user:int, top:int):
         return 0
-
-    def remove_scout(self, user: User) -> User:
-        raw_modified_user = self.db_connector.sql_query(
-            """
-            UPDATE users
-            SET scout = NULL
-            WHERE id = %(id)s
-            RETURNING *;
-            """,
-            {"id": user.id},
-            "one",
-        )
-        return User(**raw_modified_user)
-
+        
 if __name__ == "__main__" :
     import dotenv
     dotenv.load_dotenv()

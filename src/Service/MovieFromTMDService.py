@@ -57,7 +57,7 @@ class MovieFromTMDService:
 
     def get_lastest_released(self, number:int)-> list[Movie]:
         payload = {"sort_by" : "primary_release_date.desc"}
-        return self.get_by_params(payload)
+        return self.get_by_params(payload)[:number]
         
     def get_id_name_genre(self)-> list[Genre]:
         url = "https://api.themoviedb.org/3/genre/movie/list?language=en"

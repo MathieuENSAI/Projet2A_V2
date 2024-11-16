@@ -58,6 +58,35 @@ class SeenMovieRepo:
             )
         return True if raw_update else False
     
+    def remote_from_user_favorites(self, id_user:int, id_movie:int):
+        raw_update = self.db_connector.sql_query(
+        """UPDATE projet_info.seenmovies
+           SET favorite = FALSE
+           WHERE id_user = %(id_user)s AND id_movie = %(id_movie)s;
+        """,
+            {
+                "id_user": id_user,
+                "id_movie": id_movie
+                },
+                "none"
+            )
+        return True if raw_update else False
+    
+    def remote_from_user_watchlists(self, id_user:int, id_movie:int):
+        raw_update = self.db_connector.sql_query(
+        """UPDATE projet_info.seenmovies
+           SET to_watch_later = FALSE
+           WHERE id_user = %(id_user)s AND id_movie = %(id_movie)s;
+        """,
+            {
+                "id_user": id_user,
+                "id_movie": id_movie
+                },
+                "none"
+            )
+        return True if raw_update else False
+    
+    
     def get_movies_seen_by_user(self, id_user : int) -> list[Movie]|None:
         """ Returns the list of movies id seen by a user"""
         raw_movies = self.db_connector.sql_query(
@@ -141,7 +170,7 @@ class SeenMovieRepo:
         
         return vote_movie if vote_movie else None
     
-    def delete_note_movie(self, id_user:int, id_movie:int):
+    def remove_note_movie(self, id_user:int, id_movie:int):
         query = """
         UPDATE projet_info.SeenMovies
         SET vote=NULL

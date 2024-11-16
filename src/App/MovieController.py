@@ -5,6 +5,8 @@ from .JWTBearer import JWTBearer
 from src.Model.Movie import Movie
 from .init_app import jwt_service, movie_service
 import logging
+from pydantic import BaseModel, Field
+from datetime import date
 
 movie_router = APIRouter(prefix="/movies", tags=["Movies"])
 
@@ -52,10 +54,23 @@ def get_movie_by_genre(genre: str, credentials: Annotated[HTTPAuthorizationCrede
         logging.error(f"Error occurred: {e}")
         raise HTTPException(status_code=400, detail=f"Invalid request: {e}") from e
 
+class ReleasePeriod(BaseModel): 
+    start: date = Field(
+        ..., 
+        description="start date",
+        example="2024-01-01",  # Exemple d'une date valide
+        format="date"
+    )
+    end: date = Field(
+        ..., 
+        description="end date",
+        example="2024-12-31",  # Exemple d'une date valide
+        format="date"
+    )
 @movie_router.get("/search/release_period", status_code=status.HTTP_200_OK)
-def get_movie_by_release_period(start_release_date:str, end_release_date:str):
+def get_movie_by_release_period(release_period:ReleasePeriod=Depends(ReleasePeriod)):
     try:
-        movies = movie_service.get_by_release_period(start_release_date, end_release_date)
+        movies = movie_service.get_by_release_period(release_period.start, release_period.end)
         return movies
     except Exception as e:
         logging.error(f"Error occurred: {e}")

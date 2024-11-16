@@ -28,6 +28,9 @@ class SeenMovieService:
             seenmovie.to_watch_later = True
             return self.seen_movierepo.update_db(seenmovie)
         return True
+    
+    def remote_from_user_watchlists(self, id_user:int, id_movie:int):
+        return self.seen_movierepo.remote_from_user_watchlists(id_user, id_movie)
 
     def add_to_favoritelist(self, id_user:int, id_movie:int) -> SeenMovie:
         seenmovie = self.seen_movierepo.get_by_user_and_movie(id_user, id_movie)
@@ -42,6 +45,9 @@ class SeenMovieService:
             return self.seen_movierepo.update_db(seenmovie)
         return True
     
+    def remote_from_user_favorites(self, id_user:int, id_movie:int):
+        return self.seen_movierepo.remote_from_user_favorites(id_user, id_movie)
+    
     def user_watchlist(self, id_user : int) -> list[Movie]:
         list_movies = self.seen_movierepo.get_watchlist_movie(id_user)
         if list_movies:
@@ -55,7 +61,7 @@ class SeenMovieService:
             return list_movies
         else:
             return None
-            
+
     def user_favorites_movie(self, id_user : int) -> list[User]:
         list_movies = self.seen_movierepo.get_user_favorites_movie(id_user)
         if list_movies:
