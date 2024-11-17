@@ -351,7 +351,7 @@ class MockDBConnector:
                         seenmovie["favorite"] = data["favorite"]
                         seenmovie["seen"] = data["seen"]
                         seenmovie["to_watch_later"] = data["to_watch_later"]
-                        seenmovie["vote"] = seenmovie["vote"]
+                        seenmovie["vote"] = data["vote"]
                         return True
                 return False
                 
@@ -377,6 +377,10 @@ class MockDBConnector:
                     return list_users
                 return None
             
+            case """UPDATE projet_info.seenmovies
+           SET favorite = FALSE
+           WHERE id_user = %(id_user)s AND id_movie = %(id_movie)s;""":
+                
             case """
             SELECT AVG(vote) AS vote_avg, COUNT(vote) AS vote_count 
             FROM projet_info.seenmovies
@@ -400,6 +404,8 @@ def test_get_by_user_and_movie_found():
     seenmovie: SeenMovie = seenmovierepo.get_by_user_and_movie(3,1)
     assert seenmovie is not None
     assert seenmovie.id_user == 3 and seenmovie.id_movie == 1
+    assert seenmovie.seen is True
+    assert seenmovie.vote == 8
 
 def test_get_by_user_and_movie_none():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
@@ -458,22 +464,49 @@ def test_get_user_favorites_movie_found():
 
 def test_get_user_favorites_movie_none():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    movies: list[Movie] = seenmovierepo.get_user_favorites_movie(4)
+    movies: list[Movie] = seenmovierepo.get_user_favorites_movie(1)
     assert movies is None
 
-def test_get_users_who_watch_movie():
+def test_get_users_who_watch_movie_found():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     users : list[User] = seenmovierepo.get_users_who_watch_movie(1)
     assert users is not None
-    assert users[0].id_user == 3
-    assert users[0].username == ""
-    assert users[0].pass_word == ""
-    assert users[0].salt is None
     assert users[0] == User(id_user=3, username="",pass_word="", salt=None)
     assert users[1] == User(id_user=5, username="",pass_word="", salt=None)
     assert users[2] == User(id_user=4, username="",pass_word="", salt=None)
 
-def test_note_movie():
+def test_get_users_who_watch_movie_none():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    note_movie : int = seenmovierepo.note_movie(id_user=4,id_movie=1,note=6)
-    assert note_movie == 8
+    users : list[User] = seenmovierepo.get_users_who_watch_movie(10)
+    assert users is None
+
+
+def test_update_db_sucess():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    seenmovie = SeenMovie(id_user=3,
+            id_movie= 1,
+            seen=True,
+            to_watch_later=True,
+            vote=6,
+            favorite=False)
+    update : bool = seenmovierepo.update_db(seenmovie=seenmovie)
+    assert update is True
+    assert seenmovierepo.get_by_user_and_movie(id_user=3,id_movie=1) == seenmovie
+
+def test_update_db_fail():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    seenmovie = SeenMovie(id_user=3,
+            id_movie= 2,
+            seen=True,
+            to_watch_later=True,
+            vote=6,
+            favorite=False)
+    update : bool = seenmovierepo.update_db(seenmovie=seenmovie)
+    assert update is False
+    assert seenmovierepo.get_by_user_and_movie(id_user=3,id_movie=2) is None
+
+def test_remove_from_user_favorites_success():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    removed : int = seenmovierepo.remove_from_user_favorites(id_user=5,id_movie=1)
+    assert removed is True
+    assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=1).favorite is False

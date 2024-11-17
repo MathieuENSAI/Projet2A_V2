@@ -58,12 +58,11 @@ class SeenMovieRepo:
             )
         return True if raw_update else False
     
-    def remote_from_user_favorites(self, id_user:int, id_movie:int):
+    def remove_from_user_favorites(self, id_user:int, id_movie:int):
         raw_update = self.db_connector.sql_query(
         """UPDATE projet_info.seenmovies
            SET favorite = FALSE
-           WHERE id_user = %(id_user)s AND id_movie = %(id_movie)s;
-        """,
+           WHERE id_user = %(id_user)s AND id_movie = %(id_movie)s;""",
             {
                 "id_user": id_user,
                 "id_movie": id_movie
@@ -72,7 +71,7 @@ class SeenMovieRepo:
             )
         return True if raw_update else False
     
-    def remote_from_user_watchlists(self, id_user:int, id_movie:int):
+    def remove_from_user_watchlists(self, id_user:int, id_movie:int):
         raw_update = self.db_connector.sql_query(
         """UPDATE projet_info.seenmovies
            SET to_watch_later = FALSE
