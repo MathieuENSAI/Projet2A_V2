@@ -380,24 +380,65 @@ class MockDBConnector:
             case """UPDATE projet_info.seenmovies
            SET favorite = FALSE
            WHERE id_user = %(id_user)s AND id_movie = %(id_movie)s;""":
-                
+                if not data:
+                    raise Exception
+                id_user = data["id_user"]
+                id_movie = data["id_movie"]
+                for seenmovie in self.db:
+                    if seenmovie["id_user"] == id_user and seenmovie["id_movie"] == id_movie:
+                        seenmovie["favorite"] = False
+                        return True
+                return False
+            
+            case """UPDATE projet_info.seenmovies
+           SET to_watch_later = FALSE
+           WHERE id_user = %(id_user)s AND id_movie = %(id_movie)s;""":
+                if not data:
+                    raise Exception
+                id_user = data["id_user"]
+                id_movie = data["id_movie"]
+                for seenmovie in self.db:
+                    if seenmovie["id_user"] == id_user and seenmovie["id_movie"] == id_movie:
+                        seenmovie["to_watch_later"] = False
+                        return True
+                return False
+                    
             case """
+            INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, favorite, vote, to_watch_later)
+            VALUES (%(id_user)s, %(id_movie)s, TRUE, FALSE, %(vote)s, FALSE)
+            ON CONFLICT (id_movie, id_user)
+            DO UPDATE SET vote = EXCLUDED.vote, seen=TRUE;
             SELECT AVG(vote) AS vote_avg, COUNT(vote) AS vote_count 
             FROM projet_info.seenmovies
             WHERE id_movie = %(id_movie)s;""" :
                 id_user = data["id_user"]
                 id_movie = data["id_movie"]
                 vote = data["vote"]
-                note_sum = 0
-                nb_film=0
-                for seenmovie in self.db: 
-                    if seenmovie["id_movie"] == id_movie and seenmovie[id_user] == [id_user]:
-                        self.db[seenmovie]["vote"] = vote
-                    if seenmovie["id_movie"]==id_movie and seenmovie["vote"] is not None :
-                        note_sum += seenmovie["vote"]
-                        nb_film+=1
-                return note_sum/nb_film
 
+                note_sum = 0
+                nb_film = 0
+                movie_found = False 
+
+                for seenmovie in self.db:
+                    if seenmovie["id_user"] == id_user and seenmovie["id_movie"] == id_movie:
+                        seenmovie["vote"] = vote
+                        seenmovie["seen"] = True
+                        movie_found = True
+                    elif seenmovie["id_movie"] == id_movie and seenmovie["vote"] is not None:
+                        note_sum += seenmovie["vote"]
+                        nb_film += 1
+
+                if not movie_found:
+                    self.db.append({"id_user": id_user, "id_movie": id_movie, "seen": True, "vote": vote, "favorite": False, "to_watch_later":False})
+                    note_sum += vote
+                    nb_film += 1
+
+                if nb_film > 0:
+                    return note_sum / nb_film
+                else:
+                    return None 
+
+                
 
 def test_get_by_user_and_movie_found():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
@@ -510,3 +551,39 @@ def test_remove_from_user_favorites_success():
     removed : int = seenmovierepo.remove_from_user_favorites(id_user=5,id_movie=1)
     assert removed is True
     assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=1).favorite is False
+
+def test_remove_from_user_favorites_fail():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    removed : int = seenmovierepo.remove_from_user_favorites(id_user=5,id_movie=5)
+    assert removed is False
+    assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=5) is None
+
+def test_remove_from_user_watchlist_success():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    removed : int = seenmovierepo.remove_from_user_watchlist(id_user=1,id_movie=6)
+    assert removed is True
+    assert seenmovierepo.get_by_user_and_movie(id_user=1,id_movie=6).to_watch_later is False
+
+def test_remove_from_user_watchlist_fail():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    removed : int = seenmovierepo.remove_from_user_watchlist(id_user=5,id_movie=5)
+    assert removed is False
+    assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=5) is None
+
+def test_note_movie_found_new_note():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    note : int = seenmovierepo.note_movie(id_user=5,id_movie=5, note=7)
+    assert note is not None
+    assert note == 8
+    assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=5).vote == 7
+    assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=5).seen is True
+    assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=5).favorite is False
+
+def test_note_movie_modified_note():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    note : int = seenmovierepo.note_movie(id_user=5,id_movie=2, note=5)
+    assert note is not None
+    assert note == 5
+    assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=2).vote == 5
+    assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=2).seen is True
+

@@ -71,12 +71,11 @@ class SeenMovieRepo:
             )
         return True if raw_update else False
     
-    def remove_from_user_watchlists(self, id_user:int, id_movie:int):
+    def remove_from_user_watchlist(self, id_user:int, id_movie:int):
         raw_update = self.db_connector.sql_query(
         """UPDATE projet_info.seenmovies
            SET to_watch_later = FALSE
-           WHERE id_user = %(id_user)s AND id_movie = %(id_movie)s;
-        """,
+           WHERE id_user = %(id_user)s AND id_movie = %(id_movie)s;""",
             {
                 "id_user": id_user,
                 "id_movie": id_movie
@@ -157,14 +156,13 @@ class SeenMovieRepo:
     def note_movie(self, id_user: int, id_movie: int, note: int):
 
         query = """
-            INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, favorite, vote)
-            VALUES (%(id_user)s, %(id_movie)s, TRUE, FALSE, %(vote)s)
+            INSERT INTO projet_info.seenmovies (id_user, id_movie, seen, favorite, vote, to_watch_later)
+            VALUES (%(id_user)s, %(id_movie)s, TRUE, FALSE, %(vote)s, FALSE)
             ON CONFLICT (id_movie, id_user)
             DO UPDATE SET vote = EXCLUDED.vote, seen=TRUE;
             SELECT AVG(vote) AS vote_avg, COUNT(vote) AS vote_count 
             FROM projet_info.seenmovies
-            WHERE id_movie = %(id_movie)s;
-        """
+            WHERE id_movie = %(id_movie)s;"""
         vote_movie= self.db_connector.sql_query(query, {"id_user": id_user, "id_movie": id_movie, "vote": note}, "one")
         
         return vote_movie if vote_movie else None
