@@ -23,7 +23,7 @@ class FollowingRepo:
             following_add = self.db_connector.sql_query(query,{"id_user":id_user, "id_following":id_following},"one",)
         except ForeignKeyViolation:
             return None
-        return APIUser(id=following_add["id_user"], username=following_add["username"])
+        return APIUser(**following_add)
     
     def delete_following(self, id_user:int, id_following:int):
         raw_delete = self.db_connector.sql_query(
@@ -43,12 +43,12 @@ class FollowingRepo:
 
     def get_all_following(self, id_user: int) -> list[APIUser]:
         query = """
-            SELECT * FROM projet_info.user U
+            SELECT U.* FROM projet_info.user U
             JOIN projet_info.userfollowing UF ON U.id_user = UF.id_user
             WHERE U.id_user = %s;
             """
         raw_users = self.db_connector.sql_query(query, [id_user], "all" )
-        return [APIUser(id=raw_user["id_following"], username=raw_user["username"]) for raw_user in raw_users]
+        return [APIUser(**raw_user) for raw_user in raw_users]
     
     def get_following_seen_movies(self, id_following:int):
 
@@ -71,19 +71,59 @@ class FollowingRepo:
         raws_collection = self.db_connector.sql_query(query, {"id_user":id_user, "id_following":id_following}, "all" )
         return raws_collection
     
-    def get_movies_liked_by_all_following(id_user:int):
-        query="""
-            SELECT * FROM projet_info.User
-            JOIN projet_info.
+    def get_movies_seen_by_all_following(self, id_user:int):
+        query = """
+        SELECT M.*, AVG(SM.vote) AS following_vote_average, 
+        COUNT(CASE WHEN SM.favorite=TRUE THEN 1 END) AS total_liked_following
+        FROM projet_info.Movie M
+        JOIN projet_info.SeenMovies SM ON M.id=SM.id_movie
+        JOIN projet_info.UserFollowing UF ON SM.id_user=UF.id_following AND UF.id_user=%s
+        GROUP BY M.id
+        ORDER BY following_vote_average DESC NULLS LAST, total_liked_following DESC;
         """
-        return 0
+        raws_collection = self.db_connector.sql_query(query, [id_user], "all" )
+        
+        return raws_collection
     
-    def get_top_movies_liked_by_all_following(id_user:int, top:int):
-        return 0
+    def get_movies_liked_by_all_following(self, id_user:int):
+        query = """
+        SELECT M.*, AVG(SM.vote) AS following_vote_average, 
+        COUNT(CASE WHEN SM.favorite=TRUE THEN 1 END) AS total_liked_following
+        FROM projet_info.Movie M
+        JOIN projet_info.SeenMovies SM ON M.id=SM.id_movie
+        JOIN projet_info.UserFollowing UF ON SM.id_user=UF.id_following AND UF.id_user=%s
+        GROUP BY M.id
+        HAVING COUNT(CASE WHEN SM.favorite = TRUE THEN 1 END) > 0
+        ORDER BY total_liked_following DESC, following_vote_average DESC NULLS LAST;
+        """
+        raws_collection = self.db_connector.sql_query(query, [id_user], "all" )
+        
+        return raws_collection
+    
+    def get_new_follow_suggestions(self, id_user:int):
+        query = """
+        SELECT U.id_user, U.username, COUNT(SM1.id_movie) AS common_favorite_movies
+        FROM projet_info.SeenMovies SM1
+        JOIN projet_info.SeenMovies SM2 
+        ON SM1.id_movie=SM2.id_movie AND SM2.id_user!= %(id_user)s AND SM2.favorite=TRUE 
+        LEFT JOIN projet_info.UserFollowing UF 
+        ON SM2.id_user=UF.id_following AND UF.id_user=%(id_user)s
+        JOIN projet_info.User U
+        ON SM2.id_user = U.id_user
+        WHERE SM1.id_user =%(id_user)s AND SM1.favorite=TRUE
+        AND UF.id_following IS NULL
+        GROUP BY U.id_user
+        ORDER BY common_favorite_movies DESC;
+        """
+        raws_selected= self.db_connector.sql_query(query, {'id_user':id_user}, "all" )
+        return raws_selected
+
+    
+    
         
 if __name__ == "__main__" :
     import dotenv
     dotenv.load_dotenv()
     db_connector = DBConnector()
     following_repo = FollowingRepo(db_connector)
-    print(following_repo.add_following(1,3))
+    print(following_repo.get_movies_liked_by_all_following(2))

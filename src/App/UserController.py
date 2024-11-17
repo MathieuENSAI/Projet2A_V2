@@ -33,7 +33,7 @@ def create_user(username: str, pass_word: str) -> APIUser:
     if user is None:
         raise HTTPException(status_code = 500, detail = "Failed to create a user. Please try again later")
 
-    return APIUser(id=user.id_user, username=user.username)
+    return APIUser(id_user=user.id_user, username=user.username)
 
 
 @user_router.post("/login", status_code=status.HTTP_201_CREATED)
@@ -63,4 +63,4 @@ def get_user_from_credentials(credentials: HTTPAuthorizationCredentials) -> APIU
     user: User | None = user_repo.get_by_id(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return APIUser(id=user.id_user, username=user.username)
+    return APIUser(id_user=user.id_user, username=user.username)
