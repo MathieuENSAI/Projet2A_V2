@@ -2,7 +2,7 @@ from typing import Optional
 from src.Model.SeenMovie import SeenMovie
 from src.DAO.DBConnector import DBConnector
 from src.Model.Movie import Movie
-from src.Model.User import User
+from src.Model.APIUser import APIUser
 
 
 class SeenMovieRepo:
@@ -137,7 +137,7 @@ class SeenMovieRepo:
         else:
             return None
         
-    def get_users_who_watch_movie(self, id_movie : int) -> list[User]|None:
+    def get_users_who_watch_movie(self, id_movie : int) -> list[APIUser]|None:
         """ Returns the list of users who have seen a movie"""
         raw_users = self.db_connector.sql_query(
             """SELECT *
@@ -186,12 +186,23 @@ class SeenMovieRepo:
 
         query = """
         SELECT AVG(vote) AS vote_avg FROM projet_info.seenmovies
-        WHERE id_user=%s AND  vote IS NOT NULL;
+        WHERE id_user=%s;
         """
         raw_note = self.db_connector.sql_query(query, [id_user], "one")
         return raw_note["vote_avg"] if raw_note else None
-
-
+    
+    def get_all_movies_liked_by_all_users(self):
+        query = """
+        SELECT M.*, COUNT(CASE WHEN SM.favorite=TRUE THEN 1 END) AS total_liked
+        FROM projet_info.Movie M
+        JOIN projet_info.SeenMovies SM ON M.id=SM.id_movie
+        GROUP BY M.id
+        HAVING COUNT(CASE WHEN SM.favorite = TRUE THEN 1 END) > 0
+        ORDER BY total_liked DESC, vote_average DESC NULLS LAST;
+        """
+        raws_collection = self.db_connector.sql_query(query, None, "all" )
+        
+        return raws_collection
 
 # Tests manuels
 if __name__ == "__main__" :
@@ -199,7 +210,6 @@ if __name__ == "__main__" :
     dotenv.load_dotenv()
     db_connector = DBConnector()
     seen_movie_repo = SeenMovieRepo(db_connector)
-    print(seen_movie_repo.note_movie(1, 200, 8))
-    print(seen_movie_repo.mean_note_user(2))
+    print(seen_movie_repo.get_new_follow_suggestions(5))
 
     
