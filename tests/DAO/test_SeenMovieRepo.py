@@ -291,9 +291,11 @@ class MockDBConnector:
                 list_seenmovies = []
                 for seenmovie in self.db:
                     if seenmovie["id_user"] == id_user and seenmovie["seen"] is True:
-                        movie = Movie(id=seenmovie["id_movie"],**seenmovie)
+                        movie = dict(id = seenmovie["id_movie"])
                         list_seenmovies.append(movie)
-                return list_seenmovies
+                if list_seenmovies != []: 
+                    return list_seenmovies
+                return None
 
             case """SELECT *
             FROM projet_info.seenmovies AS sm
@@ -308,9 +310,11 @@ class MockDBConnector:
                 list_seenmovies = []
                 for seenmovie in self.db:
                     if seenmovie["id_user"] == id_user and seenmovie["to_watch_later"] is True:
-                        movie = Movie(id=seenmovie["id_movie"],**seenmovie)
+                        movie = dict(id = seenmovie["id_movie"])
                         list_seenmovies.append(movie)
-                return list_seenmovies
+                if list_seenmovies != []: 
+                    return list_seenmovies
+                return None
             
             case """SELECT *
             FROM projet_info.seenmovies AS sm
@@ -325,10 +329,32 @@ class MockDBConnector:
                 list_seenmovies = []
                 for seenmovie in self.db:
                     if seenmovie["id_user"] == id_user and seenmovie["favorite"] is True:
-                        movie = Movie(id=seenmovie["id_movie"],**seenmovie)
+                        movie = dict(id = seenmovie["id_movie"])
                         list_seenmovies.append(movie)
-                return list_seenmovies
+                if list_seenmovies != []: 
+                    return list_seenmovies
+                return None
             
+            case """UPDATE projet_info.seenmovies
+            SET seen = %(seen)s, 
+                to_watch_later = %(to_watch_later)s,
+                vote = %(vote)s,
+                favorite = %(favorite)s
+            WHERE id_user = %(id_user)s
+            AND id_movie = %(id_movie)s;""":
+                if not data:
+                    raise Exception
+                id_user = data["id_user"]
+                id_movie = data["id_movie"]
+                for seenmovie in self.db:
+                    if seenmovie["id_user"] == id_user and seenmovie["id_movie"] == id_movie:
+                        seenmovie["favorite"] = data["favorite"]
+                        seenmovie["seen"] = data["seen"]
+                        seenmovie["to_watch_later"] = data["to_watch_later"]
+                        seenmovie["vote"] = seenmovie["vote"]
+                        return True
+                return False
+                
             case """SELECT *
             FROM projet_info.seenmovies AS sm
             JOIN projet_info.user AS m
@@ -342,9 +368,15 @@ class MockDBConnector:
                 list_users = []
                 for seenmovie in self.db:
                     if seenmovie["id_movie"] == id_movie and seenmovie["seen"] is True:
-                        user = User(**seenmovie)
+                        user = dict(id_user = seenmovie["id_user"],
+                                    username = seenmovie["username"], 
+                                    pass_word = seenmovie["pass_word"],
+                                    salt = seenmovie["salt"])
                         list_users.append(user)
-                return list_users
+                if list_users != []: 
+                    return list_users
+                return None
+            
             case """
             SELECT AVG(vote) AS vote_avg, COUNT(vote) AS vote_count 
             FROM projet_info.seenmovies
@@ -363,11 +395,16 @@ class MockDBConnector:
                 return note_sum/nb_film
 
 
-def test_get_by_user_and_movie():
+def test_get_by_user_and_movie_found():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     seenmovie: SeenMovie = seenmovierepo.get_by_user_and_movie(3,1)
     assert seenmovie is not None
     assert seenmovie.id_user == 3 and seenmovie.id_movie == 1
+
+def test_get_by_user_and_movie_none():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    seenmovie: SeenMovie = seenmovierepo.get_by_user_and_movie(43,1)
+    assert seenmovie is None
 
 def test_insert_into_db():
     seenmovierepo = SeenMovieRepo(MockDBConnector())
@@ -387,26 +424,42 @@ def test_insert_into_db():
     assert seenmovie.to_watch_later is False
     assert seenmovie.favorite is False
 
-def test_get_movies_seen_by_user():
+def test_get_movies_seen_by_user_found():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    movies: list[Movie] = seenmovierepo.get_list_seenmovies_by_user(4)
+    movies: list[Movie] = seenmovierepo.get_movies_seen_by_user(4)
     assert movies is not None
     assert movies[0] == Movie(id=3)
     assert movies[1] == Movie(id=2)
     assert movies[2] == Movie(id=1)
 
-def test_get_watchlist_user():
+def test_get_movies_seen_by_user_None():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    movies: list[Movie] = seenmovierepo.get_watchlist_user(1)
+    movies: list[Movie] = seenmovierepo.get_movies_seen_by_user(2)
+    assert movies is None
+    
+def test_get_watchlist_user_found():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    movies: list[Movie] = seenmovierepo.get_watchlist_movie(1)
     assert movies is not None
     assert movies[0] == Movie(id=5)
     assert movies[1] == Movie(id=6)
 
-def test_get_user_favorites_movie():
+def test_get_watchlist_user_None():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    movies: list[Movie] = seenmovierepo.get_watchlist_movie(3)
+    assert movies is None
+
+
+def test_get_user_favorites_movie_found():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     movies: list[Movie] = seenmovierepo.get_user_favorites_movie(4)
     assert movies is not None
     assert movies[0] == Movie(id=1)
+
+def test_get_user_favorites_movie_none():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    movies: list[Movie] = seenmovierepo.get_user_favorites_movie(4)
+    assert movies is None
 
 def test_get_users_who_watch_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
