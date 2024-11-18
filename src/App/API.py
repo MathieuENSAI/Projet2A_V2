@@ -9,7 +9,7 @@ from .init_app import scheduler_service
 
 
 def run_app():
-    app = FastAPI(title="Projet Info 2A", description="Example project for ENSAI students")
+    app = FastAPI(title="Réseau social ciné", description="Réseau social ciné")
 
     app.include_router(user_router)
 

@@ -189,16 +189,22 @@ class SeenMovieRepo:
         raw_note = self.db_connector.sql_query(query, [id_user], "one")
         return raw_note["vote_avg"] if raw_note else None
     
-    def get_all_movies_liked_by_all_users(self):
+    def get_top_movies_liked_by_others_users(self, id_user:int, top:int=5):
         query = """
         SELECT M.*, COUNT(CASE WHEN SM.favorite=TRUE THEN 1 END) AS total_liked
         FROM projet_info.Movie M
         JOIN projet_info.SeenMovies SM ON M.id=SM.id_movie
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM projet_info.SeenMovies SM2
+            WHERE SM2.id_user = %(id_user)s
+            AND SM2.id_movie = M.id
+        )
         GROUP BY M.id
         HAVING COUNT(CASE WHEN SM.favorite = TRUE THEN 1 END) > 0
-        ORDER BY total_liked DESC, vote_average DESC NULLS LAST;
+        ORDER BY total_liked DESC, vote_average DESC NULLS LAST LIMIT %(top)s;
         """
-        raws_collection = self.db_connector.sql_query(query, None, "all" )
+        raws_collection = self.db_connector.sql_query(query, {"id_user":id_user, "top":top}, "all" )
         
         return raws_collection
 

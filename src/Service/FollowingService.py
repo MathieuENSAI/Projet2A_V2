@@ -25,11 +25,11 @@ class FollowingService:
         return {"following_seen_movies": self.following_repo.get_following_seen_movies(id_following),
         "movies_seen_together": self.following_repo.get_movies_seen_together(id_user, id_following)}
     
-    def get_movies_seen_by_all_following(self, id_user:int):
-        return self.following_repo.get_movies_seen_by_all_following(id_user)
+    def get_movies_seen_by_followings(self, id_user:int):
+        return self.following_repo.get_movies_seen_by_followings(id_user)
     
-    def get_movies_liked_by_all_following(self, id_user:int):
-        return self.following_repo.get_movies_liked_by_all_following(id_user)
+    def get_movies_liked_by_followings(self, id_user:int):
+        return self.following_repo.get_movies_liked_by_followings(id_user)
     
     def get_new_follow_suggestion(self, id_user:int):
         return self.following_repo.get_new_follow_suggestion(id_user)

@@ -43,9 +43,9 @@ class FollowingRepo:
 
     def get_all_following(self, id_user: int) -> list[APIUser]:
         query = """
-            SELECT U.* FROM projet_info.user U
-            JOIN projet_info.userfollowing UF ON U.id_user = UF.id_user
-            WHERE U.id_user = %s;
+            SELECT U.* FROM projet_info.userfollowing UF
+            JOIN projet_info.user U ON U.id_user = UF.id_following
+            WHERE UF.id_user = %s;
             """
         raw_users = self.db_connector.sql_query(query, [id_user], "all" )
         return [APIUser(**raw_user) for raw_user in raw_users]
@@ -71,32 +71,44 @@ class FollowingRepo:
         raws_collection = self.db_connector.sql_query(query, {"id_user":id_user, "id_following":id_following}, "all" )
         return raws_collection
     
-    def get_movies_seen_by_all_following(self, id_user:int):
+    def get_movies_seen_by_followings(self, id_user:int):
         query = """
         SELECT M.*, AVG(SM.vote) AS following_vote_average, 
         COUNT(CASE WHEN SM.favorite=TRUE THEN 1 END) AS total_liked_following
         FROM projet_info.Movie M
         JOIN projet_info.SeenMovies SM ON M.id=SM.id_movie
-        JOIN projet_info.UserFollowing UF ON SM.id_user=UF.id_following AND UF.id_user=%s
+        JOIN projet_info.UserFollowing UF ON SM.id_user=UF.id_following AND UF.id_user=%(id_user)s
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM projet_info.SeenMovies SM2
+            WHERE SM2.id_user = %(id_user)s
+            AND SM2.id_movie = M.id
+        )
         GROUP BY M.id
         ORDER BY following_vote_average DESC NULLS LAST, total_liked_following DESC;
         """
-        raws_collection = self.db_connector.sql_query(query, [id_user], "all" )
+        raws_collection = self.db_connector.sql_query(query, {"id_user":id_user}, "all")
         
         return raws_collection
     
-    def get_movies_liked_by_all_following(self, id_user:int):
+    def get_movies_liked_by_followings(self, id_user:int):
         query = """
         SELECT M.*, AVG(SM.vote) AS following_vote_average, 
         COUNT(CASE WHEN SM.favorite=TRUE THEN 1 END) AS total_liked_following
         FROM projet_info.Movie M
         JOIN projet_info.SeenMovies SM ON M.id=SM.id_movie
-        JOIN projet_info.UserFollowing UF ON SM.id_user=UF.id_following AND UF.id_user=%s
+        JOIN projet_info.UserFollowing UF ON SM.id_user=UF.id_following AND UF.id_user=%(id_user)s
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM projet_info.SeenMovies SM2
+            WHERE SM2.id_user = %(id_user)s
+            AND SM2.id_movie = M.id
+        )
         GROUP BY M.id
         HAVING COUNT(CASE WHEN SM.favorite = TRUE THEN 1 END) > 0
         ORDER BY total_liked_following DESC, following_vote_average DESC NULLS LAST;
         """
-        raws_collection = self.db_connector.sql_query(query, [id_user], "all" )
+        raws_collection = self.db_connector.sql_query(query, {"id_user": id_user}, "all" )
         
         return raws_collection
     
