@@ -100,7 +100,7 @@ class FollowingRepo:
         
         return raws_collection
     
-    def get_new_follow_suggestions(self, id_user:int):
+    def get_new_follow_suggestion(self, id_user:int):
         query = """
         SELECT U.id_user, U.username, COUNT(SM1.id_movie) AS common_favorite_movies
         FROM projet_info.SeenMovies SM1
@@ -113,9 +113,9 @@ class FollowingRepo:
         WHERE SM1.id_user =%(id_user)s AND SM1.favorite=TRUE
         AND UF.id_following IS NULL
         GROUP BY U.id_user
-        ORDER BY common_favorite_movies DESC;
+        ORDER BY common_favorite_movies DESC LIMIT 1;
         """
-        raws_selected= self.db_connector.sql_query(query, {'id_user':id_user}, "all" )
+        raws_selected= self.db_connector.sql_query(query, {'id_user':id_user}, "one" )
         return raws_selected
 
     
