@@ -12,6 +12,9 @@ watch_movie_route = APIRouter(prefix="/watch", tags=["Watch Movies"])
 
 @watch_movie_route.get("/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def watch_movie(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    """ 
+    Watch this movie
+    """
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     movie = movie_service.get_by_id(movie_id)
     if movie is None:
@@ -24,6 +27,9 @@ def watch_movie(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentia
 
 @watch_movie_route.post("/add-to-watch-lists", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def add_to_watchlist(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    """ 
+    Add this video to your watchlist for later!
+    """
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     movie = movie_service.get_by_id(movie_id)
     if movie is None:
@@ -34,7 +40,7 @@ def add_to_watchlist(movie_id: int, credentials: Annotated[HTTPAuthorizationCred
         raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
     return movie
 
-@watch_movie_route.put("/remove-from-user-watch-lists/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
+@watch_movie_route.put("/remove-from-watchlists/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def remove_from_user_watchlists(movie_id:int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
     return seen_movie_service.remote_from_user_watchlists(user_id, movie_id)
