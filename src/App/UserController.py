@@ -16,10 +16,10 @@ if TYPE_CHECKING:
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@user_router.post("/singup", status_code=status.HTTP_201_CREATED)
+@user_router.post("/sign-up", status_code=status.HTTP_201_CREATED, summary="Sign up")
 def create_user(username: str, pass_word: str) -> APIUser:
     """
-    Performs validation on the username and password
+    Sign up by providing a username and password. A unique username and a sufficiently strong password are required to complete the registration process.
     """
     try:
         check_password_strength(pass_word=pass_word)

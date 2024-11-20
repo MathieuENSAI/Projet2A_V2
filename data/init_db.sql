@@ -25,7 +25,7 @@ CREATE TABLE projet_info.Movie(
     release_date DATE,
     title CHAR(256),
     vote_average FLOAT,
-    vote_count INT, 
+    vote_count INT DEFAULT 0, 
     overview CHAR(1024)
 );
 
@@ -33,10 +33,10 @@ CREATE TABLE projet_info.Movie(
 CREATE TABLE projet_info.SeenMovies (
     id_user INT NOT NULL,
     id_movie INT NOT NULL,
-    seen BOOLEAN,
-    to_watch_later BOOLEAN,
+    seen BOOLEAN DEFAULT TRUE,
+    to_watch_later BOOLEAN DEFAULT FALSE,
     vote INT,
-    favorite BOOLEAN,
+    favorite BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (id_user,id_movie),
     FOREIGN KEY(id_user) REFERENCES projet_info.User(id_user) ON DELETE CASCADE,
     FOREIGN KEY(id_movie) REFERENCES projet_info.Movie(id) ON DELETE CASCADE

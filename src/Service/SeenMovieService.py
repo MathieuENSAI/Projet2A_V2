@@ -75,5 +75,8 @@ class SeenMovieService:
             return list_users
         else:
             return None
+    
+    def get_top_movies_liked_by_others_users(self, id_user:int, top:int=5):
+        return self.seen_movierepo.get_top_movies_liked_by_others_users(id_user, top)
 
     
