@@ -149,7 +149,7 @@ class SeenMovieRepo:
             {"id_movie": id_movie}, "all",
         )
         if raw_users:
-            return [User(**raw_user) for raw_user in raw_users]
+            return [APIUser(**raw_user) for raw_user in raw_users]
         else:
             return None
     

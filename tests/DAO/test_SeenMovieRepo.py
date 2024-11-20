@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Literal, Optional, Union
 from src.DAO.SeenMovieRepo import SeenMovieRepo
 from src.Model.SeenMovie import SeenMovie
 from src.Model.Movie import Movie 
-from src.Model.User import User
+from src.Model.APIUser import APIUser
 
 if TYPE_CHECKING:
     from src.Model.SeenMovie import SeenMovie
@@ -18,8 +18,6 @@ class MockDBConnector:
             "vote": 8,
             "favorite": True,
             "username": "", 
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None, 
@@ -36,8 +34,6 @@ class MockDBConnector:
             "vote": 6,
             "favorite": False,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -54,8 +50,6 @@ class MockDBConnector:
             "vote": None,
             "favorite": False,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -72,8 +66,6 @@ class MockDBConnector:
             "vote": 7,
             "favorite": True,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -90,8 +82,6 @@ class MockDBConnector:
             "vote": None,
             "favorite": False,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -108,8 +98,6 @@ class MockDBConnector:
             "vote": 9,
             "favorite": True,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -126,8 +114,6 @@ class MockDBConnector:
             "vote": 5,
             "favorite": False,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -144,8 +130,6 @@ class MockDBConnector:
             "vote": None,
             "favorite": False,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -162,8 +146,6 @@ class MockDBConnector:
             "vote": 10,
             "favorite": True,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -180,8 +162,6 @@ class MockDBConnector:
             "vote": None,
             "favorite": False,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -198,8 +178,6 @@ class MockDBConnector:
             "vote": 6,
             "favorite": False,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -216,8 +194,6 @@ class MockDBConnector:
             "vote": 8,
             "favorite": True,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -234,8 +210,6 @@ class MockDBConnector:
             "vote": None,
             "favorite": False,
             "username": "",
-            "salt": None,
-            "pass_word": "",
             "original_language": None,
             "original_title": None,
             "release_date": None,
@@ -369,9 +343,7 @@ class MockDBConnector:
                 for seenmovie in self.db:
                     if seenmovie["id_movie"] == id_movie and seenmovie["seen"] is True:
                         user = dict(id_user = seenmovie["id_user"],
-                                    username = seenmovie["username"], 
-                                    pass_word = seenmovie["pass_word"],
-                                    salt = seenmovie["salt"])
+                                    username = seenmovie["username"])
                         list_users.append(user)
                 if list_users != []: 
                     return list_users
@@ -424,7 +396,7 @@ class MockDBConnector:
                         seenmovie["vote"] = vote
                         seenmovie["seen"] = True
                         movie_found = True
-                    elif seenmovie["id_movie"] == id_movie and seenmovie["vote"] is not None:
+                    if seenmovie["id_movie"] == id_movie and seenmovie["vote"] is not None:
                         note_sum += seenmovie["vote"]
                         nb_film += 1
 
@@ -434,7 +406,7 @@ class MockDBConnector:
                     nb_film += 1
 
                 if nb_film > 0:
-                    return note_sum / nb_film
+                    return dict(vote_avg = note_sum / nb_film, vote_count = nb_film)
                 else:
                     return None
                 
@@ -459,7 +431,7 @@ class MockDBConnector:
                         nb_film += 1
 
                 if nb_film > 0:
-                    return note_sum / nb_film
+                    return dict(vote_avg = note_sum / nb_film, vote_count = nb_film)
                 else:
                     return None
             case """
@@ -476,7 +448,7 @@ class MockDBConnector:
                         nb_film += 1
 
                 if nb_film > 0:
-                    return note_sum / nb_film
+                    return dict(vote_avg = note_sum/nb_film)
                 else:
                     return None
                     
@@ -551,15 +523,15 @@ def test_get_user_favorites_movie_none():
 
 def test_get_users_who_watch_movie_found():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    users : list[User] = seenmovierepo.get_users_who_watch_movie(1)
+    users : list[APIUser] = seenmovierepo.get_users_who_watch_movie(1)
     assert users is not None
-    assert users[0] == User(id_user=3, username="",pass_word="", salt=None)
-    assert users[1] == User(id_user=5, username="",pass_word="", salt=None)
-    assert users[2] == User(id_user=4, username="",pass_word="", salt=None)
+    assert users[0] == APIUser(id_user=3, username="")
+    assert users[1] == APIUser(id_user=5, username="")
+    assert users[2] == APIUser(id_user=4, username="")
 
 def test_get_users_who_watch_movie_none():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    users : list[User] = seenmovierepo.get_users_who_watch_movie(10)
+    users : list[APIUser] = seenmovierepo.get_users_who_watch_movie(10)
     assert users is None
 
 
@@ -611,42 +583,49 @@ def test_remove_from_user_watchlist_fail():
     assert removed is False
     assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=5) is None
 
-def test_note_movie_found_new_note():
+def test_note_movie_new_note():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    note : int = seenmovierepo.note_movie(id_user=5,id_movie=5, note=7)
+    note : dict = seenmovierepo.note_movie(id_user=5,id_movie=5, note=7)
     assert note is not None
-    assert note == 8
+    assert note["vote_avg"] == 8
+    assert note["vote_count"] == 2
     assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=5).vote == 7
     assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=5).seen is True
     assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=5).favorite is False
 
 def test_note_movie_modified_note():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    note : int = seenmovierepo.note_movie(id_user=5,id_movie=2, note=5)
+    note : dict = seenmovierepo.note_movie(id_user=5,id_movie=2, note=5)
     assert note is not None
-    assert note == 5
+    assert note["vote_avg"] == 5
+    assert note["vote_count"] == 2
     assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=2).vote == 5
     assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=2).seen is True
 
 def test_remove_note_movie_still_noted():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    note : int = seenmovierepo.remove_note_movie(id_user=5,id_movie=1)
+    note : dict = seenmovierepo.remove_note_movie(id_user=5,id_movie=1)
     assert note is not None
-    assert note == 8
+    assert note["vote_avg"] == 8
+    assert note["vote_count"] == 2
     assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=1).vote is None
 
 def test_remove_note_movie_no_more_note():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    note : int = seenmovierepo.remove_note_movie(id_user=4,id_movie=3)
+    note : dict = seenmovierepo.remove_note_movie(id_user=4,id_movie=3)
     assert note is None
     assert seenmovierepo.get_by_user_and_movie(id_user=4,id_movie=3).vote is None
 
 def test_mean_note_user_result():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    note : int = seenmovierepo.mean_note_user(id_user=3)
+    note : dict = seenmovierepo.mean_note_user(id_user=3)
     assert note == 23/3
+    
 
 def test_mean_note_user_None():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
-    note : int = seenmovierepo.mean_note_user(id_user=2)
+    note : dict = seenmovierepo.mean_note_user(id_user=2)
     assert note is None 
+
+def test_get_top_movies_liked_by_others_users():
+    
