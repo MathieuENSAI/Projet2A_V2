@@ -206,7 +206,7 @@ class SeenMovieRepo:
         """
         raws_collection = self.db_connector.sql_query(query, {"id_user":id_user, "top":top}, "all" )
         
-        return raws_collection
+        return raws_collection if raws_collection else None
 
 # Tests manuels
 if __name__ == "__main__" :

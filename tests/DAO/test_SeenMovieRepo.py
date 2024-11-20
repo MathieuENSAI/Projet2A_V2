@@ -451,6 +451,47 @@ class MockDBConnector:
                     return dict(vote_avg = note_sum/nb_film)
                 else:
                     return None
+            case """
+        SELECT M.*, COUNT(CASE WHEN SM.favorite=TRUE THEN 1 END) AS total_liked
+        FROM projet_info.Movie M
+        JOIN projet_info.SeenMovies SM ON M.id=SM.id_movie
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM projet_info.SeenMovies SM2
+            WHERE SM2.id_user = %(id_user)s
+            AND SM2.id_movie = M.id
+        )
+        GROUP BY M.id
+        HAVING COUNT(CASE WHEN SM.favorite = TRUE THEN 1 END) > 0
+        ORDER BY total_liked DESC, vote_average DESC NULLS LAST LIMIT %(top)s;
+        """:
+                id_user = data["id_user"]
+                top = data["top"]
+
+                grouped_likes = {}
+                for seenmovie in self.db:
+                    if seenmovie["id_user"] != id_user and seenmovie["favorite"]:
+                        movie_id = seenmovie["id_movie"]
+                        grouped_likes[movie_id] = grouped_likes.get(movie_id, 0) + 1
+
+                sorted_movies = sorted(grouped_likes.items(), key=lambda x: x[1], reverse=True)
+
+                top_movies = sorted_movies[:top]
+
+                result = []
+                for movie_id, likes in top_movies:
+                    movie_details = next((movie for movie in self.db if movie["id_movie"] == movie_id), None)
+                    if movie_details:
+                        result.append({
+                            "movie": Movie(id=movie_details["id_movie"], **movie_details),
+                            "total_liked": likes
+                        })
+                return result
+    
+
+
+
+
                     
 
 def test_get_by_user_and_movie_found():
@@ -627,5 +668,10 @@ def test_mean_note_user_None():
     note : dict = seenmovierepo.mean_note_user(id_user=2)
     assert note is None 
 
-def test_get_top_movies_liked_by_others_users():
-    
+def test_movies_liked_by_others_users():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    liked_movies : dict = seenmovierepo.get_top_movies_liked_by_others_users(15,4)
+    assert len(liked_movies) == 3
+    assert liked_movies[0]["total_liked"] == 3
+    assert liked_movies[0]["movie"] == Movie(id=1)
+    assert liked_movies[1]["total_liked"] == 1
