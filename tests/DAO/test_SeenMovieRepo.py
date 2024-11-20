@@ -436,9 +436,50 @@ class MockDBConnector:
                 if nb_film > 0:
                     return note_sum / nb_film
                 else:
-                    return None 
-
+                    return None
                 
+            case """
+        UPDATE projet_info.SeenMovies
+        SET vote=NULL
+        WHERE id_user=%(id_user)s AND id_movie=%(id_movie)s;
+        SELECT AVG(vote) AS vote_avg, COUNT(vote) AS vote_count 
+            FROM projet_info.seenmovies
+            WHERE id_movie = %(id_movie)s;
+        """:
+                id_user = data["id_user"]
+                id_movie = data["id_movie"]
+                note_sum = 0
+                nb_film = 0
+
+                for seenmovie in self.db:
+                    if seenmovie["id_user"] == id_user and seenmovie["id_movie"] == id_movie:
+                        seenmovie["vote"] = None
+                    elif seenmovie["id_movie"] == id_movie and seenmovie["vote"] is not None:
+                        note_sum += seenmovie["vote"]
+                        nb_film += 1
+
+                if nb_film > 0:
+                    return note_sum / nb_film
+                else:
+                    return None
+            case """
+        SELECT AVG(vote) AS vote_avg FROM projet_info.seenmovies
+        WHERE id_user=%(id_user)s;
+        """:
+                id_user = data["id_user"]
+                note_sum = 0
+                nb_film = 0
+
+                for seenmovie in self.db:
+                    if seenmovie["id_user"] == id_user and seenmovie["vote"] is not None:
+                        note_sum += seenmovie["vote"]
+                        nb_film += 1
+
+                if nb_film > 0:
+                    return note_sum / nb_film
+                else:
+                    return None
+                    
 
 def test_get_by_user_and_movie_found():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
@@ -587,3 +628,25 @@ def test_note_movie_modified_note():
     assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=2).vote == 5
     assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=2).seen is True
 
+def test_remove_note_movie_still_noted():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    note : int = seenmovierepo.remove_note_movie(id_user=5,id_movie=1)
+    assert note is not None
+    assert note == 8
+    assert seenmovierepo.get_by_user_and_movie(id_user=5,id_movie=1).vote is None
+
+def test_remove_note_movie_no_more_note():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    note : int = seenmovierepo.remove_note_movie(id_user=4,id_movie=3)
+    assert note is None
+    assert seenmovierepo.get_by_user_and_movie(id_user=4,id_movie=3).vote is None
+
+def test_mean_note_user_result():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    note : int = seenmovierepo.mean_note_user(id_user=3)
+    assert note == 23/3
+
+def test_mean_note_user_None():
+    seenmovierepo=SeenMovieRepo(MockDBConnector())
+    note : int = seenmovierepo.mean_note_user(id_user=2)
+    assert note is None 

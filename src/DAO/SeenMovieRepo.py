@@ -184,9 +184,9 @@ class SeenMovieRepo:
 
         query = """
         SELECT AVG(vote) AS vote_avg FROM projet_info.seenmovies
-        WHERE id_user=%s;
+        WHERE id_user=%(id_user)s;
         """
-        raw_note = self.db_connector.sql_query(query, [id_user], "one")
+        raw_note = self.db_connector.sql_query(query, {"id_user": id_user}, "one")
         return raw_note["vote_avg"] if raw_note else None
     
     def get_all_movies_liked_by_all_users(self):
