@@ -18,6 +18,9 @@ class UserService:
     def get_user_by_id(self, user_id: int) -> User | None:
         return self.user_repo.get_by_id(user_id)
     
+    def get_user_by_username(self, username : str)-> User | None:
+        return self.user_repo.get_by_username(username=username)
+    
     # def login_user(self, username: str, password: str) -> Optional[User]:
     #     user = self.user_repo.get_by_username(username)
     #     if user is None:

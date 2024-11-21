@@ -3,12 +3,12 @@ from fastapi import APIRouter, Depends, HTTPException, status, Body
 from typing import TYPE_CHECKING, Annotated
 from fastapi.security import HTTPAuthorizationCredentials
 from .JWTBearer import JWTBearer
-from .init_app import jwt_service, following_service
+from .init_app import jwt_service, following_service, user_service
 import logging
 
 following_route = APIRouter(prefix="/follow", tags=["User Following"])
 
-@following_route.post("/", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="Add a new following")
+@following_route.post("/id", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="Add a new following")
 def add_following(following_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     """
     This action allows you to add a user to your following list, enabling you to receive updates and recommendations based on their activity. A valid authentication token is required.
@@ -18,7 +18,22 @@ def add_following(following_id: int, credentials: Annotated[HTTPAuthorizationCre
         return None
     following = following_service.add_following(user_id, following_id)
     if following is None:
-        raise HTTPException(status_code=404, detail=f"You can not follow user with id[{following_id}]. check and try adain")
+        raise HTTPException(status_code=404, detail=f"You can not follow user with id[{following_id}]. check and try again")
+    return {"following":following} |following_service.get_following_movies_collection(user_id, following_id)
+
+@following_route.post("/username", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="Add a new following by username")
+def add_following_by_username(username: str, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    """
+    This action allows you to add a user to your following list, enabling you to receive updates and recommendations based on their activity. A valid authentication token is required.
+    """
+    user_id = jwt_service.validate_user_jwt(credentials.credentials)
+    user = user_service.get_user_by_username(username=username)
+    following_id = user.id_user
+    if user_id == following_id:
+        return None
+    following = following_service.add_following(user_id, following_id)
+    if following is None:
+        raise HTTPException(status_code=404, detail=f"You can not follow user with username[{username}]. check and try again")
     return {"following":following} |following_service.get_following_movies_collection(user_id, following_id)
 
 @following_route.delete("/stop-follow/{following_id}",  status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary= "Stop following a user")
