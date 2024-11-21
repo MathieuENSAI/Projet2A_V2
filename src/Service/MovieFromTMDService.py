@@ -6,16 +6,12 @@ import dotenv
 
 class MovieFromTMDService:
     dotenv.load_dotenv()
-    movie_db: None
     tmdb_token = os.environ['TMDB_TOKEN']
     header = {
     "accept": "application/json",
     "Authorization": "Bearer "+tmdb_token
     }
 
-    def __init__(self, movie_db: None = None):
-        self.movie_db = movie_db
-    
     def build_movie(self, data:dict) -> Movie:
         return {'movie': Movie(id = data['id'], original_language = data.get('original_language', None),
                      original_title = data.get('original_title', None),
@@ -25,7 +21,7 @@ class MovieFromTMDService:
                 'movie_genre' : {'id_movie': data['id'], 'genres':data.get('genre_ids', data.get('genres', []))}
         }
 
-    def get_by_params(self, payload:str, url='https://api.themoviedb.org/3/discover/movie?'):
+    def get_by_params(self, payload:dict, url='https://api.themoviedb.org/3/discover/movie?'):
         response = requests.get(url,
         params=payload, headers=self.header)
         data = response.json()
@@ -68,4 +64,6 @@ class MovieFromTMDService:
 if __name__ == "__main__" :
    
     movie_TMDB = MovieFromTMDService()
-    print(movie_TMDB.search_movie('commedi'))
+
+    
+       
