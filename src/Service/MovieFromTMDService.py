@@ -1,5 +1,6 @@
 from src.Model.Movie import Movie
 from src.Model.Genre import Genre
+from datetime import date
 import requests
 import os
 import dotenv
@@ -52,7 +53,9 @@ class MovieFromTMDService:
         return self.get_by_params(payload)
 
     def get_lastest_released(self, number:int)-> list[Movie]:
-        payload = {"sort_by" : "primary_release_date.desc"}
+        end_release_date = str(date.today())
+        payload = {"sort_by" : "primary_release_date.desc",
+                   'primary_release_date.lte': end_release_date}
         return self.get_by_params(payload)[:number]
         
     def get_id_name_genre(self)-> list[Genre]:
@@ -66,4 +69,3 @@ if __name__ == "__main__" :
     movie_TMDB = MovieFromTMDService()
 
     
-       
