@@ -10,36 +10,16 @@ from src.Service.MovieService import MovieService
 
 
 @pytest.fixture
-def movie_repo():
-    """Fixture pour simuler le MovieRepo"""
-    return MagicMock(MovieRepo)
+def movie_service():
+    """Fixture pour simuler MovieRepo, MovieFromTMDService, MovieGenreRepo et MovieService"""
+    movie_repo=MagicMock(MovieRepo)
+    movie_TMDB = MagicMock(MovieFromTMDService)
+    movie_genre_repo = MagicMock(MovieGenreRepo)
+    return MovieService(movie_repo, movie_TMDB, movie_genre_repo), movie_repo, movie_TMDB, movie_genre_repo
 
-
-@pytest.fixture
-def movie_TMDB():
-    """Fixture pour simuler le MovieFromTMDService"""
-    return MagicMock(MovieFromTMDService)
-
-
-@pytest.fixture
-def movie_genre_repo():
-    """Fixture pour simuler le MovieGenreRepo"""
-    return MagicMock(MovieGenreRepo)
-
-
-@pytest.fixture
-def movie_service(movie_repo, movie_TMDB, movie_genre_repo):
-    """Fixture pour créer une instance de MovieService"""
-    return MovieService(
-        movie_repo=movie_repo,
-        movie_TMDB=movie_TMDB,
-        movie_genre_repo=movie_genre_repo
-    )
-
-
-def test_get_by_id(movie_service, movie_repo, movie_TMDB):
+def test_get_by_id(movie_service):
     """Test de la méthode get_by_id"""
-
+    movie_service, movie_repo, movie_TMDB, _= movie_service
     # Simulation des données
     movie_id = 1
     expected_movie = Movie(id=movie_id, title="Test Movie")
@@ -57,14 +37,15 @@ def test_get_by_id(movie_service, movie_repo, movie_TMDB):
     assert result == expected_movie
 
 
-def test_get_by_id_movie_not_found_in_repo_but_found_in_tmdb(movie_service, movie_repo, movie_TMDB, movie_genre_repo):
+def test_get_by_id_movie_not_found_in_repo_but_found_in_tmdb(movie_service):
     """Test de la méthode get_by_id lorsque le film est trouvé dans TMDB mais pas dans le repo"""
+    movie_service, movie_repo, movie_TMDB, movie_genre_repo= movie_service
 
     # Simulation des données
-    movie_id = 1
+    movie_id = 1234821
     movie_data = {
         'movie': Movie(id=movie_id, title="Test Movie TMDB"),
-        'movie_genre': 'Action'
+        'movie_genre': {'id_movie':movie_id, 'genres':[{'id': 12, 'name': 'Adventure'}, {'id': 878, 'name': 'Science Fiction'}, {'id': 53, 'name': 'Thriller'}]}
     }
 
     # Configuration des mocks
@@ -82,29 +63,57 @@ def test_get_by_id_movie_not_found_in_repo_but_found_in_tmdb(movie_service, movi
     assert result == movie_data['movie']
 
 
-def test_get_by_id_movie_not_found_anywhere(movie_service, movie_repo, movie_TMDB):
+def test_get_by_id_movie_not_found_anywhere(movie_service):
     """Test de la méthode get_by_id lorsque le film n'est trouvé ni dans le repo ni dans TMDB"""
+    movie_service, movie_repo, movie_TMDB, movie_genre_repo= movie_service
 
     # Simulation des retours
     movie_id = 1
     movie_repo.get_by_id.return_value = None
     movie_TMDB.get_by_id.return_value = None
+    
+    # Appel de la méthode
+    result = movie_service.get_by_id(movie_id)
+    
+    # Vérification
+    movie_repo.get_by_id.assert_called_once_with(movie_id)
+    movie_TMDB.get_by_id.assert_called_once_with(movie_id)
+    movie_repo.insert_into_db.assert_not_called()
+    movie_genre_repo.insert_into_db.assert_not_called()
+    assert result==None
 
-    # Test de l'exception levée
-    with pytest.raises(FileNotFoundError):
-        movie_service.get_by_id(movie_id)
 
-
-def test_get_by_title(movie_service, movie_repo, movie_TMDB):
+def test_get_by_title_all_movie_found_in_local_db(movie_service):
     """Test de la méthode get_by_title"""
+    movie_service, movie_repo, movie_TMDB, _= movie_service
 
     # Simulation des données
-    title = "Test Movie"
-    movie = Movie(id=1, title=title)
+    title = "Nindja"
+    movies = [Movie(id=1, title=title), Movie(id=5, title=title + "blanc"), Movie(id=6, title=title + "noir"), Movie(id=8, title="Black"+title), Movie(id=12, title= "White"+ title)]
 
-    # Configuration des mocks
-    movie_repo.get_by_title.return_value = [movie]
-    movie_TMDB.search_movie.return_value = [{'movie': movie}]
+    # Configuration des mock
+    movie_repo.get_by_title.return_value = movies
+
+    # Appel de la méthode
+    result = movie_service.get_by_title(title)
+
+    # Vérifications
+    movie_repo.get_by_title.assert_called_once_with(title, None)
+    movie_TMDB.search_movie.assert_not_called()
+    assert result==movies
+
+def test_get_by_title_movies_found_in_local_less_five(movie_service):
+    """Test de la méthode get_by_title"""
+    movie_service, movie_repo, movie_TMDB, _= movie_service
+
+    # Simulation des données
+    title = "Nindja"
+    movies_found_in_local_db = [Movie(id=1, title=title), Movie(id=5, title=title + "blanc")]
+    movies_found_on_tmdb = [{'movie': Movie(id=5, title=title + "blanc"), "genre_movie":None}, {'movie': Movie(id=6, title=title + "noir"), "genre_movie":None}, {'movie': Movie(id=8, title="Black"+title), "genre_movie":None}, {'movie': Movie(id=12, title= "White"+ title), "genre_movie":None}]
+
+    # Configuration des mock
+    movie_repo.get_by_title.return_value = movies_found_in_local_db
+    movie_TMDB.search_movie.return_value = movies_found_on_tmdb
 
     # Appel de la méthode
     result = movie_service.get_by_title(title)
@@ -112,19 +121,39 @@ def test_get_by_title(movie_service, movie_repo, movie_TMDB):
     # Vérifications
     movie_repo.get_by_title.assert_called_once_with(title, None)
     movie_TMDB.search_movie.assert_called_once_with(title)
-    assert movie in result
+    assert result==[Movie(id=1, title=title), Movie(id=5, title=title + "blanc"), Movie(id=6, title=title + "noir"), Movie(id=8, title="Black"+title), Movie(id=12, title= "White"+ title)]
 
-
-def test_get_by_genre(movie_service, movie_repo, movie_TMDB):
+def test_get_by_genre_all_found_in_local_db(movie_service):
     """Test de la méthode get_by_genre"""
+    movie_service, movie_repo, movie_TMDB, _= movie_service
+
+    # Simulation des données
+    genre = "action"
+    movies = [Movie(id=1), Movie(id=5), Movie(id=6), Movie(id=8), Movie(id=12)]
+
+    # Configuration des mock
+    movie_repo.get_by_genre.return_value = movies
+
+    # Appel de la méthode
+    result = movie_service.get_by_genre(genre)
+
+    # Vérifications
+    movie_repo.get_by_genre.assert_called_once_with(genre, None)
+    movie_TMDB.search_movie.assert_not_called()
+    assert result==movies
+
+def test_get_by_genre_movies_found_in_local_less_five(movie_service):
+    """Test de la méthode get_by_genre"""
+    movie_service, movie_repo, movie_TMDB, _= movie_service
 
     # Simulation des données
     genre = "Action"
-    movie = Movie(id=1, title="Action Movie")
+    movies_found_in_local_db = [Movie(id=1), Movie(id=5)]
+    movies_found_on_tmdb = [{'movie': Movie(id=5), "genre_movie":None}, {'movie': Movie(id=6), "genre_movie":None}, {'movie': Movie(id=8), "genre_movie":None}, {'movie': Movie(id=12), "genre_movie":None}]
 
-    # Configuration des mocks
-    movie_repo.get_by_genre.return_value = [movie]
-    movie_TMDB.search_movie.return_value = [{'movie': movie}]
+    # Configuration des mock
+    movie_repo.get_by_genre.return_value = movies_found_in_local_db
+    movie_TMDB.search_movie.return_value = movies_found_on_tmdb
 
     # Appel de la méthode
     result = movie_service.get_by_genre(genre)
@@ -132,7 +161,7 @@ def test_get_by_genre(movie_service, movie_repo, movie_TMDB):
     # Vérifications
     movie_repo.get_by_genre.assert_called_once_with(genre, None)
     movie_TMDB.search_movie.assert_called_once_with(genre)
-    assert movie in result
+    assert result==[Movie(id=1), Movie(id=5), Movie(id=6), Movie(id=8), Movie(id=12)]
 
 
 def test_get_by_release_period(movie_service, movie_repo, movie_TMDB):
