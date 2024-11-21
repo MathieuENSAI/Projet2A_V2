@@ -487,11 +487,6 @@ class MockDBConnector:
                             "total_liked": likes
                         })
                 return result
-    
-
-
-
-
                     
 
 def test_get_by_user_and_movie_found():

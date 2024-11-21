@@ -1,6 +1,5 @@
 from typing import Optional
 from psycopg2.errors import ForeignKeyViolation
-from src.Model.User import User
 from src.Model.APIUser import APIUser
 
 from src.DAO.DBConnector import DBConnector
