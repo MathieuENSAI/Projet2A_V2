@@ -12,7 +12,7 @@ class MovieService:
         self.movie_genre_repo = movie_genre_repo
     
     def get_by_id(self, movie_id: int, user_id=None) -> Movie | None :
-        movie = self.movie_repo.get_by_id(movie_id)
+        movie = self.movie_repo.get_by_id(movie_id, user_id)
         if movie is not None:
             return movie
 
@@ -22,12 +22,13 @@ class MovieService:
             self.movie_genre_repo.insert_into_db([movie['movie_genre']])
             movie = movie["movie"]
         return movie
-        
-        raise FileNotFoundError()
     
     def get_by_title(self,title: str, user_id=None):
         movies = self.movie_repo.get_by_title(title, user_id)
-        if movies is None:
+        
+        if len(movies)>=5:
+            return movies
+        elif movies is None:
             movies = []
         movie_not_in_db = []
         movies_from_TMDB = self.movie_TMDB.search_movie(title)
@@ -40,7 +41,9 @@ class MovieService:
     
     def get_by_genre(self,genre: str, user_id=None):
         movies = self.movie_repo.get_by_genre(genre, user_id)
-        if movies is None:
+        if len(movies)>=5:
+            return movies
+        elif movies is None:
             movies = []
         movie_not_in_db = []
         movies_from_TMDB = self.movie_TMDB.search_movie(genre)

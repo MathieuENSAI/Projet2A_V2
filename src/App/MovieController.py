@@ -41,7 +41,7 @@ def get_movie_by_title(title: str, credentials: Annotated[HTTPAuthorizationCrede
     except Exception :
         user_id=None
     try:
-        movies = movie_service.get_by_title(title)
+        movies = movie_service.get_by_title(title, user_id)
         return movies
     except Exception as e:
         logging.error(f"Error occurred: {e}")
@@ -57,7 +57,7 @@ def get_movie_by_genre(genre: str, credentials: Annotated[HTTPAuthorizationCrede
     except Exception :
         user_id=None
     try:
-        movies = movie_service.get_by_genre(genre)
+        movies = movie_service.get_by_genre(genre, user_id)
         return movies
     except Exception as e:
         logging.error(f"Error occurred: {e}")

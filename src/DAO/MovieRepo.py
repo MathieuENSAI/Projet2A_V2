@@ -148,7 +148,7 @@ if __name__ == "__main__" :
     dotenv.load_dotenv()
     db_connector = DBConnector()
     movie_repo = MovieRepo(db_connector)
-    print(movie_repo.get_by_title('', 2))
+    print(movie_repo.get_by_id(2, 6))
     
     
    
