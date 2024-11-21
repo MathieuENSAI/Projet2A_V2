@@ -18,19 +18,11 @@ class SchedulerService(BackgroundScheduler):
         except Exception as error:
             logging.error(error)
 
-        return self.genre_repo.insert_into_db([movie_genre.__dict__ for movie_genre in movies_genres]) if movies_genres else False
-    
-    # def update_last_week_released_movies(self):
-    #     end_release_date = datetime.today()
-    #     start_release_date = end_release_date - timedelta(weeks=1)
-    #     try :
-    #         last_week_released_movies = self.movie_TMDB.get_by_release_period(start_release_date, end_release_date)
-    #     except Exception as error:
-    #         logging.error(error)
+        return  self.genre_repo.insert_into_db([movie_genre.__dict__ for movie_genre in movies_genres]) if movies_genres else False
 
 
     def start(self):
-        self.add_job(self.update_movie_genre, 'interval', seconds=10)
+        self.add_job(self.update_movie_genre, 'interval', days=1)
         super().start()
 
 if __name__ == "__main__" :
