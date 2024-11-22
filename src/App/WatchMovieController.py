@@ -25,6 +25,27 @@ def watch_movie(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentia
         raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
     return movie
 
+@watch_movie_route.get("/watch/get_seen_movies", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="The movies you have seen.")
+def get_seen_list(credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    """ 
+    This action allows you to get your list of movies you have seen. Authentication is required. A valid token is needed to perform this action and access the watchlist.
+    """
+    user_id = jwt_service.validate_user_jwt(credentials.credentials)
+    try:
+        seenlist = seen_movie_service.user_seenmovies(user_id)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
+    return seen_movie_service.user_seenmovies(user_id)
+
+@watch_movie_route.put("/remove-from-seen/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="")
+def remove_from_user_seenmovies(movie_id:int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    """
+    This action allows you to remove a movie from the list of movies you have seen. It reinitialises the vote and the favorite status. Note that a valid token is required to perform this operation.
+    Returns None if the movie wasn't seen in the first place.
+    """
+    user_id = jwt_service.validate_user_jwt(credentials.credentials)
+    return seen_movie_service.remove_from_seen(user_id,movie_id)
+
 @watch_movie_route.post("/add-to-watch-lists", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="Add a movie to your watchlist")
 def add_to_watchlist(movie_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     """ 
@@ -39,6 +60,18 @@ def add_to_watchlist(movie_id: int, credentials: Annotated[HTTPAuthorizationCred
     except Exception:
         raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
     return movie
+
+@watch_movie_route.get("/watchlist/get_watch_list", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="Your watchlist")
+def get_watch_list(credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    """ 
+    This action allows you to get your list of movies you have planed to watch. Authentication is required. A valid token is needed to perform this action and access the watchlist.
+    """
+    user_id = jwt_service.validate_user_jwt(credentials.credentials)
+    try:
+        watchlist = seen_movie_service.user_watchlist(user_id)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
+    return seen_movie_service.user_watchlist(user_id)
 
 @watch_movie_route.put("/remove-from-watchlist/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="")
 def remove_from_user_watchlist(movie_id:int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
@@ -62,6 +95,18 @@ def add_to_favoritelist(movie_id: int, credentials: Annotated[HTTPAuthorizationC
     except Exception:
         raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
     return movie
+
+@watch_movie_route.get("/favorites/get_favorite_list", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="Your favorite movies")
+def get_favorite_list(credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    """ 
+    This action allows you to get your list of movies you have liked as favorite. Authentication is required. A valid token is needed to perform this action and access the watchlist.
+    """
+    user_id = jwt_service.validate_user_jwt(credentials.credentials)
+    try:
+        favoritelist = seen_movie_service.user_favorites_movie(user_id)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Something is going wrong. Try again !") from Exception
+    return seen_movie_service.user_favorites_movie(user_id)
 
 @watch_movie_route.put("/remove-from-user-favorites/{movie_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="Remove a movie from your favorites")
 def remove_from_user_favorites(movie_id:int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):

@@ -16,6 +16,19 @@ class SeenMovieService:
             id_movie=id_movie,
             seen=True)
     
+    def remove_from_seen(self, id_user : int, id_movie : int)-> bool|None:
+        seenmovie = self.seen_movierepo.get_by_user_and_movie(id_user, id_movie)
+        if seenmovie is None :
+            return None
+        elif seenmovie.seen is False : 
+            return None
+        else :
+            seenmovie.seen = False
+            seenmovie.favorite = False
+            seenmovie.vote = None
+            return self.seen_movierepo.update_db(seenmovie=seenmovie)
+        
+
     def add_to_watchlist(self, id_user : int, id_movie : int)-> SeenMovie:
         seenmovie = self.seen_movierepo.get_by_user_and_movie(id_user, id_movie)
         if seenmovie is None:
@@ -30,7 +43,7 @@ class SeenMovieService:
         return True
     
     def remote_from_user_watchlists(self, id_user:int, id_movie:int):
-        return self.seen_movierepo.remote_from_user_watchlists(id_user, id_movie)
+        return self.seen_movierepo.remove_from_user_watchlist(id_user, id_movie)
 
     def add_to_favoritelist(self, id_user:int, id_movie:int) -> SeenMovie:
         seenmovie = self.seen_movierepo.get_by_user_and_movie(id_user, id_movie)
@@ -46,7 +59,7 @@ class SeenMovieService:
         return True
     
     def remote_from_user_favorites(self, id_user:int, id_movie:int):
-        return self.seen_movierepo.remote_from_user_favorites(id_user, id_movie)
+        return self.seen_movierepo.remove_from_user_favorites(id_user, id_movie)
     
     def user_watchlist(self, id_user : int) -> list[Movie]:
         list_movies = self.seen_movierepo.get_watchlist_movie(id_user)
