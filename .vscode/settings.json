@@ -13,42 +13,6 @@
     },
     "sqltools.connections": [
         {
-            "previewLimit": 50,
-            "server": "sgbd-eleves.domensai.ecole",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "PostgreSQL",
-            "database": "id2515",
-            "username": "id2515"
-        },
-        {
-            "previewLimit": 50,
-            "server": "sgbd-eleves.domensai.ecole",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "database": "id2450",
-            "username": "id2450",
-            "name": "Leo"
-        },
-        {
-            "previewLimit": 50,
-            "server": "sgbd-eleves.domensai.ecole",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "id2458",
-            "database": "id2458",
-            "username": "id2458"
-        },
-        {
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "postgreSQL",
-            "database": "bd_cinema",
-            "username": "postgres"
-        },
-        {
             "mysqlOptions": {
                 "authProtocol": "default",
                 "enableSsl": "Disabled"
@@ -60,6 +24,15 @@
             "database": "projet_db",
             "name": "MySQLConnection",
             "username": "Yatoute"
+        },
+        {
+            "previewLimit": 50,
+            "server": "aws-0-eu-west-3.pooler.supabase.com",
+            "port": 6543,
+            "driver": "PostgreSQL",
+            "name": "superbaseSQL",
+            "database": "postgres",
+            "username": "postgres.nwrnwrzwtdyukzseqltp"
         }
     ]
 }

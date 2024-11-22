@@ -18,15 +18,12 @@ user_router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @user_router.post("/sign-up", status_code=status.HTTP_201_CREATED, summary="Sign up")
-def create_user(username: str, pass_word: SecretStr) -> APIUser:
+def create_user(username: str, pass_word: SecretStr) :
     """
     Sign up by providing a username and password. A unique username and a sufficiently strong password are required to complete the registration process.
     """
-    try:
-        check_password_strength(pass_word=pass_word)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Password too weak") from Exception
-
+    pass_word = pass_word.get_secret_value()
+    check_password_strength(pass_word=pass_word)
     if user_service.user_exists(username):
         raise HTTPException(status_code=409, detail="User with this username already exists")
 
@@ -42,6 +39,7 @@ def login(username: str, pass_word: SecretStr) -> JWTResponse:
     """
     Authenticate with username and password and obtain a token
     """
+    pass_word = pass_word.get_secret_value()
     try:
         user = validate_username_password(username=username, pass_word=pass_word, user_repo=user_repo)
     except Exception as error:

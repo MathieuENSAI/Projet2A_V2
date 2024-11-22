@@ -1,12 +1,6 @@
 DROP SCHEMA IF EXISTS projet_info CASCADE;
 CREATE SCHEMA projet_info;
 
--- DROP TABLE IF EXISTS projet_info.MovieGenre CASCADE;
--- DROP TABLE IF EXISTS projet_info.Genre CASCADE;
--- DROP TABLE IF EXISTS projet_info.UserFollowers CASCADE ;
--- DROP TABLE IF EXISTS projet_info.SeenMovies CASCADE ; 
--- DROP TABLE IF EXISTS projet_info.Movie CASCADE;
--- DROP TABLE IF EXISTS projet_info.User CASCADE ;
 --------------------------------------------------------------
 -- Utilisateurs
 --------------------------------------------------------------

@@ -35,3 +35,7 @@ def validate_username_password(username: str, pass_word: str, user_repo: UserRep
     if tested_password != user_with_username.pass_word:
         raise Exception("Username or password incorect")
     return user_with_username
+
+
+if __name__ == "__main__" :
+    check_password_strength("Yatoute0773")
