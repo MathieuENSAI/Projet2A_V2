@@ -36,13 +36,24 @@ def add_following_by_username(username: str, credentials: Annotated[HTTPAuthoriz
         raise HTTPException(status_code=404, detail=f"You can not follow user with username[{username}]. check and try again")
     return {"following":following} |following_service.get_following_movies_collection(user_id, following_id)
 
-@following_route.delete("/stop-follow/{following_id}",  status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary= "Stop following a user")
+@following_route.delete("/stop-follow/id/{following_id}",  status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary= "Stop following a user")
 def stop_follow(following_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
     
     """
     Unfollow a user. Once you stop following, you will no longer receive their updates or suggestions. Please note that authentication is required for this operation.
     """
     user_id = jwt_service.validate_user_jwt(credentials.credentials)
+    return following_service.stop_follow(user_id, following_id)
+
+@following_route.delete("/stop-follow/username/{username}",  status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary= "Stop following a user")
+def stop_follow(username: str, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    
+    """
+    Unfollow a user. Once you stop following, you will no longer receive their updates or suggestions. Please note that authentication is required for this operation.
+    """
+    user_id = jwt_service.validate_user_jwt(credentials.credentials)
+    user = user_service.get_user_by_username(username=username)
+    following_id = user.id_user
     return following_service.stop_follow(user_id, following_id)
 
 @following_route.get("/all-followings",  status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="View all users you are following")

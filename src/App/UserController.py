@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Annotated
 
+from pydantic import SecretStr
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 
@@ -17,7 +18,7 @@ user_router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @user_router.post("/sign-up", status_code=status.HTTP_201_CREATED, summary="Sign up")
-def create_user(username: str, pass_word: str) -> APIUser:
+def create_user(username: str, pass_word: SecretStr) -> APIUser:
     """
     Sign up by providing a username and password. A unique username and a sufficiently strong password are required to complete the registration process.
     """
@@ -37,7 +38,7 @@ def create_user(username: str, pass_word: str) -> APIUser:
 
 
 @user_router.post("/login", status_code=status.HTTP_201_CREATED)
-def login(username: str, pass_word: str) -> JWTResponse:
+def login(username: str, pass_word: SecretStr) -> JWTResponse:
     """
     Authenticate with username and password and obtain a token
     """
