@@ -56,7 +56,7 @@ class SeenMovieService:
             return None
     
     def user_seenmovies(self, id_user: int)-> list[Movie]:
-        list_movies = self.seen_movierepo.get_movies_seen_by_userr(id_user)
+        list_movies = self.seen_movierepo.get_movies_seen_by_user(id_user)
         if list_movies :
             return list_movies
         else:

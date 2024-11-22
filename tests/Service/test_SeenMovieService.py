@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Literal, Optional, Union
 from src.Model.SeenMovie import SeenMovie
 from src.Model.Movie import Movie
 from src.Model.User import User
+from src.Model.APIUser import APIUser
 from src.Service.SeenMovieService import SeenMovieService
 from src.DAO.SeenMovieRepo import SeenMovieRepo
 
@@ -54,8 +55,6 @@ def test_add_to_favoritelist_new():
     assert seenmovie.vote == None
     assert seenmovie.favorite == True
 
-#def test_delete_seenmovie_by_user_and_movie():
-
 def test_watchlist_exist():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     seenmovieservice = SeenMovieService(seenmovierepo)
@@ -82,12 +81,10 @@ def test_user_seenmovies_exist():
 def test_who_watch_movie():
     seenmovierepo=SeenMovieRepo(MockDBConnector())
     seenmovieservice = SeenMovieService(seenmovierepo)
-    users : list[User] = seenmovieservice.who_watch_movie(1)
+    users : list[APIUser] = seenmovieservice.who_watch_movie(1)
     assert users is not None
     assert users[0].id_user == 3
     assert users[0].username == ""
-    assert users[0].pass_word == ""
-    assert users[0].salt is None
-    assert users[0] == User(id_user=3, username="",pass_word="", salt=None)
-    assert users[1] == User(id_user=5, username="",pass_word="", salt=None)
-    assert users[2] == User(id_user=4, username="",pass_word="", salt=None)
+    assert users[0] == APIUser(id_user=3, username="")
+    assert users[1] == APIUser(id_user=5, username="")
+    assert users[2] == APIUser(id_user=4, username="")

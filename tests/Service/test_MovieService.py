@@ -164,8 +164,9 @@ def test_get_by_genre_movies_found_in_local_less_five(movie_service):
     assert result==[Movie(id=1), Movie(id=5), Movie(id=6), Movie(id=8), Movie(id=12)]
 
 
-def test_get_by_release_period(movie_service, movie_repo, movie_TMDB):
+def test_get_by_release_period(movie_service):
     """Test de la méthode get_by_release_period"""
+    movie_service, movie_repo, movie_TMDB, _= movie_service
 
     # Simulation des données
     start_date = "2020-01-01"
@@ -185,8 +186,9 @@ def test_get_by_release_period(movie_service, movie_repo, movie_TMDB):
     assert movie in result
 
 
-def test_get_lastest_released(movie_service, movie_TMDB, movie_repo, movie_genre_repo):
+def test_get_lastest_released(movie_service):
     """Test de la méthode get_lastest_released"""
+    movie_service, movie_repo, movie_TMDB, movie_genre_repo= movie_service
 
     # Simulation des données
     number = 5

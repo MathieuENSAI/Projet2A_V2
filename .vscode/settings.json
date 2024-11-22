@@ -47,6 +47,19 @@
             "name": "postgreSQL",
             "database": "bd_cinema",
             "username": "postgres"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "Yatoute.mysql.pythonanywhere-services.com",
+            "port": 3306,
+            "driver": "MySQL",
+            "database": "projet_db",
+            "name": "MySQLConnection",
+            "username": "Yatoute"
         }
     ]
 }
