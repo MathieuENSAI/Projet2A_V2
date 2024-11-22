@@ -72,7 +72,8 @@ class MovieService:
         movies = self.movie_TMDB.get_lastest_released(number)
         self.movie_genre_repo.insert_into_db([movie['movie_genre'] for movie in movies])
         movies = [movie['movie'] for movie in movies]
-        self.movie_repo.insert_into_db([movie.__dict__ for movie in movies])
+        # Enrégistrer les 10 récents films en local
+        self.movie_repo.insert_into_db([movie.__dict__ for movie in movies[:10]])
         return movies
 
 if __name__ == "__main__" :
