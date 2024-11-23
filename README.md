@@ -1,41 +1,103 @@
-# Prerequisite:  PDM 
+# Réseau social Ciné 🍿
 
-Install PDM for your user with pip 
+## Project Overview
+"Réseau social Cinéma" is a web service that allows users to interact with their movie preferences and explore films through social connections.
 
-`> pip install --user pdm`
+### Users can:
 
-Check your PDM version with 
+- Create an account.  
+- Add movies to their favorites and watchlists
+- Rate movies and track their viewing history.
+- Follow other users and view their movie collections.
+- Discover films that have been watched by both the user and those they follow.
 
-`> pdm --version`
+### Authenticated users have access to :
 
-## In case of `pdm: command not found`
+- Personalized and detailed data, including the ability to rate movies and manage their collections.
+- Suggestions for new follows.
+- The platform ensures that only valid, authenticated users can perform actions like rating or following.
+- Additionally, the project integrates social features, allowing users to engage with others' movie choices, share collections, and collaborate on discovering new films together.
 
-You must then add the PDM executable to your PATH environment 
+## Prerequisite: PDM
 
-To do so: 
+PDM (Python Development Master) is a modern Python package manager that simplifies dependency management and virtual environment handling. The project uses PDM for managing dependencies and virtual environments.
 
-Locate the folder in which pdm was installed with `pip list -v` (Usually `C:/Users/UserName/AppData/Roaming or Local/Python/Python310/site-packages`)
+### Install PDM
+To install PDM for your user with pip, run the following command:
 
-Find the `Scripts` folder which is a sibling of the `site-packages` (e.g. `C:/Users/UserName/AppData/Roaming or Local/Python/Python310/Scripts`; it should contain `pdm.exe`) and copy it. 
+> pip install --user pdm
 
-On Windows, search `Edit the system environment variables`
+You can check if PDM is installed correctly by running:
 
-In `System Properties`, click `Environment variables` => One of the `User variables` should be named `Path`
+> pdm --version
 
-`Edit` it and add the copied folder at the end of the variable, then save. 
+### In case of pdm: command not found
 
-You can now open a new terminal and retry 
+If you encounter the error pdm: command not found, you need to add the PDM executable to your system's PATH environment variable.
 
-# How to install the app 
+### To do so:
 
-`> pdm install`
+- Locate the folder where PDM was installed by running pip list -v (typically in a path like C:/Users/YourUsername/AppData/Roaming/Python/Python310/site-packages).
 
-That's all 😊
+- Find the Scripts folder, which is located alongside site-packages (e.g., C:/Users/YourUsername/AppData/Roaming/Python/Python310/Scripts), and copy this path.
 
-# How to run the app 
+- On Windows, search for "Edit the system environment variables".
 
-```> pdm start```
+- In the System Properties window, click on Environment Variables, then find the Path variable in the User variables section.
 
-This starts a server accessible on `localhost:8000`
+- Edit the Path variable and add the copied folder path at the end, then save.
+Afterward, open a new terminal and retry the pdm command.
 
-The API is then documented on `localhost:8000/docs`
+## How to install the app
+
+Once you have installed PDM, you can install all the required dependencies for the project using the following command:
+
+> pdm install
+
+This will install the dependencies listed in the pyproject.toml file, which includes libraries such as FastAPI, Uvicorn, Pydantic, and others necessary for the application to run.
+
+For a list of all dependencies, check the pyproject.toml file.
+
+## How to run the app
+
+To start the application, run:
+
+> pdm start
+
+This will launch the server, and the application will be accessible at localhost:8000. The API documentation can be viewed at localhost:8000/docs.
+
+## Project Dependencies
+
+The project uses several key dependencies, all of which are defined in the pyproject.toml file. These include:
+
+- FastAPI: A modern, fast web framework for building APIs.
+
+- Uvicorn: An ASGI server for running FastAPI applications.
+
+- Pydantic: Used for data validation and parsing.
+
+- PyJWT: Used for handling JSON Web Tokens for authentication.
+
+- psycopg2-binary: PostgreSQL database adapter.
+
+- python-dotenv: For managing environment variables securely.
+
+## Dev Dependencies
+
+In addition to the main dependencies, the project includes the following development dependencies for testing, linting, and type checking:
+
+- pytest: A testing framework.
+
+- pytest-cov: For test coverage.
+
+- freezegun: For freezing time during tests.
+
+You can see the full list of dependencies and their versions in the pyproject.toml file.
+
+## Testing
+
+To run the tests for this project, execute the following command:
+
+> pdm run test
+
+This will run all the tests in the tests folder using pytest.

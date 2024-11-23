@@ -11,7 +11,7 @@ def run_app():
     app = FastAPI(
         title="Réseau social ciné",
         description="""
-<p><strong>"Réseau social Cinéma"</strong> is a platform that allows users to interact with their movie preferences and explore films through social connections.</p>
+<p><strong>"Réseau social Cinéma"</strong> is a web service that allows users to interact with their movie preferences and explore films through social connections.</p>
 <p>Users can:</p>
 <ul>
     <li>Create an account.</li>
