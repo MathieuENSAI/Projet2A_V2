@@ -9,7 +9,8 @@ CREATE TABLE projet_info.User (
     id_user serial PRIMARY KEY,
     username VARCHAR(32) NOT NULL UNIQUE,
     pass_word VARCHAR(256) NOT NULL,
-    salt VARCHAR(256) 
+    salt VARCHAR(256),
+    connected BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE projet_info.Movie(

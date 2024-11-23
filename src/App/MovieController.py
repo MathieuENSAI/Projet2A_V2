@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Annotated
 from fastapi.security import HTTPAuthorizationCredentials
 from .JWTBearer import JWTBearer
 from src.Model.Movie import Movie
-from .init_app import jwt_service, movie_service
+from .init_app import jwt_service, user_service, movie_service
 import logging
 from pydantic import BaseModel, Field
 from datetime import date
@@ -17,6 +17,9 @@ def get_movie_by_id(movie_id: int, credentials: Annotated[HTTPAuthorizationCrede
     """
     try:
         user_id = jwt_service.validate_user_jwt(credentials.credentials)  
+        # Authentification renforcé au niveau backend en plus de jwt
+        if not user_service.is_connected(user_id):
+            raise HTTPException(status_code=404, detail="It seem like you are no longer connected.")
     except Exception :
         user_id=None
     try:
@@ -37,7 +40,10 @@ def get_movie_by_title(title: str, credentials: Annotated[HTTPAuthorizationCrede
      Find movies by providing their title. Unauthenticated users can access basic details, while authenticated users with a valid token can view more comprehensive information.
     """
     try:
-        user_id = jwt_service.validate_user_jwt(credentials.credentials)  
+        user_id = jwt_service.validate_user_jwt(credentials.credentials) 
+        # Authentification renforcé au niveau backend en plus de jwt
+        if not user_service.is_connected(user_id):
+            raise HTTPException(status_code=404, detail="It seem like you are no longer connected.") 
     except Exception :
         user_id=None
     try:
@@ -54,6 +60,9 @@ def get_movie_by_genre(genre: str, credentials: Annotated[HTTPAuthorizationCrede
     """
     try:
         user_id = jwt_service.validate_user_jwt(credentials.credentials)  
+        # Authentification renforcé au niveau backend en plus de jwt
+        if not user_service.is_connected(user_id):
+            raise HTTPException(status_code=404, detail="It seem like you are no longer connected.")
     except Exception :
         user_id=None
     try:

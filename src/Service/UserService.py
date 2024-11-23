@@ -16,15 +16,28 @@ class UserService:
         user = self.user_repo.insert_into_db(username = username, salt = salt, hashed_password=pass_word)
         return(user)
     
+    def update_user(self, id_user: int, username:str, pass_word:str) -> User:
+        user = self.get_user_by_id(id_user)
+        salt = self.pass_word_service.create_salt()
+        user.username = username
+        user.salt = salt
+        user.pass_word =  self.pass_word_service.hash_password(pass_word, salt)
+        return self.user_repo.update_user(new_profile_user=user)
+    
     def login(self, username:str, pass_word:str):
         user_with_username: Optional[User] = self.user_repo.get_by_username(username=username)
         if user_with_username is None:
             raise Exception("Username incorect")
         self.pass_word_service.validate_password_salt(pass_word=pass_word, 
                     hashed_password=user_with_username.pass_word, salt=user_with_username.salt)
-        return user_with_username
-        
-
+        return self.user_repo.login(user_with_username.id_user)
+    
+    def logout(self, id_user:int):
+        return self.user_repo.logout(id_user)
+    
+    def is_connected(self, id_user:int):
+        return self.user_repo.is_connected(id_user)
+    
     def get_user_by_id(self, user_id: int) -> User | None:
         return self.user_repo.get_by_id(user_id)
     

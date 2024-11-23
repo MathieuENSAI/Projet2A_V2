@@ -77,14 +77,3 @@ def test_user_seenmovies_exist():
     assert list_movies[0] == Movie(id=3)
     assert list_movies[1] == Movie(id=2)
     assert list_movies[2] == Movie(id=1)
-
-def test_who_watch_movie():
-    seenmovierepo=SeenMovieRepo(MockDBConnector())
-    seenmovieservice = SeenMovieService(seenmovierepo)
-    users : list[APIUser] = seenmovieservice.who_watch_movie(1)
-    assert users is not None
-    assert users[0].id_user == 3
-    assert users[0].username == ""
-    assert users[0] == APIUser(id_user=3, username="")
-    assert users[1] == APIUser(id_user=5, username="")
-    assert users[2] == APIUser(id_user=4, username="")

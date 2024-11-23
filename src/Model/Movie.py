@@ -17,10 +17,6 @@ class APIMovie(Movie):
     following_vote_average: Optional[float] = None
     total_liked_following: Optional[int] = None
 
-if __name__ == "__main__" :
-   movie= Movie(id=1)
-   print(movie.__dict__)
-
 
 
 

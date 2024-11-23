@@ -29,7 +29,19 @@ class UserRepo:
             "one",
         )
         return User(**raw_created_user) if raw_created_user else None
-
+    
+    def login(self, id_user:int):
+        raw_update= self.db_connector.sql_query("UPDATE projet_info.User SET connected=TRUE WHERE id_user=%s RETURNING *;", [id_user], "one")
+        return User(**raw_update) if raw_update else None
+    
+    def logout(self, id_user:int):
+        raw_update= self.db_connector.sql_query("UPDATE projet_info.User SET connected=FALSE WHERE id_user=%s RETURNING *;", [id_user], "one")
+        return True if raw_update else False
+    
+    def is_connected(self, id_user:int):
+        raw_update= self.db_connector.sql_query("SELECT * FROM projet_info.User WHERE id_user=%s AND connected=TRUE;", [id_user], "one")
+        return True if raw_update else False
+        
     def get_all(self) -> list[User]:
         raw_users = self.db_connector.sql_query("SELECT * from projet_info.User;", [], "all")
         if raw_users is None:
@@ -38,7 +50,7 @@ class UserRepo:
     
     def update_user(self, new_profile_user: User) -> User:
         raw_modified_user = self.db_connector.sql_query(
-        "UPDATE projet_info.User SET username = %(username)s, salt = %(salt)s, pass_word = %(pass_word)s WHERE id_user = %(id_user)s RETURNING *;",
+        "UPDATE projet_info.User SET username = %(username)s, salt = %(salt)s, pass_word = %(pass_word)s, connected=FALSE WHERE id_user = %(id_user)s RETURNING *;",
             {"id_user":new_profile_user.id_user, "username": new_profile_user.username, "salt": new_profile_user.salt, "pass_word": new_profile_user.pass_word},
             "one",
         )

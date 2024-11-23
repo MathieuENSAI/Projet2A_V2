@@ -44,7 +44,7 @@ class MockDBConnector:
                 return(self.db[-1])
             case "SELECT * from projet_info.User;":
                 return self.db
-            case  "UPDATE projet_info.User SET username = %(username)s, salt = %(salt)s, pass_word = %(pass_word)s WHERE id_user = %(id_user)s RETURNING *;":
+            case  "UPDATE projet_info.User SET username = %(username)s, salt = %(salt)s, pass_word = %(pass_word)s, connected=FALSE WHERE id_user = %(id_user)s RETURNING *;":
                 id_user = data["id_user"]
                 for index_user, user in enumerate(self.db):
                     if user['id_user']==id_user:

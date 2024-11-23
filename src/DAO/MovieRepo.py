@@ -130,14 +130,14 @@ class  MovieRepo:
         return [APIMovie(**raw_selected) for raw_selected in raws_selected] if raws_selected else []
     
     def get_by_release_period(self, start_release_date:str, end_release_date:str):
-        raws_movie = self.db_connector.sql_query("SELECT * FROM Movie WHERE release_date BETWEEN %s AND %s;", (start_release_date, end_release_date), "all")
+        raws_movie = self.db_connector.sql_query("SELECT * FROM projet_info.Movie WHERE release_date BETWEEN %s AND %s;", (start_release_date, end_release_date), "all")
         if raws_movie is None :
             return []
         else :
             return [Movie(**raw_movie) for raw_movie in raws_movie]
     
     def get_lastest_released(self, number:int):
-        raws_movie = self.db_connector.sql_query("SELECT * FROM Movie ORDER BY release_date DESC LIMIT %s;", (number,), return_type = "all")
+        raws_movie = self.db_connector.sql_query("SELECT * FROM projet_info.Movie ORDER BY release_date DESC LIMIT %s;", (number,), return_type = "all")
         if raws_movie is None :
             return []
         else :
