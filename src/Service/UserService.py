@@ -16,7 +16,7 @@ class UserService:
         user = self.user_repo.insert_into_db(username = username, salt = salt, hashed_password=pass_word)
         return(user)
     
-    def login(self, username, pass_word):
+    def login(self, username:str, pass_word:str):
         user_with_username: Optional[User] = self.user_repo.get_by_username(username=username)
         if user_with_username is None:
             raise Exception("Username incorect")
@@ -30,19 +30,9 @@ class UserService:
     
     def get_user_by_username(self, username : str)-> User | None:
         return self.user_repo.get_by_username(username=username)
-
+    
     def delete_user(self, user_id: int) -> None:
         return self.user_repo.delete_user(user_id)
-    
-    def search_user(self, username: str) -> User:
-        user = self.user_repo.get_by_username(username=username)
-        if user == None:
-            raise Exception("This User didn't exist.")
-        return user
-    
-    def user_exists(self, username: str) -> User:
-        user = self.user_repo.get_by_username(username=username)
-        return True if user else False
 
 
 if __name__=='__main__':

@@ -36,10 +36,10 @@ class UserRepo:
             return None
         return [User(**raw_user) for raw_user in raw_users]
     
-    def modify_user(self, last_username, user: User) -> User:
+    def update_user(self, new_profile_user: User) -> User:
         raw_modified_user = self.db_connector.sql_query(
-        "UPDATE projet_info.User SET username = %(username)s, salt = %(salt)s, pass_word = %(pass_word)s WHERE username = %(last_username)s RETURNING *;",
-            {"username": user.username, "salt": user.salt, "pass_word": user.pass_word, "last_username" : last_username},
+        "UPDATE projet_info.User SET username = %(username)s, salt = %(salt)s, pass_word = %(pass_word)s WHERE id_user = %(id_user)s RETURNING *;",
+            {"id_user":new_profile_user.id_user, "username": new_profile_user.username, "salt": new_profile_user.salt, "pass_word": new_profile_user.pass_word},
             "one",
         )
         return User(**raw_modified_user)
@@ -57,20 +57,6 @@ class UserRepo:
         except Exception as e:
             return False
         return True
-
-
-    # def login(self, username: str, pass_word: str) -> Optional[User]:
-    #     raw_user = self.db_connector.sql_query(
-    #         """
-    #         SELECT * FROM projet_info.User
-    #         WHERE username = %(username)s AND pass_word = %(pass_word)s;
-    #         """,
-    #         {"username": username, "pass_word": pass_word},
-    #         "one",
-    #     )
-    #     if raw_user is None:
-    #         return None
-    #     return User(**raw_user)
 
 if __name__ == "__main__" :
     import dotenv
