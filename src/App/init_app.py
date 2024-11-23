@@ -9,6 +9,7 @@ from src.DAO.SeenMovieRepo import SeenMovieRepo
 from src.DAO.GenreRepo import GenreRepo
 from src.DAO.MovieGenreRepo import MovieGenreRepo
 from src.Service.JWTService import JwtService
+import src.Service.PasswordService as PasswordService
 from src.Service.UserService import UserService
 from src.Service.FollowingService import FollowingService
 from src.Service.MovieService import MovieService
@@ -26,7 +27,7 @@ seen_movie_repo = SeenMovieRepo(db_connector)
 movie_genre_repo = MovieGenreRepo(db_connector)
 genre_repo = GenreRepo(db_connector)
 jwt_service = JwtService()
-user_service = UserService(user_repo)
+user_service = UserService(user_repo, PasswordService)
 following_service = FollowingService(following_repo)
 movie_TMDB = MovieFromTMDService()
 movie_service = MovieService(movie_repo, movie_TMDB, movie_genre_repo)

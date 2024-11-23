@@ -6,7 +6,6 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from src.Model.APIUser import APIUser
 from src.Model.JWTResponse import JWTResponse
-from src.Service.PasswordService import check_password_strength, validate_username_password
 
 from .init_app import jwt_service, user_repo, user_service
 from .JWTBearer import JWTBearer
@@ -23,7 +22,6 @@ def create_user(username: str, pass_word: SecretStr) :
     Sign up by providing a username and password. A unique username and a sufficiently strong password are required to complete the registration process.
     """
     pass_word = pass_word.get_secret_value()
-    check_password_strength(pass_word=pass_word)
     if user_service.user_exists(username):
         raise HTTPException(status_code=409, detail="User with this username already exists")
 
@@ -41,7 +39,7 @@ def login(username: str, pass_word: SecretStr) -> JWTResponse:
     """
     pass_word = pass_word.get_secret_value()
     try:
-        user = validate_username_password(username=username, pass_word=pass_word, user_repo=user_repo)
+        user = user_service.login(username, pass_word)
     except Exception as error:
         raise HTTPException(status_code=403, detail="Invalid username and password combination") from error
 

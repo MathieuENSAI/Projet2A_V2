@@ -43,16 +43,3 @@ class JwtService:
         if decoded_jwt["expiry_timestamp"] < time.time():
             raise ExpiredSignatureError("Expired JWT")
         return decoded_jwt["user_id"]
-
-
-
-
-if __name__=='__main__':
-    from freezegun import freeze_time
-    jwt_service = JwtService("mysecret")
-    @freeze_time("2024-11-16 12:00:00")
-    def generate_jwt():
-        token = jwt_service.encode_jwt(5).access_token
-        print(token)
-        
-    generate_jwt()

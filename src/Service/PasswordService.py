@@ -2,10 +2,6 @@ import hashlib
 import secrets
 from typing import Optional
 
-from src.DAO.UserRepo import UserRepo
-from src.Model.User import User
-
-
 def hash_password(pass_word: str, salt: Optional[str] = None) -> str:
     if salt is None:
         raise Exception("salt not found")
@@ -27,11 +23,8 @@ def check_password_strength(pass_word: str):
         raise ValueError("Password must contain at least one lowercase letter")
 
 
-def validate_username_password(username: str, pass_word: str, user_repo: UserRepo) -> User:
-    user_with_username: Optional[User] = user_repo.get_by_username(username=username)
-    if user_with_username is None:
-        raise Exception("Username or password incorect")
-    tested_password = hash_password(pass_word, user_with_username.salt)
-    if tested_password != user_with_username.pass_word:
-        raise Exception("Username or password incorect")
-    return user_with_username
+def validate_password_salt(pass_word: str, hashed_password:str, salt:str) -> Optional[bool]:
+    tested_password = hash_password(pass_word, salt)
+    if tested_password != hashed_password:
+        raise Exception("Password incorect")
+    return True

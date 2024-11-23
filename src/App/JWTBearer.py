@@ -33,19 +33,3 @@ class JWTBearer(HTTPBearer):
                 raise HTTPException(status_code=403, detail="Unknown error") from e
 
         return credentials
-
-class PartialAuthJWTBearer(HTTPBearer):
-    def __init__(self, auto_error: bool = False):
-        super(PartialAuthJWTBearer, self).__init__(auto_error=auto_error)
-
-    async def __call__(self, request: Request) -> HTTPAuthorizationCredentials:
-        credentials: HTTPAuthorizationCredentials | None = await super(PartialAuthJWTBearer, self).__call__(request)
-        if not credentials:
-            return False
-        if not credentials.scheme == "Bearer":
-            return False
-        try:
-            jwt_service.validate_user_jwt(credentials.credentials)
-        except Exception :
-            return False
-        return credentials

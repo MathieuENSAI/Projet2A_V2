@@ -44,45 +44,33 @@ class UserRepo:
         )
         return User(**raw_modified_user)
     
-    def delete_user(self, username:str) -> None:
+    def delete_user(self, user_id:int) -> None:
         try:
             self.db_connector.sql_query(
                 """
             DELETE FROM projet_info.User
-            WHERE username = %s;
+            WHERE id_user = %s;
             """,
-                (username,),
+                [user_id],
                 "none",
             )
         except Exception as e:
-            print(f"Error deleting user: {e}")
-            raise e
+            return False
+        return True
 
-    def login(self, username: str, pass_word: str) -> Optional[User]:
-        raw_user = self.db_connector.sql_query(
-            """
-            SELECT * FROM projet_info.User
-            WHERE username = %(username)s AND pass_word = %(pass_word)s;
-            """,
-            {"username": username, "pass_word": pass_word},
-            "one",
-        )
-        if raw_user is None:
-            return None
-        return User(**raw_user)
 
-    # def retrieve_scouts(self, user: User) -> list[User]:
-    #     raw_users = self.db_connector.sql_query(
+    # def login(self, username: str, pass_word: str) -> Optional[User]:
+    #     raw_user = self.db_connector.sql_query(
     #         """
-    #         SELECT * FROM User
-    #         WHERE scout = %(scout)s;
+    #         SELECT * FROM projet_info.User
+    #         WHERE username = %(username)s AND pass_word = %(pass_word)s;
     #         """,
-    #         {"scout": user.id_user},
-    #         "all",
+    #         {"username": username, "pass_word": pass_word},
+    #         "one",
     #     )
-    #     if raw_users is None:
+    #     if raw_user is None:
     #         return None
-    #     return [User(**raw_user) for raw_user in raw_users]
+    #     return User(**raw_user)
 
 if __name__ == "__main__" :
     import dotenv
