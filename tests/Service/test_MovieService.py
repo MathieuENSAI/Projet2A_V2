@@ -32,7 +32,7 @@ def test_get_by_id(movie_service):
     result = movie_service.get_by_id(movie_id)
 
     # Vérifications
-    movie_repo.get_by_id.assert_called_once_with(movie_id)
+    movie_repo.get_by_id.assert_called_once_with(movie_id,None)
     movie_TMDB.get_by_id.assert_not_called()  # TMDB ne doit pas être appelé
     assert result == expected_movie
 
@@ -56,7 +56,7 @@ def test_get_by_id_movie_not_found_in_repo_but_found_in_tmdb(movie_service):
     result = movie_service.get_by_id(movie_id)
 
     # Vérifications
-    movie_repo.get_by_id.assert_called_once_with(movie_id)
+    movie_repo.get_by_id.assert_called_once_with(movie_id, None)
     movie_TMDB.get_by_id.assert_called_once_with(movie_id)
     movie_repo.insert_into_db.assert_called_once_with([movie_data['movie'].__dict__])
     movie_genre_repo.insert_into_db.assert_called_once_with([movie_data['movie_genre']])
@@ -76,7 +76,7 @@ def test_get_by_id_movie_not_found_anywhere(movie_service):
     result = movie_service.get_by_id(movie_id)
     
     # Vérification
-    movie_repo.get_by_id.assert_called_once_with(movie_id)
+    movie_repo.get_by_id.assert_called_once_with(movie_id, None)
     movie_TMDB.get_by_id.assert_called_once_with(movie_id)
     movie_repo.insert_into_db.assert_not_called()
     movie_genre_repo.insert_into_db.assert_not_called()

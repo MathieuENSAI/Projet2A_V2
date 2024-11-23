@@ -28,12 +28,12 @@ def test_search_movie_found():
     assert movies[0]['movie_genre']['genres']==[27, 9648, 18, 53]
 
 def test_search_movie_no_found():
-    movie_db = MovieFromTMDService(None)
+    movie_db = MovieFromTMDService()
     movies = movie_db.search_movie("Nindja")
     assert movies==[]
 
 def test_get_by_release_period_found():
-    movie_db = MovieFromTMDService(None)
+    movie_db = MovieFromTMDService()
     movies = movie_db.get_by_release_period('2025-07-01', '2025-07-02')
     assert '2025-07-01' <= movies[0]['movie'].release_date <= '2025-07-02'
     assert '2025-07-01' <= movies[-1]['movie'].release_date <= '2025-07-02'
