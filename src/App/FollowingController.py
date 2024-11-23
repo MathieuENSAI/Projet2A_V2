@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Body
 from typing import TYPE_CHECKING, Annotated
 from fastapi.security import HTTPAuthorizationCredentials
 from .JWTBearer import JWTBearer
-from .init_app import jwt_service, user_service, following_service, user_service
+from .init_app import jwt_service, user_service, following_service, user_service, seen_movie_service
 import logging
 
 following_route = APIRouter(prefix="/follow", tags=["User Following"])
@@ -92,5 +92,19 @@ def get_following_movies_collection(following_id: int, credentials: Annotated[HT
         raise HTTPException(status_code=404, detail="It seem like you are no longer connected.")
     if following_service.is_user_follow(user_id, following_id):
         return following_service.get_following_movies_collection(user_id, following_id)
+    else:
+       raise HTTPException(status_code=404, detail=f"You can not get movies collections from this user.")
+
+@following_route.get("/following-mean-note/{following_id}",  status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())], summary="The mean note given by a following")
+def get_following_movies_collection(following_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(JWTBearer())]):
+    """ 
+    This action provides the mean note given by a user your are following. Access is granted only if you're following the user, and a valid authentication token is required.
+    """
+    user_id = jwt_service.validate_user_jwt(credentials.credentials)
+    # Authentification renforcé au niveau backend en plus de jwt
+    if not user_service.is_connected(user_id):
+        raise HTTPException(status_code=404, detail="It seem like you are no longer connected.")
+    if following_service.is_user_follow(user_id, following_id):
+        return seen_movie_service.mean_note(following_id)
     else:
        raise HTTPException(status_code=404, detail=f"You can not get movies collections from this user.")

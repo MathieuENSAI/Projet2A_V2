@@ -72,4 +72,5 @@ class SeenMovieService:
     def get_top_movies_liked_by_others_users(self, id_user:int, top:int=5):
         return self.seen_movierepo.get_top_movies_liked_by_others_users(id_user, top)
 
-    
+    def mean_note(self, id_user:int):
+        return self.seen_movierepo.mean_note_user(id_user)
