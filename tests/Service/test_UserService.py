@@ -39,11 +39,13 @@ def test_login_success(user_service):
     id_user = 2
     pass_word = "Yatoute123"
     username = "Yatoute"
-    hashed_password = "9f3b9bcf7b06c8241dc7caa55c36de4e5a2161d697f2a303a53ba707783c42a6"
-    salt = "5c6cf48d4003d3c5c7de4791b32385d1"
+    
+    hashed_password = "f21414f901c58d1de70c1683ac6dad5dae4a7c8ca2bd2fc78fdef88d41a9e980"
+    salt = "b6c710865ac724048532efdaa1fc465e98121528ed101165e4c50729a3e6ae11af2f01da44dd202140c0e95cd5ddbcfc9f2cdec6f51184892ef92c5d74145c70bd6d1275f512710f5e75eb6b7e473027d365d6ccb269e45d6f81257096d4e0ff6ac2c47e544da41a29530030c43f014587c24501cc6e7c0867cf24efc91b122e"
 
     expected_user = User(id_user=id_user, username=username, pass_word=hashed_password, salt=salt)
     user_repo.get_by_username.return_value = expected_user
+    user_repo.login.return_value = expected_user
     
     # Appel de la méthode
     resultat = user_service.login(username, pass_word)

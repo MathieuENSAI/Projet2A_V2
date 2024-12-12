@@ -1,6 +1,7 @@
 # Réseau social Ciné 🍿
 
 ## Project Overview
+
 "Réseau social Cinéma" is a web service that allows users to interact with their movie preferences and explore films through social connections.
 
 ### Users can:

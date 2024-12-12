@@ -22,7 +22,7 @@ class SchedulerService(BackgroundScheduler):
 
 
     def start(self):
-        self.add_job(self.update_movie_genre, 'interval', seconds=10)
+        self.add_job(self.update_movie_genre, 'interval', seconds=3600)
         super().start()
 
 if __name__ == "__main__" :

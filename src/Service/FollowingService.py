@@ -1,13 +1,10 @@
 from src.DAO.FollowingRepo import FollowingRepo
-from src.DAO.UserRepo import UserRepo
 from src.Model.User import User
-from src.DAO.MovieRepo import MovieRepo
 
 class FollowingService:
     def __init__(self, following_repo : FollowingRepo):
         self.following_repo = following_repo
-        #self.user_repo = user_repo
-        #self.movie_repo = movie_repo
+
 
     def add_following(self, id_user: int, id_following: int) :
         return self.following_repo.add_following(id_user, id_following)
