@@ -21,12 +21,17 @@ def signup(username: str, pass_word: SecretStr) -> APIUser:
     """
     Sign up by providing a username and password. A unique username and a sufficiently strong password are required to complete the registration process.
     """
-    pass_word = pass_word.get_secret_value()
+    try :
+        pass_word = pass_word.get_secret_value()
+    except Exception as error :
+        raise HTTPException(status_code=409, detail="Invalid password. Must contain a digit, a lowercase letter, an uppercase letter and 8 characters.") from error
     user = user_service.get_user_by_username(username)
     if user:
         raise HTTPException(status_code=409, detail="User with this username already exists")
-
-    user= user_service.create_user(username=username, pass_word=pass_word)
+    try :
+        user= user_service.create_user(username=username, pass_word=pass_word)
+    except Exception as error :
+        raise HTTPException(status_code=409, detail="Invalid password. Must contain a digit, a lowercase letter, an uppercase letter and 8 characters.") from error
     if user is None:
         raise HTTPException(status_code = 500, detail = "Failed to create a user. Please try again later")
 
